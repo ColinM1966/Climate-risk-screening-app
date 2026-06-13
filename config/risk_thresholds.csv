@@ -1,0 +1,10 @@
+variable_id,class,lower_bound,upper_bound,lower_inclusive,upper_inclusive,score,units,notes
+FIRE_PROB,Low,0,0.25,TRUE,TRUE,1,probability,Modelled fire probability or suitability
+FIRE_PROB,Moderate,0.25,0.50,FALSE,TRUE,2,probability,Modelled fire probability or suitability
+FIRE_PROB,High,0.50,0.75,FALSE,TRUE,3,probability,Modelled fire probability or suitability
+FIRE_PROB,Very High,0.75,1.00,FALSE,TRUE,4,probability,Modelled fire probability or suitability
+INUNDATION_PCT,No mapped exposure,0,0,TRUE,TRUE,0,percent,No inundated area within the AOI
+INUNDATION_PCT,Low,0,5,FALSE,TRUE,1,percent,More than 0 to 5 percent of the AOI exposed
+INUNDATION_PCT,Moderate,5,20,FALSE,TRUE,2,percent,More than 5 to 20 percent of the AOI exposed
+INUNDATION_PCT,High,20,50,FALSE,TRUE,3,percent,More than 20 to 50 percent of the AOI exposed
+INUNDATION_PCT,Very High,50,100,FALSE,TRUE,4,percent,More than 50 percent of the AOI exposed
