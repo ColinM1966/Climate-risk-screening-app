@@ -1,0 +1,3 @@
+dataset_id,variable_id,scenario,period,file_path,units,dataset_type,nodata_value,enabled
+CDD_BASE,CDD,baseline,1981-2010,rasters/baseline/1981-2010/CDD_AllGCMs_historical_1981-2010.tif,days,continuous,-9999,TRUE
+CDD_245_4170,CDD,ssp245,2041-2070,rasters/future/ssp245/2041-2070/CDD_AllGCMs_ssp245_2041-2070.tif,days,continuous,-9999,TRUE
