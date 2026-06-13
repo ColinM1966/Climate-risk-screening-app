@@ -1,0 +1,41 @@
+# R and RStudio files
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Generated outputs
+outputs/
+*.zip
+
+# Large raster and spatial data files
+rasters/**/*.tif
+rasters/**/*.tiff
+rasters/**/*.asc
+rasters/**/*.nc
+rasters/**/*.grd
+rasters/**/*.gri
+rasters/**/*.img
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+.DS_Store
+Thumbs.db
+
+# Shapefile components in local working folders
+data/**/*.shp
+data/**/*.shx
+data/**/*.dbf
+data/**/*.prj
+data/**/*.cpg
+
+# GeoPackages and other larger local spatial files
+data/**/*.gpkg
+data/**/*.kml
+
+# Keep documentation and placeholders
+!data/**/README.md
+!rasters/**/README.md
+!outputs/README.md
