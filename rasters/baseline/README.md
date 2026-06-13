@@ -1,6 +1,4 @@
 
-## Add README files to the main subfolders
-
 ### `rasters/baseline/README.md`
 
 ```markdown
