@@ -2,13 +2,14 @@ packages <- c(
   "shiny",
   "bslib",
   "leaflet",
-  "dplyr",
-  "readr",
-  "stringr",
-  "DT",
   "sf",
   "terra",
-  "exactextractr"
+  "exactextractr",
+  "dplyr",
+  "readr",
+  "tidyr",
+  "purrr",
+  "DT"
 )
 
 missing_packages <- packages[
