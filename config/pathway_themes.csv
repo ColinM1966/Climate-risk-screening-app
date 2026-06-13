@@ -1,0 +1,7 @@
+pathway,theme,default_enabled
+Restoration Planning,Drought and Fire,TRUE
+Restoration Planning,Human Heat,FALSE
+Protected Area Management,Drought and Fire,TRUE
+Protected Area Management,Coastal Exposure,TRUE
+Community Adaptation,Human Heat,TRUE
+Community Adaptation,Agriculture,TRUE
