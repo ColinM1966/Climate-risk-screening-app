@@ -1,0 +1,13 @@
+theme,variable_id,display_order,default_selected
+Drought and Fire,CDD,1,TRUE
+Drought and Fire,PPETMIN,2,TRUE
+Drought and Fire,FIRE_PROB,3,TRUE
+Restoration Planning,CDD,1,TRUE
+Restoration Planning,PPETMIN,2,TRUE
+Restoration Planning,FIRE_PROB,3,TRUE
+Protected Area Management,CDD,1,TRUE
+Protected Area Management,FIRE_PROB,2,TRUE
+Agriculture,CDD,1,FALSE
+Agriculture,OILPALM_YIELD_CHANGE,2,TRUE
+Community Climate Concerns,CDD,1,FALSE
+Community Climate Concerns,HI41_DAYS,2,TRUE
