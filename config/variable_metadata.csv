@@ -1,1 +1,5 @@
-
+variable_id,display_name,description,units,summary_method,risk_direction
+CDD,Consecutive Dry Days,Maximum annual sequence of dry days,days,weighted_mean;p90;max,high
+PPETMIN,Minimum Monthly P:PET,Lowest monthly precipitation to PET ratio,ratio,weighted_mean;min,low
+FIRE_PROB,Fire Probability,Modelled relative probability of fire,probability,weighted_mean;p90,high
+HI41_DAYS,Days above Heat Index 41C,Annual number of days exceeding HI 41C,days/year,weighted_mean;p90;max,high
