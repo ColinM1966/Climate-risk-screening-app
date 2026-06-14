@@ -12,7 +12,7 @@ library(stringr)
 library(DT)
 
 # ------------------------------------------------------------
-# LOAD CONFIGURATION FUNCTIONS
+# LOAD APPLICATION FUNCTIONS
 # ------------------------------------------------------------
 
 source(
@@ -55,6 +55,10 @@ source(
   )
 )
 
+# ------------------------------------------------------------
+# LOAD CONFIGURATION TABLES
+# ------------------------------------------------------------
+
 app_config <- load_app_config(
   config_dir = "config"
 )
@@ -63,7 +67,6 @@ print_config_summary(
   app_config
 )
 
-# Make the configuration tables available to the app
 raster_catalogue <- app_config$raster_catalogue
 variable_metadata <- app_config$variable_metadata
 theme_variables <- app_config$theme_variables
@@ -71,201 +74,7 @@ pathway_themes <- app_config$pathway_themes
 risk_thresholds <- app_config$risk_thresholds
 
 # ------------------------------------------------------------
-# 1. CONFIGURATION FILE PATHS
-# ------------------------------------------------------------
-
-config_files <- list(
-  raster_catalogue = file.path(
-    "config",
-    "raster_catalogue.csv"
-  ),
-
-  variable_metadata = file.path(
-    "config",
-    "variable_metadata.csv"
-  ),
-
-  theme_variables = file.path(
-    "config",
-    "theme_variables.csv"
-  ),
-
-  pathway_themes = file.path(
-    "config",
-    "pathway_themes.csv"
-  ),
-
-  risk_thresholds = file.path(
-    "config",
-    "risk_thresholds.csv"
-  )
-)
-
-# ------------------------------------------------------------
-# 2. CHECK CONFIGURATION FILES
-# ------------------------------------------------------------
-
-missing_config_files <- unlist(
-  config_files
-)[
-  !file.exists(
-    unlist(config_files)
-  )
-]
-
-if (length(missing_config_files) > 0) {
-
-  stop(
-    paste0(
-      "The following configuration files are missing:\n\n",
-      paste(
-        missing_config_files,
-        collapse = "\n"
-      )
-    )
-  )
-}
-
-# ------------------------------------------------------------
-# 3. READ CONFIGURATION TABLES
-# ------------------------------------------------------------
-
-raster_catalogue <- read_csv(
-  config_files$raster_catalogue,
-  show_col_types = FALSE
-)
-
-variable_metadata <- read_csv(
-  config_files$variable_metadata,
-  show_col_types = FALSE
-)
-
-theme_variables <- read_csv(
-  config_files$theme_variables,
-  show_col_types = FALSE
-)
-
-pathway_themes <- read_csv(
-  config_files$pathway_themes,
-  show_col_types = FALSE
-)
-
-risk_thresholds <- read_csv(
-  config_files$risk_thresholds,
-  show_col_types = FALSE
-)
-
-# ------------------------------------------------------------
-# 4. VALIDATE REQUIRED COLUMNS
-# ------------------------------------------------------------
-
-check_required_columns <- function(
-    data,
-    required_columns,
-    table_name
-) {
-
-  missing_columns <- setdiff(
-    required_columns,
-    names(data)
-  )
-
-  if (length(missing_columns) > 0) {
-
-    stop(
-      paste0(
-        "Missing columns in ",
-        table_name,
-        ":\n",
-        paste(
-          missing_columns,
-          collapse = ", "
-        )
-      )
-    )
-  }
-}
-
-check_required_columns(
-  raster_catalogue,
-  c(
-    "dataset_id",
-    "variable_id",
-    "scenario",
-    "period",
-    "file_path",
-    "enabled"
-  ),
-  "raster_catalogue.csv"
-)
-
-check_required_columns(
-  variable_metadata,
-  c(
-    "variable_id",
-    "display_name"
-  ),
-  "variable_metadata.csv"
-)
-
-check_required_columns(
-  theme_variables,
-  c(
-    "theme",
-    "variable_id",
-    "display_order",
-    "default_selected"
-  ),
-  "theme_variables.csv"
-)
-
-check_required_columns(
-  pathway_themes,
-  c(
-    "pathway",
-    "theme",
-    "display_order",
-    "default_enabled"
-  ),
-  "pathway_themes.csv"
-)
-
-# ------------------------------------------------------------
-# 5. CLEAN TRUE/FALSE FIELDS
-# ------------------------------------------------------------
-
-to_logical <- function(x) {
-
-  tolower(
-    as.character(x)
-  ) %in% c(
-    "true",
-    "t",
-    "1",
-    "yes",
-    "y"
-  )
-}
-
-raster_catalogue <- raster_catalogue %>%
-  mutate(
-    enabled = to_logical(enabled)
-  )
-
-theme_variables <- theme_variables %>%
-  mutate(
-    default_selected =
-      to_logical(default_selected)
-  )
-
-pathway_themes <- pathway_themes %>%
-  mutate(
-    default_enabled =
-      to_logical(default_enabled)
-  )
-
-# ------------------------------------------------------------
-# 6. BASIC CHOICES
+# 1. BASIC CHOICES
 # ------------------------------------------------------------
 
 pathway_choices <- pathway_themes %>%
@@ -278,7 +87,7 @@ if (length(pathway_choices) == 0) {
 }
 
 # ------------------------------------------------------------
-# 7. USER INTERFACE
+# 2. USER INTERFACE
 # ------------------------------------------------------------
 
 ui <- page_sidebar(
