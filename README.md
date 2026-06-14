@@ -205,11 +205,21 @@ The repository should contain the application code, configuration files, documen
 
 ## Current status
 
-The repository currently contains:
+The repository now contains:
 
-- the prototype development brief;
-- configuration-table templates;
-- the future-ready data structure;
-- initial planning for the Shiny application.
+- the starter Shiny application;
+- the future-ready configuration system;
+- AOI preparation functions;
+- continuous-raster processing;
+- inundation-raster processing;
+- raster catalogue lookup functions;
+- the Jambongan example AOI;
+- the planned directory structure.
 
-The next development stage is to add the starter Shiny application, AOI-processing functions, raster-processing functions, and example Sabah boundary and AOI data.
+The next stage is to:
+
+1. complete the raster catalogue;
+2. add local test rasters;
+3. run the standalone example scripts;
+4. connect AOI selection and raster processing to the Shiny interface;
+5. validate outputs against the existing standalone analyses.
