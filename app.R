@@ -47,6 +47,14 @@ source(
   )
 )
 
+source(
+  file.path(
+    "R",
+    "processing",
+    "process_inundation_raster.R"
+  )
+)
+
 app_config <- load_app_config(
   config_dir = "config"
 )
