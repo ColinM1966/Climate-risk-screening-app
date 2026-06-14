@@ -31,6 +31,14 @@ source(
   )
 )
 
+source(
+  file.path(
+    "R",
+    "processing",
+    "prepare_aoi.R"
+  )
+)
+
 app_config <- load_app_config(
   config_dir = "config"
 )
