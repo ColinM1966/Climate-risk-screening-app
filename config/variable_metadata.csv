@@ -3,3 +3,4 @@ CDD,Consecutive Dry Days,Maximum annual sequence of dry days,days,weighted_mean;
 PPETMIN,Minimum Monthly P:PET,Lowest monthly precipitation to PET ratio,ratio,weighted_mean;min,low
 FIRE_PROB,Fire Probability,Modelled relative probability of fire,probability,weighted_mean;p90,high
 HI41_DAYS,Days above Heat Index 41C,Annual number of days exceeding HI 41C,days/year,weighted_mean;p90;max,high
+INUNDATION_RP100,100-year Coastal Inundation,Area exposed to the mapped 100-year coastal inundation extent,binary,exposed_area;percent_exposed,high
