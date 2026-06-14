@@ -39,6 +39,14 @@ source(
   )
 )
 
+source(
+  file.path(
+    "R",
+    "processing",
+    "process_continuous_raster.R"
+  )
+)
+
 app_config <- load_app_config(
   config_dir = "config"
 )
