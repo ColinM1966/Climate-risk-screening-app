@@ -23,6 +23,14 @@ source(
   )
 )
 
+source(
+  file.path(
+    "R",
+    "utils",
+    "find_raster.R"
+  )
+)
+
 app_config <- load_app_config(
   config_dir = "config"
 )
