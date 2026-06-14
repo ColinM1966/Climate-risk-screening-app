@@ -12,6 +12,33 @@ library(stringr)
 library(DT)
 
 # ------------------------------------------------------------
+# LOAD CONFIGURATION FUNCTIONS
+# ------------------------------------------------------------
+
+source(
+  file.path(
+    "R",
+    "utils",
+    "load_config.R"
+  )
+)
+
+app_config <- load_app_config(
+  config_dir = "config"
+)
+
+print_config_summary(
+  app_config
+)
+
+# Make the configuration tables available to the app
+raster_catalogue <- app_config$raster_catalogue
+variable_metadata <- app_config$variable_metadata
+theme_variables <- app_config$theme_variables
+pathway_themes <- app_config$pathway_themes
+risk_thresholds <- app_config$risk_thresholds
+
+# ------------------------------------------------------------
 # 1. CONFIGURATION FILE PATHS
 # ------------------------------------------------------------
 
