@@ -11,3 +11,4 @@ Agriculture,CDD,1,FALSE
 Agriculture,OILPALM_YIELD_CHANGE,2,TRUE
 Community Climate Concerns,CDD,1,FALSE
 Community Climate Concerns,HI41_DAYS,2,TRUE
+Coastal Inundation,INUNDATION_RP100,3,TRUE
