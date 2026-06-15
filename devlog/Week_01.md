@@ -16,3 +16,38 @@ variable_metadata.csv exists.
 theme_variables.csv exists.
 pathway_themes.csv exists.
 risk_threshold.csv exists.
+
+Config file
+raster_catalogue.csv
+variable_metadata.csv
+theme_variables.csv
+pathway_themes.csv
+risk_thresholds.csv
+
+Opens correctly
+Yes
+Yes
+Yes
+Yes
+Yes
+
+Main issue found
+Only two starter records
+None
+Check IDs
+None
+Thresholds incomplete
+
+Action needed
+Add more later
+None
+Review
+None
+Add later
+
+nrow(raster_catalogue)
+nrow(variable_metadata)
+nrow(theme_variables)
+nrow(pathway_themes)
+nrow(risk_thresholds)
+
