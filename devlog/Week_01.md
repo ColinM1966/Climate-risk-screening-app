@@ -82,50 +82,7 @@ Remaining configuration issue
 - Coastal Exposure also no link variables.
 - Because the selected theme has no linked variables, the variable, scenario, and period controls may remain empty.
 
-Simple feature collections with 56 features and 0 field (with 51 geometries empty).
-Geometry type: POLYGON.
-Coordinate Reference System:
-  User input: WGS 84 
-  wkt:
-GEOGCRS["WGS 84",
-    ENSEMBLE["World Geodetic System 1984 ensemble",
-        MEMBER["World Geodetic System 1984 (Transit)"],
-        MEMBER["World Geodetic System 1984 (G730)"],
-        MEMBER["World Geodetic System 1984 (G873)"],
-        MEMBER["World Geodetic System 1984 (G1150)"],
-        MEMBER["World Geodetic System 1984 (G1674)"],
-        MEMBER["World Geodetic System 1984 (G1762)"],
-        MEMBER["World Geodetic System 1984 (G2139)"],
-        MEMBER["World Geodetic System 1984 (G2296)"],
-        ELLIPSOID["WGS 84",6378137,298.257223563,
-            LENGTHUNIT["metre",1]],
-        ENSEMBLEACCURACY[2.0]],
-    PRIMEM["Greenwich",0,
-        ANGLEUNIT["degree",0.0174532925199433]],
-    CS[ellipsoidal,2],
-        AXIS["geodetic latitude (Lat)",north,
-            ORDER[1],
-            ANGLEUNIT["degree",0.0174532925199433]],
-        AXIS["geodetic longitude (Lon)",east,
-            ORDER[2],
-            ANGLEUNIT["degree",0.0174532925199433]],
-    USAGE[
-        SCOPE["Horizontal component of 3D system."],
-        AREA["World."],
-        BBOX[-90,-180,90,180]],
-    ID["EPSG",4326]]
-
-First 10 features:
-        geometry
-1  POLYGON EMPTY
-2  POLYGON EMPTY
-3  POLYGON EMPTY
-4  POLYGON EMPTY
-5  POLYGON EMPTY
-6  POLYGON EMPTY
-7  POLYGON EMPTY
-8  POLYGON EMPTY
-9  POLYGON EMPTY
-10 POLYGON EMPTY
-
-Bounding box: xmin: 117.3253 ymin: 6.618561 xmax: 117.5114 ymax: 6.758163
+The GeoPackage opens successfully.
+The CRS is defined.
+The geometry is valid.
+The AOI is located in Sabah.
