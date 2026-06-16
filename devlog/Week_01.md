@@ -86,3 +86,10 @@ The GeoPackage opens successfully.
 The CRS is defined.
 The geometry is valid.
 The AOI is located in Sabah.
+
+The output remains an sf object.
+The geometry is valid.
+The CRS is retained.
+No features disappear.
+No unexpected buffer is added.
+The AOI remains in the correct location.
