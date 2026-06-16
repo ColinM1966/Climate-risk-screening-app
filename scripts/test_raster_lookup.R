@@ -1,10 +1,11 @@
 # ============================================================
-# TEST ALL PROTOTYPE RASTER LOOKUPS
+# TEST PROTOTYPE RASTER LOOKUPS
 #
-# Save as:
+# File:
 #   scripts/test_raster_lookup.R
 #
-# Run from the root of the RStudio project.
+# Run from the project root:
+#   source("scripts/test_raster_lookup.R")
 #
 # Required files:
 #   config/raster_catalogue.csv
@@ -16,7 +17,7 @@
 
 
 # ------------------------------------------------------------
-# 1. PACKAGES
+# 1. REQUIRED PACKAGES
 # ------------------------------------------------------------
 
 required_packages <- c(
@@ -28,15 +29,20 @@ required_packages <- c(
 )
 
 missing_packages <- required_packages[
-  !required_packages %in% rownames(
-    installed.packages()
-  )
+  !required_packages %in% rownames(installed.packages())
 ]
 
 if (length(missing_packages) > 0) {
-  install.packages(
-    missing_packages,
-    dependencies = TRUE
+  stop(
+    paste0(
+      "The following required packages are not installed:\n",
+      paste(missing_packages, collapse = ", "),
+      "\n\nInstall them with:\n",
+      "install.packages(c(",
+      paste0('"', missing_packages, '"', collapse = ", "),
+      "))"
+    ),
+    call. = FALSE
   )
 }
 
@@ -83,7 +89,7 @@ output_file <- file.path(
 
 
 # ------------------------------------------------------------
-# 3. CONFIRM REQUIRED FILES EXIST
+# 3. CHECK REQUIRED PROJECT FILES
 # ------------------------------------------------------------
 
 required_files <- c(
@@ -98,11 +104,8 @@ missing_files <- required_files[
 if (length(missing_files) > 0) {
   stop(
     paste0(
-      "These required project files were not found:\n",
-      paste(
-        missing_files,
-        collapse = "\n"
-      ),
+      "The following required project files were not found:\n\n",
+      paste(missing_files, collapse = "\n"),
       "\n\nRun this script from the root of the RStudio project."
     ),
     call. = FALSE
@@ -111,17 +114,15 @@ if (length(missing_files) > 0) {
 
 
 # ------------------------------------------------------------
-# 4. LOAD THE RASTER LOOKUP FUNCTION
+# 4. LOAD find_raster()
 # ------------------------------------------------------------
 
-source(
-  find_raster_script
-)
+source(find_raster_script)
 
 if (!exists("find_raster", mode = "function")) {
   stop(
     paste0(
-      "The function find_raster() was not created after sourcing:\n",
+      "The function find_raster() was not found after sourcing:\n",
       find_raster_script
     ),
     call. = FALSE
@@ -170,11 +171,8 @@ missing_columns <- setdiff(
 if (length(missing_columns) > 0) {
   stop(
     paste0(
-      "The raster catalogue is missing these columns:\n",
-      paste(
-        missing_columns,
-        collapse = ", "
-      )
+      "The raster catalogue is missing these required columns:\n",
+      paste(missing_columns, collapse = ", ")
     ),
     call. = FALSE
   )
@@ -187,31 +185,20 @@ if (length(missing_columns) > 0) {
 
 raster_catalogue <- raster_catalogue |>
   mutate(
-    dataset_id = trimws(
-      as.character(dataset_id)
-    ),
-    variable_id = trimws(
-      as.character(variable_id)
-    ),
-    scenario = trimws(
-      as.character(scenario)
-    ),
-    period = trimws(
-      as.character(period)
-    ),
-    file_path = trimws(
-      as.character(file_path)
-    )
+    dataset_id = trimws(as.character(dataset_id)),
+    variable_id = trimws(as.character(variable_id)),
+    scenario = trimws(tolower(as.character(scenario))),
+    period = trimws(as.character(period)),
+    file_path = trimws(as.character(file_path)),
+    units = trimws(as.character(units)),
+    dataset_type = trimws(as.character(dataset_type))
   )
 
-# Convert enabled to logical when it was read as text.
 if (!is.logical(raster_catalogue$enabled)) {
   raster_catalogue <- raster_catalogue |>
     mutate(
       enabled = tolower(
-        trimws(
-          as.character(enabled)
-        )
+        trimws(as.character(enabled))
       ) %in% c(
         "true",
         "t",
@@ -238,15 +225,13 @@ fields_that_cannot_be_blank <- c(
 blank_value_check <- map_dfr(
   fields_that_cannot_be_blank,
   function(current_field) {
-
-    current_values <- raster_catalogue[
-      [current_field]
-    ]
-
+    
+    current_values <- raster_catalogue[[current_field]]
+    
     tibble(
       row_number = which(
         is.na(current_values) |
-          current_values == ""
+          trimws(current_values) == ""
       ),
       field = current_field
     )
@@ -254,46 +239,50 @@ blank_value_check <- map_dfr(
 )
 
 if (nrow(blank_value_check) > 0) {
+  message(
+    "\nBlank values were found in required catalogue fields:"
+  )
+  
   print(
     blank_value_check,
     n = Inf
   )
-
+  
   stop(
-    "Blank values were found in required catalogue fields.",
+    "Correct the blank catalogue values before continuing.",
     call. = FALSE
   )
 }
 
 
 # ------------------------------------------------------------
-# 9. CHECK FOR DUPLICATE LOOKUP RECORDS
+# 9. CHECK FOR DUPLICATE ENABLED LOOKUPS
 # ------------------------------------------------------------
 
 duplicate_records <- raster_catalogue |>
-  filter(
-    enabled
-  ) |>
+  filter(enabled) |>
   count(
     variable_id,
     scenario,
     period,
     name = "number_of_records"
   ) |>
-  filter(
-    number_of_records > 1
-  )
+  filter(number_of_records > 1)
 
 if (nrow(duplicate_records) > 0) {
+  message(
+    "\nDuplicate enabled raster records were found:"
+  )
+  
   print(
     duplicate_records,
     n = Inf
   )
-
+  
   stop(
     paste0(
-      "Duplicate enabled variable-scenario-period records ",
-      "were found in the raster catalogue."
+      "Each enabled variable, scenario and period combination ",
+      "must have exactly one catalogue record."
     ),
     call. = FALSE
   )
@@ -301,42 +290,42 @@ if (nrow(duplicate_records) > 0) {
 
 
 # ------------------------------------------------------------
-# 10. SELECT THE PROTOTYPE SCENARIO AND PERIOD
+# 10. TEST SETTINGS
 # ------------------------------------------------------------
 
 test_scenario <- "ssp245"
 test_period <- "2041-2070"
+
+
+# ------------------------------------------------------------
+# 11. SELECT THE PROTOTYPE RECORDS
+# ------------------------------------------------------------
 
 prototype_records <- raster_catalogue |>
   filter(
     enabled,
     scenario == test_scenario,
     period == test_period
-  )
+  ) |>
+  arrange(variable_id)
 
 if (nrow(prototype_records) == 0) {
   stop(
     paste0(
-      "No enabled catalogue records were found for ",
+      "No enabled catalogue records were found for:\n",
+      "Scenario: ",
       test_scenario,
-      " / ",
-      test_period,
-      "."
+      "\nPeriod: ",
+      test_period
     ),
     call. = FALSE
   )
 }
 
 prototype_variables <- prototype_records |>
-  distinct(
-    variable_id
-  ) |>
-  arrange(
-    variable_id
-  ) |>
-  pull(
-    variable_id
-  )
+  distinct(variable_id) |>
+  arrange(variable_id) |>
+  pull(variable_id)
 
 message(
   paste0(
@@ -352,7 +341,7 @@ message(
 
 
 # ------------------------------------------------------------
-# 11. TEST ONE CDD LOOKUP
+# 12. TEST ONE CDD LOOKUP
 # ------------------------------------------------------------
 
 test_cdd <- find_raster(
@@ -364,15 +353,16 @@ test_cdd <- find_raster(
 
 print(
   test_cdd,
-  n = Inf
+  n = Inf,
+  width = Inf
 )
 
 if (nrow(test_cdd) != 1) {
   stop(
     paste0(
-      "The CDD test lookup returned ",
+      "The CDD lookup returned ",
       nrow(test_cdd),
-      " records instead of exactly one."
+      " records. Exactly one record was expected."
     ),
     call. = FALSE
   )
@@ -380,39 +370,37 @@ if (nrow(test_cdd) != 1) {
 
 
 # ------------------------------------------------------------
-# 12. HELPER: RESOLVE A CATALOGUE FILE PATH
+# 13. RESOLVE CATALOGUE FILE PATHS
 # ------------------------------------------------------------
 
 resolve_raster_path <- function(
     catalogue_file_path,
     project_root
 ) {
-
+  
   catalogue_file_path <- trimws(
-    as.character(
-      catalogue_file_path
-    )
+    as.character(catalogue_file_path)
   )
-
+  
   is_windows_absolute <- grepl(
     "^[A-Za-z]:[/\\\\]",
     catalogue_file_path
   )
-
+  
   is_unix_absolute <- startsWith(
     catalogue_file_path,
     "/"
   )
-
+  
   is_network_path <- grepl(
     "^[/\\\\]{2}",
     catalogue_file_path
   )
-
+  
   if (
     is_windows_absolute ||
-      is_unix_absolute ||
-      is_network_path
+    is_unix_absolute ||
+    is_network_path
   ) {
     return(
       normalizePath(
@@ -422,7 +410,7 @@ resolve_raster_path <- function(
       )
     )
   }
-
+  
   normalizePath(
     file.path(
       project_root,
@@ -435,20 +423,82 @@ resolve_raster_path <- function(
 
 
 # ------------------------------------------------------------
-# 13. TEST ALL PROTOTYPE VARIABLES
+# 14. READ STORED MINIMUM AND MAXIMUM METADATA
+# ------------------------------------------------------------
+
+get_metadata_range <- function(current_raster) {
+  
+  raster_range <- suppressWarnings(
+    tryCatch(
+      {
+        terra::minmax(
+          current_raster,
+          compute = FALSE
+        )
+      },
+      error = function(e) {
+        NULL
+      }
+    )
+  )
+  
+  if (
+    is.null(raster_range) ||
+    length(raster_range) == 0 ||
+    all(is.na(raster_range))
+  ) {
+    return(
+      list(
+        minimum = NA_real_,
+        maximum = NA_real_
+      )
+    )
+  }
+  
+  minimum_value <- suppressWarnings(
+    min(
+      raster_range[1, ],
+      na.rm = TRUE
+    )
+  )
+  
+  maximum_value <- suppressWarnings(
+    max(
+      raster_range[2, ],
+      na.rm = TRUE
+    )
+  )
+  
+  if (!is.finite(minimum_value)) {
+    minimum_value <- NA_real_
+  }
+  
+  if (!is.finite(maximum_value)) {
+    maximum_value <- NA_real_
+  }
+  
+  list(
+    minimum = minimum_value,
+    maximum = maximum_value
+  )
+}
+
+
+# ------------------------------------------------------------
+# 15. TEST ALL PROTOTYPE RASTER LOOKUPS
 # ------------------------------------------------------------
 
 lookup_test <- map_dfr(
   prototype_variables,
   function(current_variable) {
-
+    
     message(
       paste0(
         "Testing: ",
         current_variable
       )
     )
-
+    
     raster_record <- tryCatch(
       {
         find_raster(
@@ -459,191 +509,191 @@ lookup_test <- map_dfr(
         )
       },
       error = function(e) {
-
-        return(
-          structure(
-            list(
-              error_message = conditionMessage(e)
-            ),
-            class = "lookup_error"
-          )
+        structure(
+          list(
+            error_message = conditionMessage(e)
+          ),
+          class = "lookup_error"
         )
       }
     )
-
+    
     if (inherits(raster_record, "lookup_error")) {
       return(
         tibble(
-          variable_id = current_variable,
           dataset_id = NA_character_,
+          variable_id = current_variable,
           scenario = test_scenario,
           period = test_period,
           file_path = NA_character_,
           file_exists = FALSE,
           raster_opens = FALSE,
           number_of_layers = NA_integer_,
+          number_of_rows = NA_integer_,
+          number_of_columns = NA_integer_,
           crs_present = FALSE,
+          has_values = FALSE,
           minimum = NA_real_,
           maximum = NA_real_,
           result = paste0(
-            "Lookup error: ",
+            "LOOKUP ERROR: ",
             raster_record$error_message
           )
         )
       )
     }
-
+    
     if (nrow(raster_record) != 1) {
       return(
         tibble(
-          variable_id = current_variable,
           dataset_id = NA_character_,
+          variable_id = current_variable,
           scenario = test_scenario,
           period = test_period,
           file_path = NA_character_,
           file_exists = FALSE,
           raster_opens = FALSE,
           number_of_layers = NA_integer_,
+          number_of_rows = NA_integer_,
+          number_of_columns = NA_integer_,
           crs_present = FALSE,
+          has_values = FALSE,
           minimum = NA_real_,
           maximum = NA_real_,
           result = paste0(
-            "Lookup returned ",
+            "LOOKUP FAILED: returned ",
             nrow(raster_record),
             " records"
           )
         )
       )
     }
-
+    
     full_path <- resolve_raster_path(
-      catalogue_file_path =
-        raster_record$file_path[[1]],
+      catalogue_file_path = raster_record$file_path[[1]],
       project_root = project_root
     )
-
-    raster_file_exists <- file.exists(
-      full_path
-    )
-
+    
+    raster_file_exists <- file.exists(full_path)
+    
     if (!raster_file_exists) {
       return(
         tibble(
+          dataset_id = raster_record$dataset_id[[1]],
           variable_id = current_variable,
-          dataset_id =
-            raster_record$dataset_id[[1]],
           scenario = test_scenario,
           period = test_period,
           file_path = full_path,
           file_exists = FALSE,
           raster_opens = FALSE,
           number_of_layers = NA_integer_,
+          number_of_rows = NA_integer_,
+          number_of_columns = NA_integer_,
           crs_present = FALSE,
+          has_values = FALSE,
           minimum = NA_real_,
           maximum = NA_real_,
-          result = "File not found"
+          result = "FILE NOT FOUND"
         )
       )
     }
-
+    
     raster_result <- tryCatch(
       {
-        current_raster <- rast(
-          full_path
+        current_raster <- terra::rast(full_path)
+        
+        raster_crs <- terra::crs(
+          current_raster,
+          proj = TRUE
         )
-
-        raster_crs <- crs(
+        
+        crs_present <- (
+          !is.na(raster_crs) &&
+            nzchar(raster_crs)
+        )
+        
+        raster_has_values <- terra::hasValues(
           current_raster
         )
-
-        crs_present <- !is.na(raster_crs) &&
-          raster_crs != ""
-
-        values_range <- global(
-          current_raster,
-          fun = range,
-          na.rm = TRUE
+        
+        metadata_range <- get_metadata_range(
+          current_raster
         )
-
-        minimum_value <- suppressWarnings(
-          min(
-            values_range[, 1],
-            na.rm = TRUE
-          )
+        
+        result_message <- case_when(
+          terra::nlyr(current_raster) < 1 ~
+            "RASTER HAS NO LAYERS",
+          
+          terra::nrow(current_raster) < 1 ~
+            "RASTER HAS NO ROWS",
+          
+          terra::ncol(current_raster) < 1 ~
+            "RASTER HAS NO COLUMNS",
+          
+          !crs_present ~
+            "RASTER OPENED BUT CRS IS MISSING",
+          
+          !raster_has_values ~
+            "RASTER OPENED BUT HAS NO VALUES",
+          
+          TRUE ~
+            "PASS"
         )
-
-        maximum_value <- suppressWarnings(
-          max(
-            values_range[, 2],
-            na.rm = TRUE
-          )
-        )
-
-        if (!is.finite(minimum_value)) {
-          minimum_value <- NA_real_
-        }
-
-        if (!is.finite(maximum_value)) {
-          maximum_value <- NA_real_
-        }
-
-        test_result <- if (!crs_present) {
-          "Raster opened but has no CRS"
-        } else if (
-          is.na(minimum_value) ||
-            is.na(maximum_value)
-        ) {
-          "Raster opened but contains no valid values"
-        } else {
-          "PASS"
-        }
-
+        
         tibble(
+          dataset_id = raster_record$dataset_id[[1]],
           variable_id = current_variable,
-          dataset_id =
-            raster_record$dataset_id[[1]],
           scenario = test_scenario,
           period = test_period,
           file_path = full_path,
           file_exists = TRUE,
           raster_opens = TRUE,
-          number_of_layers = nlyr(
-            current_raster
-          ),
+          number_of_layers = terra::nlyr(current_raster),
+          number_of_rows = terra::nrow(current_raster),
+          number_of_columns = terra::ncol(current_raster),
           crs_present = crs_present,
-          minimum = minimum_value,
-          maximum = maximum_value,
-          result = test_result
+          has_values = raster_has_values,
+          minimum = metadata_range$minimum,
+          maximum = metadata_range$maximum,
+          result = result_message
         )
       },
       error = function(e) {
-
         tibble(
+          dataset_id = raster_record$dataset_id[[1]],
           variable_id = current_variable,
-          dataset_id =
-            raster_record$dataset_id[[1]],
           scenario = test_scenario,
           period = test_period,
           file_path = full_path,
           file_exists = TRUE,
           raster_opens = FALSE,
           number_of_layers = NA_integer_,
+          number_of_rows = NA_integer_,
+          number_of_columns = NA_integer_,
           crs_present = FALSE,
+          has_values = FALSE,
           minimum = NA_real_,
           maximum = NA_real_,
-          result = conditionMessage(e)
+          result = paste0(
+            "RASTER OPEN ERROR: ",
+            conditionMessage(e)
+          )
         )
       }
     )
-
+    
     raster_result
   }
 )
 
 
 # ------------------------------------------------------------
-# 14. PRINT TEST RESULTS
+# 16. PRINT RESULTS
 # ------------------------------------------------------------
+
+message(
+  "\nRaster lookup test results:"
+)
 
 print(
   lookup_test,
@@ -653,7 +703,7 @@ print(
 
 
 # ------------------------------------------------------------
-# 15. SAVE TEST RESULTS
+# 17. SAVE RESULTS
 # ------------------------------------------------------------
 
 dir.create(
@@ -669,30 +719,29 @@ write_csv(
 
 
 # ------------------------------------------------------------
-# 16. STOP IF ANY TEST FAILED
+# 18. CHECK FOR FAILED TESTS
 # ------------------------------------------------------------
 
 failed_tests <- lookup_test |>
-  filter(
-    result != "PASS"
-  )
+  filter(result != "PASS")
 
 if (nrow(failed_tests) > 0) {
   message(
-    "\nThe following raster tests failed:"
+    "\nThe following raster lookup tests failed:"
   )
-
+  
   print(
     failed_tests,
     n = Inf,
     width = Inf
   )
-
+  
   stop(
     paste0(
+      "\n",
       nrow(failed_tests),
-      " raster lookup test(s) failed.\n",
-      "Review the results saved to:\n",
+      " raster lookup test(s) failed.\n\n",
+      "Results were saved to:\n",
       output_file
     ),
     call. = FALSE
@@ -701,7 +750,7 @@ if (nrow(failed_tests) > 0) {
 
 
 # ------------------------------------------------------------
-# 17. SUCCESS MESSAGE
+# 19. SUCCESS MESSAGE
 # ------------------------------------------------------------
 
 message(
