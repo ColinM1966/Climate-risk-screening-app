@@ -2,7 +2,7 @@
 
 The **Sabah Climate Risk Explorer** is an R Shiny application for screening climate hazards and sector impacts for user-defined areas of interest in Sabah, Malaysia.
 
-Users will be able to upload or draw an area, select climate variables, choose a scenario and time period, run raster-based analysis, view results on an interactive map, and download summary outputs.
+Users will be able to upload or draw an area, select climate variables, choose a scenario and time period, run raster-based analysis, ~~view results on an interactive map~~, and download summary outputs.
 
 ## Prototype scope
 
