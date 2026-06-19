@@ -71,22 +71,14 @@ Current status:
 - The results table and status text update after a successful analysis.
 _ Loading and error feedback are now visible to the user.
 
-Test
-Jambongan loads	
-Papar Buayan loads	
-Active AOI name updates	
-Map AOI updates	
-Analysis AOI updates	
-Results AOI updates	
-Old raster clears	
-Switching AOIs works
+Test | Result
 
-Result
-Completed
-Completed
-Completed
-Completed
-Completed
-Completed
-Completed
-Completed
+Jambongan loads	| Completed
+
+Papar Buayan loads | Completed
+Active AOI name updates | Completed
+Map AOI updates	| Completed
+Analysis AOI updates | Completed
+Results AOI updates	| Completed
+Old raster clears	| Completed
+Switching AOIs works | Completed
