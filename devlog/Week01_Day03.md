@@ -70,3 +70,23 @@ Current status:
 - A continuous raster can be selected, proceed, summarised, and displayed.
 - The results table and status text update after a successful analysis.
 _ Loading and error feedback are now visible to the user.
+
+Test
+Jambongan loads	
+Papar Buayan loads	
+Active AOI name updates	
+Map AOI updates	
+Analysis AOI updates	
+Results AOI updates	
+Old raster clears	
+Switching AOIs works
+
+Result
+Completed
+Completed
+Completed
+Completed
+Completed
+Completed
+Completed
+Completed
