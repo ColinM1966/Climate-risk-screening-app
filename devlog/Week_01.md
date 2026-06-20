@@ -51,6 +51,8 @@ nrow(theme_variables)
 nrow(pathway_themes)
 nrow(risk_thresholds)
 
+Week 1:
+
 Work complete
 - Updated R and configured the project to run with R 4.6.0.
 - Cloned the Climate Risk Screening App repository onto the local computer.
