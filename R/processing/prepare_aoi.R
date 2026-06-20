@@ -455,18 +455,17 @@ prepare_aoi <- function(
 
   if (
     !is.null(id_field) &&
-      id_field %in% names(aoi_projected)
+    id_field %in% names(aoi_projected)
   ) {
-
+    
     source_names <- str_squish(
       as.character(
-        aoi_projected[
-          [id_field]
-        ]
+        aoi_projected[[id_field]]
       )
     )
-
-  } else {
+  }
+  
+ else {
 
     source_names <- rep(
       aoi_name,

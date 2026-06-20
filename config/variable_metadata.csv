@@ -1,6 +1,7 @@
-variable_id,display_name,description,units,summary_method,risk_direction
-CDD,Consecutive Dry Days,Maximum annual sequence of dry days,days,weighted_mean;p90;max,high
-PPETMIN,Minimum Monthly P:PET,Lowest monthly precipitation to PET ratio,ratio,weighted_mean;min,low
-FIRE_PROB,Fire Probability,Modelled relative probability of fire,probability,weighted_mean;p90,high
-HI41_DAYS,Days above Heat Index 41C,Annual number of days exceeding HI 41C,days/year,weighted_mean;p90;max,high
-INUNDATION_RP100,100-year Coastal Inundation,Area exposed to the mapped 100-year coastal inundation extent,binary,exposed_area;percent_exposed,high
+variable_id,display_name,description,units,summary_method,risk_direction,dataset_type
+CDD,Consecutive Dry Days,Longest annual sequence of consecutive dry days,days,mean;p90;max,high,continuous
+Bio05,Maximum Temperature of Warmest Month,Maximum temperature of the warmest month,degrees C,mean;max,high,continuous
+Bio017,Precipitation of Driest Quarter,Total precipitation during the driest three-month period,millimeters,mean;min,low,continuous
+Fire,Fire Probability,Modelled probability of fire occurrence,probability,mean;p90,high,continuous
+PPETConDryMth,Consecutive Moisture-Deficit Months,Maximum number of consecutive months where precipitation is below potential evapotranspiration,months,mean;p90;max,high,continuous
+PPETmin,Minimum Monthly P:PET,Minimum monthly precipitation-to-potential-evapotranspiration ratio,ratio,mean;min,low,continuous

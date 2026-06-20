@@ -1,14 +1,7 @@
-theme,variable_id,display_order,default_selected
-Drought and Fire,CDD,1,TRUE
-Drought and Fire,PPETMIN,2,TRUE
-Drought and Fire,FIRE_PROB,3,TRUE
-Restoration Planning,CDD,1,TRUE
-Restoration Planning,PPETMIN,2,TRUE
-Restoration Planning,FIRE_PROB,3,TRUE
-Protected Area Management,CDD,1,TRUE
-Protected Area Management,FIRE_PROB,2,TRUE
-Agriculture,CDD,1,FALSE
-Agriculture,OILPALM_YIELD_CHANGE,2,TRUE
-Community Climate Concerns,CDD,1,FALSE
-Community Climate Concerns,HI41_DAYS,2,TRUE
-Coastal Inundation,INUNDATION_RP100,3,TRUE
+theme,variable_id,display_order,default_selected,enabled
+Drought and Fire,CDD,1,TRUE,TRUE
+Drought and Fire,PPETmin,2,TRUE,TRUE
+Drought and Fire,PPETConDryMth,3,TRUE,TRUE
+Drought and Fire,Fire,4,TRUE,TRUE
+Temperature,Bio05,1,TRUE,TRUE
+Rainfall,Bio017,1,TRUE,TRUE

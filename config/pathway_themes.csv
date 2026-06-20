@@ -1,7 +1,7 @@
-pathway,theme,default_enabled
-Restoration Planning,Drought and Fire,TRUE
-Restoration Planning,Human Heat,FALSE
-Protected Area Management,Drought and Fire,TRUE
-Protected Area Management,Coastal Exposure,TRUE
-Community Adaptation,Human Heat,TRUE
-Community Adaptation,Agriculture,TRUE
+pathway,theme,display_order,default_enabled
+General Climate Screening,Drought and Fire,1,TRUE
+General Climate Screening,Temperature,2,TRUE
+General Climate Screening,Rainfall,3,TRUE
+Restoration Planning,Drought and Fire,1,TRUE
+Restoration Planning,Temperature,2,TRUE
+Restoration Planning,Rainfall,3,TRUE
