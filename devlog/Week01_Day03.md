@@ -21,6 +21,8 @@ Add raster path.
 AOI must be in raster path.
 Invalid AOI.
 
+Week 1 - Day 3:
+
 Work completed:
 - Added a temporary Jambongan AOI test option using data/examples/Jambongan.gpkg.
 - Loaded and prepared the AOI with prepare_AOI().
