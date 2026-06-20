@@ -10,6 +10,8 @@ no features disappear;
 no unexpected buffer is added;
 the AOI remains in the correct location.
 
+Week 2:
+
 AOI Text Panel Added
 - Added a new basic AOI Test tab to app.R.
 - Added a fixed AOI name field using Jambongan.
