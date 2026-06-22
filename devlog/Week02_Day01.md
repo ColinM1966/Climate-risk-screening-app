@@ -18,9 +18,9 @@ The Week 1 prototype can load an AOI, process one selected raster, display a map
 
 | Check | Result |  
 | ----- | ------ |  
-| Baseline row appears | Future row appears |  
-| Done | Done |  
-| Values are numeric | Units correct |  
-| Done | Done |  
-| CSV downloads | CSV opens correctly |  
-| Done | Done |  
+| Baseline row appears | Done |  
+| Future row appears | Done |  
+| Values are numeric | Done |  
+| Units correct | Done |  
+| CSV downloads | Done |  
+| CSV opens correctly | Done |  
