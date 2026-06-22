@@ -21,19 +21,19 @@ Active AOI tests:
 
 AOI comparison:
 
-| AOI | Variable | Mean | Minimum | Maximum |
-| Jambongan | Bio05 | 30.97 | 30.56 | 31.65 |
-| Papar_Buayan | Bio05 | 28.26 | 24.4 | 30.69 |
+| AOI | Variable | Mean | Minimum | Maximum |  
+| Jambongan | Bio05 | 30.97 | 30.56 | 31.65 |  
+ | Papar_Buayan | Bio05 | 28.26 | 24.4 | 30.69 |  
 
 Six-variable Jambongan tests:
 
-| Variable | Future passed | Baseline passed | Units correct | Legend OK |
-| CDD | Yes | Yes | Yes | Yes |
-| Bio05 | Yes | Yes | Yes | Yes |
-| Bio017 | Yes | Yes | Yes | Yes |
-| Fire | Yes | Yes | Yes | Yes |
-| PPETConDryMth | Yes | Yes | Yes | Yes |
-| PPETmin | Yes | Yes | Yes | Yes |
+| Variable | Future passed | Baseline passed | Units correct | Legend OK |  
+| CDD | Yes | Yes | Yes | Yes |  
+| Bio05 | Yes | Yes | Yes | Yes |  
+| Bio017 | Yes | Yes | Yes | Yes |  
+| Fire | Yes | Yes | Yes | Yes |  
+| PPETConDryMth | Yes | Yes | Yes | Yes |  
+| PPETmin | Yes | Yes | Yes | Yes |  
 
 Uploaded AOI tests:
 
