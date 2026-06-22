@@ -16,6 +16,8 @@ The Week 1 prototype can load an AOI, process one selected raster, display a map
 7. Test with Segama_catchment or Jambongan.
 8. Record issues and next steps.
 
+Fire Probabaility: 
+
 | Check | Result |  
 | ----- | ------ |  
 | Baseline row appears | Done |  
@@ -24,3 +26,14 @@ The Week 1 prototype can load an AOI, process one selected raster, display a map
 | Units correct | Done |  
 | CSV downloads | Done |  
 | CSV opens correctly | Done |  
+
+Bio05:
+
+| Check | Result |  
+| ----- | ------ |
+| Baseline row appears | Done |  
+| Future row appears | Done |  
+| Values are numeric | Done |  
+| Units correct | Done |  
+| CSV downloads | Done |  
+| CSV opens correctly | Done |
