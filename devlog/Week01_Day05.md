@@ -37,17 +37,17 @@ Six-variable Jambongan tests:
 
 Uploaded AOI tests:
 
-| Variable | Papar Buayan passed | Notes |
-| Bio05 | Yes | It passed. |
-| CDD | Yes | It passed. |
-| PPETmin | Yes | It passed. |
+| Variable | Papar Buayan passed | Notes |  
+| Bio05 | Yes | It passed. |  
+| CDD | Yes | It passed. |  
+| PPETmin | Yes | It passed. |  
 
 Error handling:
 
-| Test | Result |
-| No AOI | Done |
-| Invalid upload | Done |
-| Unsupported raster combination | Done |
+| Test | Result |  
+| No AOI | Done |  
+| Invalid upload | Done |  
+| Unsupported raster combination | Done |  
 
 Interction test:
 
