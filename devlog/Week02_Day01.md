@@ -48,3 +48,8 @@ PPETmin:
 | Units correct | Done |  
 | CSV downloads | Done |  
 | CSV opens correctly | Done |  
+
+For this version, the map still displays one selected raster at a time. Scenario and period comparison is shown in the Results tab as a table. Map comparison can be considered later.
+
+Comparison results summarise the same AOI and variable across available scenario and period combinations. They are intended for screening and comparison, not as a final risk score.
+
