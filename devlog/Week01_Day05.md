@@ -13,11 +13,11 @@ GitHub sync check:
 
 Active AOI tests:
 
-| Step                     | Expected AOI | Actual AOI | Pass/Fail |
-| Startup                  |         None |        Yes |      Pass |
-| Jambongan selected       | Jambongan    | Yes        |      Pass |
-| Papar Buayan uploaded    | Papar Buayan | Yes        |      Pass |
-| Jambongan selected again | Jambongan    | Yes        |      Pass |
+| Step                     | Expected AOI | Actual AOI | Pass/Fail |  
+| Startup                  |         None |        Yes |      Pass |  
+| Jambongan selected       | Jambongan    | Yes        |      Pass |  
+| Papar Buayan uploaded    | Papar Buayan | Yes        |      Pass |  
+| Jambongan selected again | Jambongan    | Yes        |      Pass |  
 
 AOI comparison:
 
