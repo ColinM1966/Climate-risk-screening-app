@@ -15,3 +15,12 @@ The Week 1 prototype can load an AOI, process one selected raster, display a map
 6. Add CSV download for comparison results.
 7. Test with Segama_catchment or Jambongan.
 8. Record issues and next steps.
+
+| Check | Result |  
+| ----- | ------ |  
+| Baseline row appears | Future row appears |  
+| Done | Done |  
+| Values are numeric | Units correct |  
+| Done | Done |  
+| CSV downloads | CSV opens correctly |  
+| Done | Done |  
