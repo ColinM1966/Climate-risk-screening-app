@@ -8,7 +8,7 @@ AOI upload working: Not yet / Partly
 | Analysis passed | Yes | Yes | Yes | Yes | Yes | Yes |  
 | Table displayed | Yes | Yes | Yes | Yes | Yes | Yes |  
 | Raster displayed | Yes | Yes | Yes | Yes | Yes | Yes |  
-| Notes | Unit correct | Unit correct | Unit correct | Unit correct | Unit correct | Unit correct |
+| Notes | Unit correct | Unit correct | Unit correct | Unit correct | Unit correct | Unit correct |  
 
 Selected or load AOI.
 Select a variable.
