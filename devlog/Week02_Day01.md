@@ -1,12 +1,12 @@
 # Week 2 - Day 1
 
-## Main objective:
+## Main objective
 Start the scenario and time-period comparison workflow.
 
-## Starting point:
+## Starting point
 The Week 1 prototype can load an AOI, process one selected raster, display a map, and show result statistics.
 
-## Tasks planned:
+## Tasks planned
 1. Check GitHub sync.
 2. Confirm existing single-analysis workflow still works.
 3. Design comparison table structure.
@@ -16,7 +16,7 @@ The Week 1 prototype can load an AOI, process one selected raster, display a map
 7. Test with Segama_catchment or Jambongan.
 8. Record issues and next steps.
 
-### Fire Probabaility: 
+### Fire Probabaility
 
 | Check | Result |  
 | ----- | ------ |  
@@ -27,7 +27,7 @@ The Week 1 prototype can load an AOI, process one selected raster, display a map
 | CSV downloads | Done |  
 | CSV opens correctly | Done |  
 
-### Bio05:
+### Bio05
 
 | Check | Result |  
 | ----- | ------ |
@@ -38,7 +38,7 @@ The Week 1 prototype can load an AOI, process one selected raster, display a map
 | CSV downloads | Done |  
 | CSV opens correctly | Done |
 
-### PPETmin:
+### PPETmin
 
 | Check | Result |  
 | ----- | ------ |
