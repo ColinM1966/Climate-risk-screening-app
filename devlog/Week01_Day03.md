@@ -4,15 +4,11 @@ Map loads: Yes
 Run analysis fully working: Not yet / Partly
 AOI upload working: Not yet / Partly
 
-Variable | CDD | PPETmin | PPETConDryMth | Fire | Bio05 | Bio017
-
-Analysis passed | Yes | Yes | Yes | Yes | Yes | Yes
-
-Table displayed | Yes | Yes | Yes | Yes | Yes | Yes
-
-Raster displayed | Yes | Yes | Yes | Yes | Yes | Yes
-
-Notes | Unit correct | Unit correct | Unit correct | Unit correct | Unit correct | Unit correct
+| Variable | CDD | PPETmin | PPETConDryMth | Fire | Bio05 | Bio017 |  
+| Analysis passed | Yes | Yes | Yes | Yes | Yes | Yes |  
+| Table displayed | Yes | Yes | Yes | Yes | Yes | Yes |  
+| Raster displayed | Yes | Yes | Yes | Yes | Yes | Yes |  
+| Notes | Unit correct | Unit correct | Unit correct | Unit correct | Unit correct | Unit correct |  
 
 Selected or load AOI.
 Select a variable.
