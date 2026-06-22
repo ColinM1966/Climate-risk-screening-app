@@ -1,12 +1,12 @@
- Week 2 - Day 1
+# Week 2 - Day 1
 
-  Main objective:
+## Main objective:
 Start the scenario and time-period comparison workflow.
 
-  Starting point:
+## Starting point:
 The Week 1 prototype can load an AOI, process one selected raster, display a map, and show result statistics.
 
-  Tasks planned:
+## Tasks planned:
 1. Check GitHub sync.
 2. Confirm existing single-analysis workflow still works.
 3. Design comparison table structure.
@@ -16,7 +16,7 @@ The Week 1 prototype can load an AOI, process one selected raster, display a map
 7. Test with Segama_catchment or Jambongan.
 8. Record issues and next steps.
 
-Fire Probabaility: 
+## Fire Probabaility: 
 
 | Check | Result |  
 | ----- | ------ |  
@@ -27,7 +27,7 @@ Fire Probabaility:
 | CSV downloads | Done |  
 | CSV opens correctly | Done |  
 
-Bio05:
+## Bio05:
 
 | Check | Result |  
 | ----- | ------ |
@@ -38,7 +38,7 @@ Bio05:
 | CSV downloads | Done |  
 | CSV opens correctly | Done |
 
-PPETmin:
+## PPETmin:
 
 | Check | Result |  
 | ----- | ------ |
@@ -52,4 +52,3 @@ PPETmin:
 For this version, the map still displays one selected raster at a time. Scenario and period comparison is shown in the Results tab as a table. Map comparison can be considered later.
 
 Comparison results summarise the same AOI and variable across available scenario and period combinations. They are intended for screening and comparison, not as a final risk score.
-
