@@ -18,9 +18,9 @@ Add raster path.
 AOI must be in raster path.
 Invalid AOI.
 
-Week 1 - Day 3:
+# Week 1 - Day 3:
 
-Work completed:
+## Work completed:
 - Added a temporary Jambongan AOI test option using data/examples/Jambongan.gpkg.
 - Loaded and prepared the AOI with prepare_AOI().
 - Displayed the selected AOI on the Leaflet map.
@@ -56,7 +56,7 @@ Work completed:
 - Added a basic continuous colour legend.
 - Used variable metadata for the legend title and units.
 
-Problems encountered:
+## Problems encountered:
 - Older helper functions remained in the script and caused repeated argument errors.
 - Duplicate raster observers caused the processed raster to be drawn more than once.
 - the UI and server used different result-table output IDs.
@@ -64,20 +64,19 @@ Problems encountered:
 - The workflow was simplified back to one variable at a time for stability.
 - Named labels had to be separated from the internal catalogue values.
 
-Current status:
+## Current status:
 - Jambongan can be loaded and shown on the map.
 - A continuous raster can be selected, proceed, summarised, and displayed.
 - The results table and status text update after a successful analysis.
 _ Loading and error feedback are now visible to the user.
 
-Test | Result
-
-Jambongan loads	| Completed
-
-Papar Buayan loads | Completed
-Active AOI name updates | Completed
-Map AOI updates	| Completed
-Analysis AOI updates | Completed
-Results AOI updates	| Completed
-Old raster clears	| Completed
-Switching AOIs works | Completed
+| Test | Result |
+| ---- | ------ |
+| Jambongan loads	| Completed |
+| Papar Buayan loads | Completed |
+| Active AOI name updates | Completed |
+| Map AOI updates	| Completed |
+| Analysis AOI updates | Completed |
+| Results AOI updates	| Completed |
+| Old raster clears	| Completed |
+| Switching AOIs works | Completed |
