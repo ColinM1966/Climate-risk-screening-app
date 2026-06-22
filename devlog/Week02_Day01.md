@@ -37,3 +37,14 @@ Bio05:
 | Units correct | Done |  
 | CSV downloads | Done |  
 | CSV opens correctly | Done |
+
+PPETmin:
+
+| Check | Result |  
+| ----- | ------ |
+| Baseline row appears | Done |  
+| Future row appears | Done |  
+| Values are numeric | Done |  
+| Units correct | Done |  
+| CSV downloads | Done |  
+| CSV opens correctly | Done |  
