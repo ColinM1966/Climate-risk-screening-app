@@ -6,7 +6,8 @@ Stabilise the GitHub version of the prototype, test active AOI switching, test a
 
 GitHub sync check:
 
-| Check | Result |  
+| Check | Result | 
+| ----- | ------ |
 | Local branch up to date with origin/main | Done |  
 | App runs from clean session | Done |  
 | Latest active AOI code present | Done |  
@@ -14,6 +15,7 @@ GitHub sync check:
 Active AOI tests:
 
 | Step                     | Expected AOI | Actual AOI | Pass/Fail |  
+| ------------------------ | ------------ | ---------- | --------- |
 | Startup                  |         None |        Yes |      Pass |  
 | Jambongan selected       | Jambongan    | Yes        |      Pass |  
 | Papar Buayan uploaded    | Papar Buayan | Yes        |      Pass |  
@@ -21,13 +23,15 @@ Active AOI tests:
 
 AOI comparison:
 
-| AOI | Variable | Mean | Minimum | Maximum |  
+| AOI | Variable | Mean | Minimum | Maximum | 
+| --- | -------- | ---- | ------- | ------- |
 | Jambongan | Bio05 | 30.97 | 30.56 | 31.65 |  
 | Papar_Buayan | Bio05 | 28.26 | 24.4 | 30.69 |  
 
 Six-variable Jambongan tests:
 
 | Variable | Future passed | Baseline passed | Units correct | Legend OK |  
+| -------- | ------------- | --------------- | ------------- | --------- |
 | CDD | Yes | Yes | Yes | Yes |  
 | Bio05 | Yes | Yes | Yes | Yes |  
 | Bio017 | Yes | Yes | Yes | Yes |  
@@ -38,6 +42,7 @@ Six-variable Jambongan tests:
 Uploaded AOI tests:
 
 | Variable | Papar Buayan passed | Notes |  
+| -------- | ------------------- | ----- |
 | Bio05 | Yes | It passed. |  
 | CDD | Yes | It passed. |  
 | PPETmin | Yes | It passed. |  
@@ -45,6 +50,7 @@ Uploaded AOI tests:
 Error handling:
 
 | Test | Result |  
+| ---- | ------ |
 | No AOI | Done |  
 | Invalid upload | Done |  
 | Unsupported raster combination | Done |  
