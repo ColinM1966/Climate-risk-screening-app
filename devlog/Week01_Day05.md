@@ -6,10 +6,10 @@ Stabilise the GitHub version of the prototype, test active AOI switching, test a
 
 GitHub sync check:
 
-| Check | Result |
-| Local branch up to date with origin/main | Done |
-| App runs from clean session | Done |
-| Latest active AOI code present | Done |
+| Check | Result |  
+| Local branch up to date with origin/main | Done |  
+| App runs from clean session | Done |  
+| Latest active AOI code present | Done |  
 
 Active AOI tests:
 
