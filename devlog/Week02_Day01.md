@@ -1,12 +1,12 @@
-Week 2 - Day 1
+ Week 2 - Day 1
 
-Main objective:
+  Main objective:
 Start the scenario and time-period comparison workflow.
 
-Starting point:
+  Starting point:
 The Week 1 prototype can load an AOI, process one selected raster, display a map, and show result statistics.
 
-Tasks planned:
+  Tasks planned:
 1. Check GitHub sync.
 2. Confirm existing single-analysis workflow still works.
 3. Design comparison table structure.
