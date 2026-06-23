@@ -21,4 +21,5 @@ Improve the scenario and period comparison interface, test missing raster handli
 | Comparison table | Appears | Done | Pass |
 | Baseline row | Present | Done | Pass |
 | Future row | Present | Done | Pass |
-CSV download | Work | Done | Pass |
+| CSV download | Work | Done | Pass |
+
