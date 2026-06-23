@@ -27,7 +27,7 @@ Improve the scenario and period comparison interface, test missing raster handli
 
 | Output location | Friendly labels used? | Pass/Fail |
 | --------------- | --------------------- | --------- |
-| Comparison table |  |  |
-| Downloaded CSV |  |  |
-| Missing-combination message |  |  |
-| Result note |  |  |
+| Comparison table | Yes | Pass |
+| Downloaded CSV | Yes | Pass |
+| Missing-combination message | Yes | Pass |
+| Result note | Yes | Pass |
