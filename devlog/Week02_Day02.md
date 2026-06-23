@@ -23,3 +23,11 @@ Improve the scenario and period comparison interface, test missing raster handli
 | Future row | Present | Done | Pass |
 | CSV download | Work | Done | Pass |
 
+### Comparison table check
+
+| Output location | Friendly labels used? | Pass/Fail |
+| --------------- | --------------------- | --------- |
+| Comparison table |  |  |
+| Downloaded CSV |  |  |
+| Missing-combination message |  |  |
+| Result note |  |  |
