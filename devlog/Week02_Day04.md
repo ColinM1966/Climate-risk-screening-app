@@ -24,3 +24,14 @@ Add a simple comparison graph to help users interpret baseline and future result
 | Result CSV downloads | Yes | Done | Pass |
 | Comparison CSV downloads | Yes | Done | Pass |
 | Cropped raster downloads | Yes | Done | Pass |
+
+### Fire Probability check
+
+| Check | Result |
+| ----- | ------ |
+| Graph appears | Done |
+| Baseline bar appears | Done |
+| Future bar appears | Done |
+| Units correct | Done |
+| Title correct | Done |
+
