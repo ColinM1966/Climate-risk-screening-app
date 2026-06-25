@@ -35,3 +35,11 @@ Add a simple comparison graph to help users interpret baseline and future result
 | Units correct | Done |
 | Title correct | Done |
 
+### Bio05 check
+
+| Check | Result |
+| ----- | ------ |
+| Graph appears | Done |
+| Units = degrees C | Done |
+| Bars match comparison table | Done |
+| Change direction is understandable | Done |
