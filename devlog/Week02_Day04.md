@@ -8,11 +8,11 @@ Add a simple comparison graph to help users interpret baseline and future result
 
 | Check | Result |
 | ----- | ------ |
-| Local copy up to date with GitHub |  |
-| App starts from clean session |  |
-| Day 3 result CSV download still works |  |
-| Day 3 comparison CSV download still works |  |
-| Day 3 cropped raster download still works |  |
+| Local copy up to date with GitHub | Done |
+| App starts from clean session | Done |
+| Day 3 result CSV download still works | Done |
+| Day 3 comparison CSV download still works | Done |
+| Day 3 cropped raster download still works | Done |
 
 ### Day 3 download check
 
@@ -43,3 +43,13 @@ Add a simple comparison graph to help users interpret baseline and future result
 | Units = degrees C | Done |
 | Bars match comparison table | Done |
 | Change direction is understandable | Done |
+
+### PPETmin check
+
+| Check | Result |
+| ----- | ------ |
+| Graph appears | Done |
+| Units = ratio | Done |
+| Dry-condition note appears | Done |
+| Bars match comparison table | Done |
+
