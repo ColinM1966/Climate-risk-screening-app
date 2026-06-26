@@ -27,7 +27,7 @@ Test and stabilise AOI selection workflows, confirm Week 2 comparison/download.
 | Comparison CSV downloads | Yes | Done | Pass |
 | Cropped raster downloads | Yes | Done | Pass |
 
-### Uploaded AOI workflow test
+### Uploaded AOI workflow check
 
 | Check | Result |
 | ----- | ------ |
@@ -39,3 +39,13 @@ Test and stabilise AOI selection workflows, confirm Week 2 comparison/download.
 | Graph AOI correct | Done |
 | Download filenames correct | Done |
 
+### Jambongan test AOI workflow check
+
+| Check | Result |
+| ----- | ------ |
+| Jambongan loads | Done |
+| Previous uploaded AOI clearly | Done |
+| Result table AOI correct | Done |
+| Comparison table AOI correct | Done |
+| Graph AOI correct | Done |
+| Downloads still work | Done |
