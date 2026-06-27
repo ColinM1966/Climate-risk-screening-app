@@ -97,3 +97,37 @@ Test and stabilise AOI selection workflows, confirm Week 2 comparison/download.
 | Result CSV | Yes | Complete |
 | Comparison CSV | Yes | Complete |
 | Cropped raster | Yes | Complete |
+
+### Results tab layout
+
+| Layout check | Result |
+| ------------ | ------ |
+| Analysis summary visible | Done |
+| Result table easy to find | Done |
+| Comparison table easy to read | Done |
+| Graph not too large | Done |
+| Downloads easy to find | Done |
+| Notes are not long | Done |
+
+## Known limitations at end of Week 2
+
+Only six pilot variables are currently connected.
+Only baseline / 1981-2010 and SSP2-4.5 / 2041-2070 are currently available for most vaiables.
+The map displays one selected raster at a time, while the comparison table compares available scenario-period combinations.
+Draw-polygon and point-buffer AOI tools are not yet fully implemented if testing confirms this.
+No combined overall-risk score is produced.
+Results are screening summaries only.
+
+## Week 2 progress summary
+
+Week 2 moved the prototype from single-raster analysis to comparison and export. The app can now compare available baseline and future scenario-period combinations, calculate change from baseline, display a comparison graph, download result and comparison CSVs, and download cropped raster outputs. Testing confirmed that uploaded AOIs and the Jambongan test AOI can be used in the workflow. Remaining priorities are AOI drawing/buffer tools, layout refinement, code cleanup, and preparation for a simple demonstration version.
+
+## Proposed Week 3 priorities
+
+1. Implement or complete draw-polygon AOI.
+2. Implement or complete point-and-buffer AOI.
+3. Clean up app.R by moving repeated code into helper functions.
+4. Improve user-facing labels and notes.
+5. Test the app with more AOIs.
+6. Prepare a short demonstration workflow.
+7. Review how additional SSPs and periods will be integrated when rasters are available.
