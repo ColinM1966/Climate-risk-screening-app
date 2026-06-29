@@ -8,12 +8,23 @@ Implement draw-polygon AOI selection and connect it to the active AOI workflow.
 
 | Check | Result |
 | ----- | ------ |
-| Local copy up to date with GitHub |  |
-| App starts from clean session |  |
-| Upload polygon still works |  |
-| Jambongan AOI still works |  |
-| Point-buffer status checked |  |
-| Comparison table still works |  |
-| Comparison graph still works |  |
-| Downloads still work |  |
+| Local copy up to date with GitHub | Done |
+| App starts from clean session | Done |
+| Upload polygon still works | Done |
+| Jambongan AOI still works | Done |
+| Point-buffer status checked | Done |
+| Comparison table still works | Done |
+| Comparison graph still works | Done |
+| Downloads still work | Done |
 
+## Starting AOI checks
+
+| AOI method | Works before draw-polygon changes? | Notes |
+| ---------- | ---------------------------------- | ----- |
+| Upload polygon | Done | Completed |
+| Jambongan test AOI | Done | Completed |
+| Point-buffer | Done | Completed |
+
+## Package update
+
+Added `leaflet.extras` to to support drawing polygons on the map.
