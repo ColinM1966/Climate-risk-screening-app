@@ -72,11 +72,11 @@ Test and stabilise AOI selection workflows, confirm Week 2 comparison/download.
 
 | Check | Result |
 | ----- | ------ |
-| Point-buffer option visible | Point-and-buffer mode to present in the interface but is not yet implemented. |
-| Map click captured | Point-and-buffer mode to present in the interface but is not yet implemented. |
-| Buffer polygon appears | Point-and-buffer mode to present in the interface but is not yet implemented. |
-| Buffer becomes active AOI | Point-and-buffer mode to present in the interface but is not yet implemented. |
-| Analysis runs on buffer AOI | Point-and-buffer mode to present in the interface but is not yet implemented. |
+| Point-buffer option visible | Done |
+| Map click captured | Done |
+| Buffer polygon appears | Done |
+| Buffer becomes active AOI | Done |
+| Analysis runs on buffer AOI | Done |
 
 ## AOI workflow status
 
