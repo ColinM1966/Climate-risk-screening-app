@@ -49,7 +49,7 @@ Describe any changes made to ensure drawn AOIs and old resultsare fully cleared.
 | Step | Expected | Actual | Pass/Fail |
 | ---- | -------- | ------ | --------- |
 | First polygon drawn | Drawn_AOI active | Done | Pass |
-| Bio05 run on the first polygon | Results appear | done | Pass |
+| Bio05 run on the first polygon | Results appear | Done | Pass |
 | Clear drawn AOI | First polygon removed | Done | Pass |
 | Second polygon drawn | New Drawn_AOI active | Done | Pass |
 | Bio05 run on second polygon | Results use second polygon | Done | Pass |
