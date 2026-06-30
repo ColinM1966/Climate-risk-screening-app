@@ -39,3 +39,25 @@ Added `leaflet.extras` to to support drawing polygons on the map.
 | Run analysis enabled | Done |
 | Old result cleared | Done |
 
+## Drawn AOI single-analysis test
+
+| Check | Result |
+| ----- | ------ |
+| Bio05 analysis run | Done |
+| Raster clipped to drawn AOI | Done |
+| Result table AOI name correct | Done |
+| Result CSV downloads | Done |
+| Cropped raster downloads | Done |
+
+## Drawn AOI comparison test
+
+| Check | Result |
+| ----- | ------ |
+| Fire comparison runs | Done |
+| Baseline row appears | Done |
+| Future row appears | Done |
+| Missing combinations skipped | Done |
+| Change from baseline calculated | Done |
+| Graph appears | Done |
+| Comparison CSV downloads | Done |
+
