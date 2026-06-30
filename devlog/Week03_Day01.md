@@ -28,3 +28,14 @@ Implement draw-polygon AOI selection and connect it to the active AOI workflow.
 ## Package update
 
 Added `leaflet.extras` to to support drawing polygons on the map.
+
+## Draw-polygon loading test
+
+| Check | Result |
+| ----- | ------ |
+| Drawing tool visibile | Done |
+| Polygon can be drawn | Done |
+| Active AOI updates | Done |
+| Run analysis enabled | Done |
+| Old result cleared | Done |
+
