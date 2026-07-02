@@ -40,3 +40,22 @@ Updated the point-buffer help text so it no longer says the tool is inactive if 
 | AOI outline appears | Yes | Done | Pass |
 | Run analysis enabled | Yes | Done | Pass |
 | Old results cleared | Yes | Done | Pass |
+
+## Point-buffer single-analysis test
+
+| Check | Expected | Actual | Pass/Fail |
+| ----- | -------- | ------ | --------- |
+| Bio05 analysis run | Yes | Done | Pass |
+| Raster clipped for buffer | Yes | Done | Pass |
+| Result CSV downloads | Yes | Done | Pass |
+| Cropped raster downloads | Yes | Done | Pass |
+
+## Point-buffer comarison test
+
+| Check | Expected | Actual | Pass/Fail |
+| ----- | -------- | ------ | --------- |
+| Fire comparison runs | Yes |  |  |
+| Missing combinations skipped | Yes |  |  |
+| Change from baseline appears | Yes |  |  |
+| Graph appears | Yes |  |  |
+| Comparison CSV downloads | Yes |  |  |
