@@ -79,4 +79,67 @@ Added a checkbox so users can choose whether to create cropped raster output.
 | Graph appears | Yes | Yes | Pass |
 | Raster appears on map | Yes | Yes | Pass |
 | Cropped raster button appears | Yes | Yes | Pass |
-\ Cropped raster downloads | Yes | Yes | Pass |
+| Cropped raster downloads | Yes | Yes | Pass |
+
+## Additional climatology/scenario selected
+
+| Field | Value |
+| ----- | ----- |
+| Variable | Bio05 |
+| Scenario | ssp1-2.6 |
+| Period/climatology | 2071-2100 |
+| Raster file exists | rasters/future/ssp126/2071-2100/Bio05_AllGCMs_ssp126_2071-2100.tif |
+| Enabled in catalogue | true |
+
+## Additional scenario/climatology test - cropped raster OFF
+
+| Check | Expected | Actual | Pass/Fail |
+| ----- | -------- | ------ | --------- |
+| Scenario appears in dropdown | Yes | Yes | Pass |
+| Period appears in dropdown | Yes | Yes | Pass |
+| Analysis runs | Yes | Yes | Pass |
+| Result table labels correct | Yes | Yes | Pass |
+| CSV IDs correct | Yes | Yes | Pass |
+| App does not crash | Yes | Yes | Pass |
+
+## Additional scenario/climatology test - cropped raster ON
+
+| Check | Expected | Actual | Pass/Fail |
+| ----- | -------- | ------ | --------- |
+| Analysis runs | Yes | Yes | Pass |
+| Raster appears on map | Yes | Yes | Pass |
+| Cropped raster downloads | Yes | Yes | Pass |
+| Filename scenario correct | Yes | Yes | Pass |
+| Filename period correct | Yes | Yes | Pass |
+| Raster opens | Yes | Yes | Pass |
+
+## Comparison control check for additional scenario
+
+| Check | Result |
+| ----- | ------ |
+| Additional scenario appears in comparison scenarios | Done |
+| Additional period appears in comparison periods | Done |
+| Missing combinations skipped safely | Done |
+| Valid combinations processed | Done |
+
+## Cropped raster default
+
+Cropped raster output is set to OFF by default because most users only need table and graph outputs. Users can turn it on when they need a clipped GeoTIFF for GIS use.
+
+## Known limitations after Day 5
+
+Cropped raster output is optional and off by default.
+If cropped raster output is off, the map may show only the AOI outline and not the raster layer.
+Only scenarios and climatolgies listed in the raster catalogue can be tested.
+Missing scenario-period combinations are skipped.
+No combined overall-risk score is produced.
+Results are screening summaries only.
+
+## Proposed next priorities
+
+1. Improve Data Availability tab so users can clearly see which climatologies and scenarios are available.
+2. Add more prepared rasters to the raster catalogue.
+3. Test SSP1-2.6, SSP3-7.0 and SSP5-8.5 where avilable.
+4. Add clearer variable interpreparation notes.
+5. Prepare a simple demonstration workflow for Colin.
+6. Begin moving repeated analysis code into helper functions if app.R is becoming too large.
