@@ -1,6 +1,8 @@
 dataset_id,variable_id,scenario,period,file_path,units,dataset_type,nodata_value,enabled
 CDD_BASE,CDD,baseline,1981-2010,rasters/baseline/CDD_AllGCMs_historical_1981-2010.tif,days,continuous,-9999,TRUE
 CDD_245_4170,CDD,ssp245,2041-2070,rasters/future/ssp245/2041-2070/CDD_AllGCMs_ssp245_2041-2070.tif,days,continuous,-9999,TRUE
+CDD_245_7100,CDD,ssp245,2071-2100,rasters/future/ssp245/2071-2100/CDD_AllGCMs_ssp245_2071-2100.tif,days,continuous,-9999,TRUE
+
 Bio05_BASE,Bio05,baseline,1981-2010,rasters/baseline/Bio05_AllGCMs_historical_1981-2010.tif,degrees C,continuous,-9998,TRUE
 Bio05_245_4170,Bio05,ssp245,2041-2070,rasters/future/ssp245/2041-2070/Bio05_AllGCMs_ssp245_2041-2070.tif,degrees C,continuous,-9997,TRUE
 Bio017_BASE,Bio017,baseline,1981-2010,rasters/baseline/Bio17_AllGCMs_historical_1981-2010.tif,millimeters,continuous,-9996,TRUE
