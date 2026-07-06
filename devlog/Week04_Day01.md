@@ -57,3 +57,36 @@ Implement or stabilise draw-polygon AOI selection.
 | Graph appears | Yes |
 | Comparison CSV downloads | Yes |
 
+## Clearing and redrawing check
+
+| Check | Expected |
+| ----- | -------- |
+| First AOI clears | Yes |
+| Old result clears | Yes |
+| Old raster clears | Yes |
+| Second AOI becomes active | Yes |
+| Analysis uses second AOI | Yes |
+
+## Switching AOI methods
+
+| Check | Expected |
+| ----- | -------- |
+| Active AOI updates correctly | Yes |
+| Old map layers do not remain | Yes |
+| Old result tables clear | Yes |
+| Graph updates correctly | Yes |
+| Downloads use current AOI | Yes |
+
+## Draw polygon edge cases
+
+| Test | Result | Needs fixing? |
+| ---- | ------ | ------------- |
+| No polygon drawn | Not active | No |
+| Drawing cancelled | Not active | No |
+| Very small polygon | Done | No |
+| Outside raster coverage | Done | No |
+| Crosses raster edge | Done | No |
+
+## Day 1 summary
+
+Week 4 Day 1 focused on implementing and testing the draw-polygon AOI workflow. The app was tested to confirm that drawn polygons can become the active AOI, support single analysis, comparison, graphing,downloads and optional cropped raster output. Remaining issues were recorded for Day 2.
