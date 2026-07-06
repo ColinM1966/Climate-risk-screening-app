@@ -90,3 +90,6 @@ Implement or stabilise draw-polygon AOI selection.
 ## Day 1 summary
 
 Week 4 Day 1 focused on implementing and testing the draw-polygon AOI workflow. The app was tested to confirm that drawn polygons can become the active AOI, support single analysis, comparison, graphing,downloads and optional cropped raster output. Remaining issues were recorded for Day 2.
+
+## Additional update
+SSP3-7.0 (ssp370) and SSP5-8.5 (ssp585) raster files were added to the project folders, but they still need to be connected through `config/raster_catalogue.csv` and checked in the scenario selectors before they will appear in the app.
