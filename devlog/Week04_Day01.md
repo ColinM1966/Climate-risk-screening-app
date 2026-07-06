@@ -47,3 +47,13 @@ Implement or stabilise draw-polygon AOI selection.
 | Cropped raster downloads | Yes |
 | Raster clipped to drawn AOI | Yes |
 
+## Draw-polygon status with comparison
+
+| Check | Expected |
+| ----- | -------- |
+| Comparison table appears | Yes |
+| Missing combinations skipped safely | Yes |
+| Change from baseline appears | Yes |
+| Graph appears | Yes |
+| Comparison CSV downloads | Yes |
+
