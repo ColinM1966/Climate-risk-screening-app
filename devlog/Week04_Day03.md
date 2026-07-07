@@ -38,10 +38,10 @@ Test and stabilise the WBGT workflow, improve Data Availability, and prepare WBG
 
 | Field | Value | Correct? |
 | ----- | ----- | -------- |
-| variable_id | WBGT | es |
-| label |  |  |
-| scenario |  |  |
-| period |  |  |
-| units |  |  |
+| variable_id | WBGT | Yes |
+| label | SSP_240_4170 | Yes |
+| scenario | SSP245 |  |
+| period | 2041-2070 |  |
+| units | degrees C |  |
 | file path |  |  |
 | enabled |  |  |
