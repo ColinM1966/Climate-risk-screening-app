@@ -74,3 +74,36 @@ Add monthly average maximum Wet Bulb Globe Temperature (WBGT) as a new climate v
 
 | Check | Result |
 | ----- | ------ |
+| WBGT appears | Done |
+| Scenario correct | Done |
+| Period correct | Done |
+| Units correct | Done |
+| File exists | Done |
+| Enabled | Done |
+
+## WBGT selector check
+
+| Check | Result |
+| ----- | ------ |
+| WBGT appears in selector | Done |
+| Label clear | Done |
+
+## WBGT single-analysis test - cropped raster OFF
+
+| Check | Result |
+| ----- | ------ |
+| AOI | Jambongan |
+| Scenario | SSP245 |
+| Period | 2041-2070 |
+| Analysis runs | Done |
+| Units correct | Done |
+| CSV downloads | Done |
+
+## WBGT single-analsis test - cropped raster ON
+
+| Check | Result |
+| ----- | ------ |
+| Raster appears | Done |
+| Legend sensible | Done |
+| Cropped raster downloads | Done |
+| Raster opens | Done |
