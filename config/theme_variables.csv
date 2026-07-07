@@ -5,4 +5,4 @@ Drought and Fire,PPETConDryMth,3,TRUE,TRUE
 Drought and Fire,Fire,4,TRUE,TRUE
 Temperature,Bio05,1,TRUE,TRUE
 Rainfall,Bio017,1,TRUE,TRUE
-Humidheat,WBGT,1,TRUE,TRUE
+Humid heat,WBGT,1,TRUE,TRUE
