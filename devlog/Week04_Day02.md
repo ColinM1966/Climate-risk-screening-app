@@ -28,7 +28,7 @@ Add monthly average maximum Wet Bulb Globe Temperature (WBGT) as a new climate v
 
 | Item | Value |
 | ---- | ----- |
-| File name | SSp2-4.5 |
+| File name | WBGT-Sun_Max_AllGCMs |
 | File path |  |
 | Scenario |  |
 | Period/climatology |  |
