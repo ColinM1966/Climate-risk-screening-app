@@ -3,3 +3,9 @@ Fire,Low,0,0.25,TRUE,TRUE,1,probability,Modelled fire probability or suitability
 Fire,Moderate,0.25,0.5,FALSE,TRUE,2,probability,Modelled fire probability or suitability
 Fire,High,0.5,0.75,FALSE,TRUE,3,probability,Modelled fire probability or suitability
 Fire,Very High,0.75,1,FALSE,TRUE,4,probability,Modelled fire probability or suitability
+WBGT,Low,0,26.6,TRUE,TRUE,1,degrees C,Heat Stress Threat Threshold
+WBGT,Elevated,26.6,29.3,FALSE,TRUE,2,degrees C,Heat Stress Threat Threshold
+WBGT,Moderate,29.3,31.0,FALSE,TRUE,3,degrees C,Heat Stress Threat Threshold
+WBGT,High,31.0,32.2,FALSE,TRUE,4,degrees C,Heat Stress Threat Threshold
+WBGT,Extreme,32.2,34.999,FALSE,TRUE,5,degrees C,Heat Stress Threat Threshold
+WBGT,Critical,35,100,TRUE,TRUE,6,degrees C,Heat Stress Threat Threshold
