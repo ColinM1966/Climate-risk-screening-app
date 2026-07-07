@@ -59,12 +59,12 @@ PPETmin_370_7100,PPETmin,ssp370,2071-2100,rasters/future/ssp370/2071-2100/PPETMi
 PPETmin_585_4170,PPETmin,ssp585,2041-2070,rasters/future/ssp585/2041-2070/PPETMin_AllGCMs_ssp585_2041-2070.tif,ratio,continuous,-9989,TRUE
 PPETmin_585_7100,PPETmin,ssp585,2071-2100,rasters/future/ssp585/2071-2100/PPETMin_AllGCMs_ssp585_2071-2100.tif,ratio,continuous,-9989,TRUE
 
-WBGT_BASE,WBGT,baseline,1981-2010,rasters/baseline/WBGT_AllGCMs_historical_1981-2010.tif,degrees C,continuous,-9999,TRUE
-WBGT_245_4170,WBGT,ssp245,2041-2070,rasters/future/ssp245/2041-2070/WBGT_AllGCMs_ssp245_2041-2070.tif,degrees C,continuous,-9999,TRUE
-WBGT_245_7100,WBGT,ssp245,2071-2100,rasters/future/ssp245/2071-2100/WBGT_AllGCMs_ssp245_2071-2100.tif,degrees C,continuous,-9999,TRUE
-WBGT_126_4170,WBGT,ssp126,2041-2070,rasters/future/ssp126/2041-2070/WBGT_AllGCMs_ssp126_2041-2070.tif,degrees C,continuous,-9999,TRUE
-WBGT_126_7100,WBGT,ssp126,2071-2100,rasters/future/ssp126/2071-2100/WBGT_AllGCMs_ssp126_2071-2100.tif,degrees C,continuous,-9999,TRUE
-WBGT_370_4170,WBGT,ssp370,2041-2070,rasters/future/ssp370/2041-2070/WBGT_AllGCMs_ssp370_2041-2070.tif,degrees C,continuous,-9999,TRUE
-WBGT_370_7100,WBGT,ssp370,2071-2100,rasters/future/ssp370/2071-2100/WBGT_AllGCMs_ssp370_2071-2100.tif,degrees C,continuous,-9999,TRUE
-WBGT_585_4170,WBGT,ssp585,2041-2070,rasters/future/ssp585/2041-2070/WBGT_AllGCMs_ssp585_2041-2070.tif,degrees C,continuous,-9999,TRUE
-WBGT_585_7100,WBGT,ssp585,2071-2100,rasters/future/ssp585/2071-2100/WBGT_AllGCMs_ssp585_2071-2100.tif,degrees C,continuous,-9999,TRUE
+WBGT_BASE,WBGT,baseline,1981-2010,rasters/baseline/WBGT-Sun_Max_AllGCMs_historical_1981-2010.tif,degrees C,continuous,-9999,TRUE
+WBGT_245_4170,WBGT,ssp245,2041-2070,rasters/future/ssp245/2041-2070/WBGT-Sun_Max_AllGCMs_ssp245_2041-2070.tif,degrees C,continuous,-9999,TRUE
+WBGT_245_7100,WBGT,ssp245,2071-2100,rasters/future/ssp245/2071-2100/WBGT-Sun_Max_AllGCMs_ssp245_2071-2100.tif,degrees C,continuous,-9999,TRUE
+WBGT_126_4170,WBGT,ssp126,2041-2070,rasters/future/ssp126/2041-2070/WBGT-Sun_Max_AllGCMs_ssp126_2041-2070.tif,degrees C,continuous,-9999,TRUE
+WBGT_126_7100,WBGT,ssp126,2071-2100,rasters/future/ssp126/2071-2100/WBGT-Sun_Max_AllGCMs_ssp126_2071-2100.tif,degrees C,continuous,-9999,TRUE
+WBGT_370_4170,WBGT,ssp370,2041-2070,rasters/future/ssp370/2041-2070/WBGT-Sun_Max_AllGCMs_ssp370_2041-2070.tif,degrees C,continuous,-9999,TRUE
+WBGT_370_7100,WBGT,ssp370,2071-2100,rasters/future/ssp370/2071-2100/WBGT-Sun_Max_AllGCMs_ssp370_2071-2100.tif,degrees C,continuous,-9999,TRUE
+WBGT_585_4170,WBGT,ssp585,2041-2070,rasters/future/ssp585/2041-2070/WBGT-Sun_Max_AllGCMs_ssp585_2041-2070.tif,degrees C,continuous,-9999,TRUE
+WBGT_585_7100,WBGT,ssp585,2071-2100,rasters/future/ssp585/2071-2100/WBGT-Sun_Max_AllGCMs_ssp585_2071-2100.tif,degrees C,continuous,-9999,TRUE
