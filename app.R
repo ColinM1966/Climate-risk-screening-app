@@ -7,12 +7,15 @@ library(shiny)
 library(shinyjs)
 library(bslib)
 library(leaflet)
+library(leaflet.extras)
 library(sf)
 library(terra)
 library(dplyr)
 library(readr)
 library(stringr)
 library(DT)
+library(tidyr)
+library(ggplot2)
 
 # ------------------------------------------------------------
 # LOAD APPLICATION FUNCTIONS
@@ -77,20 +80,315 @@ pathway_themes <- app_config$pathway_themes
 risk_thresholds <- app_config$risk_thresholds
 
 # ------------------------------------------------------------
-# 1. BASIC CHOICES
+# BASIC CHOICES
 # ------------------------------------------------------------
 
-pathway_choices <- pathway_themes %>%
-  distinct(pathway) %>%
-  arrange(pathway) %>%
-  pull(pathway)
+pathway_choices <- pathway_themes |>
+  dplyr::distinct(pathway) |>
+  dplyr::arrange(pathway) |>
+  dplyr::pull(pathway)
 
 if (length(pathway_choices) == 0) {
   pathway_choices <- "General Climate Risk Screening"
 }
 
 # ------------------------------------------------------------
-# 2. USER INTERFACE
+# LABEL HELPERS
+# ------------------------------------------------------------
+
+scenario_labels <- c(
+  baseline = "Baseline",
+  ssp126 = "SSP1-2.6",
+  ssp245 = "SSP2-4.5",
+  ssp370 = "SSP3-7.0",
+  ssp585 = "SSP5-8.5"
+)
+
+period_labels <- c(
+  "1981-2010" = "1981–2010",
+  "2011-2040" = "2011–2040",
+  "2041-2070" = "2041–2070",
+  "2071-2100" = "2071–2100"
+)
+
+get_scenario_label <- function(scenario_id) {
+  
+  if (scenario_id %in% names(scenario_labels)) {
+    return(
+      unname(
+        scenario_labels[[scenario_id]]
+      )
+    )
+  }
+  
+  scenario_id
+}
+
+get_period_label <- function(period_id) {
+  
+  if (period_id %in% names(period_labels)) {
+    return(
+      unname(
+        period_labels[[period_id]]
+      )
+    )
+  }
+  
+  period_id
+}
+
+get_variable_label <- function(selected_variable_id) {
+  
+  # Primary source: config/variable metadata.
+  # Keep labels catalogue-driven wherever possible.
+  variable_label <- variable_metadata |>
+    dplyr::filter(
+      variable_id == selected_variable_id
+    ) |>
+    dplyr::pull(
+      display_name
+    )
+  
+  if (
+    length(variable_label) > 0 &&
+    !is.na(variable_label[1]) &&
+    variable_label[1] != ""
+  ) {
+    return(
+      variable_label[1]
+    )
+  }
+  
+  # Fallback only.
+  # This prevents raw IDs being shown if the config has not yet
+  # been updated, but the preferred fix is still to add the label
+  # to config/variable_metadata.
+  fallback_variable_labels <- c(
+    WBGTmax = "Maximum WBGT"
+  )
+  
+  if (selected_variable_id %in% names(fallback_variable_labels)) {
+    return(
+      unname(
+        fallback_variable_labels[[selected_variable_id]]
+      )
+    )
+  }
+  
+  selected_variable_id
+}
+
+safe_filename <- function(x) {
+  
+  x |>
+    stringr::str_replace_all("[^A-Za-z0-9_-]", "_") |>
+    stringr::str_replace_all("_+", "_")
+}
+
+
+aoi_has_valid_raster_cells <- function(
+    aoi,
+    raster_path
+) {
+  
+  if (
+    is.null(aoi) ||
+    is.null(raster_path) ||
+    !file.exists(raster_path)
+  ) {
+    return(FALSE)
+  }
+  
+  result <- tryCatch(
+    {
+      raster_object <- terra::rast(
+        raster_path
+      )
+      
+      print(
+        paste(
+          "Checking raster:",
+          raster_path
+        )
+      )
+      
+      print(
+        terra::ext(
+          raster_object
+        )
+      )
+      
+      print(
+        terra::crs(
+          raster_object
+        )
+      )
+      
+      if (terra::nlyr(raster_object) > 1) {
+        raster_object <- raster_object[[1]]
+      }
+      
+      raster_crs <- terra::crs(
+        raster_object
+      )
+      
+      aoi_for_raster <- sf::st_transform(
+        aoi,
+        raster_crs
+      )
+      
+      print(
+        sf::st_bbox(
+          aoi_for_raster
+        )
+      )
+      
+      aoi_vect <- terra::vect(
+        aoi_for_raster
+      )
+      
+      cropped <- terra::crop(
+        raster_object,
+        aoi_vect
+      )
+      
+      masked <- terra::mask(
+        cropped,
+        aoi_vect
+      )
+      
+      values <- terra::values(
+        masked,
+        mat = FALSE
+      )
+      
+      any(
+        is.finite(values)
+      )
+    },
+    error = function(e) {
+      FALSE
+    }
+  )
+  
+  isTRUE(result)
+}
+
+get_first_existing_column <- function(data, possible_names) {
+  
+  matched_names <- intersect(
+    possible_names,
+    names(data)
+  )
+  
+  if (length(matched_names) == 0) {
+    return(NA_real_)
+  }
+  
+  data[[matched_names[1]]]
+}
+
+get_first_numeric_stat <- function(data, possible_names) {
+  
+  matched_names <- intersect(
+    possible_names,
+    names(data)
+  )
+  
+  if (length(matched_names) > 0) {
+    value <- data[[matched_names[1]]]
+    return(
+      as.numeric(value[1])
+    )
+  }
+  
+  numeric_columns <- names(data)[
+    vapply(
+      data,
+      is.numeric,
+      logical(1)
+    )
+  ]
+  
+  if (length(numeric_columns) == 0) {
+    return(NA_real_)
+  }
+  
+  value <- data[[numeric_columns[1]]]
+  
+  as.numeric(value[1])
+}
+
+get_analysis_value <- function(
+    result_object,
+    possible_names
+) {
+  
+  if (is.null(result_object)) {
+    return(NA_real_)
+  }
+  
+  # Case 1: value is returned directly from process_continuous_raster().
+  matching_names <- possible_names[
+    possible_names %in% names(result_object)
+  ]
+  
+  if (length(matching_names) >= 1) {
+    value <- result_object[[matching_names[1]]]
+    
+    if (length(value) > 0) {
+      return(
+        as.numeric(value[[1]])
+      )
+    }
+  }
+  
+  # Case 2: value is inside result_object$summary.
+  if (
+    is.list(result_object) &&
+    "summary" %in% names(result_object)
+  ) {
+    summary_table <- as.data.frame(
+      result_object$summary
+    )
+    
+    matching_summary_names <- possible_names[
+      possible_names %in% names(summary_table)
+    ]
+    
+    if (length(matching_summary_names) >= 1) {
+      value <- summary_table[[matching_summary_names[1]]]
+      
+      if (length(value) > 0) {
+        return(
+          as.numeric(value[[1]])
+        )
+      }
+    }
+  }
+  
+  # Case 3: result itself is a data frame.
+  if (is.data.frame(result_object)) {
+    matching_data_names <- possible_names[
+      possible_names %in% names(result_object)
+    ]
+    
+    if (length(matching_data_names) >= 1) {
+      value <- result_object[[matching_data_names[1]]]
+      
+      if (length(value) > 0) {
+        return(
+          as.numeric(value[[1]])
+        )
+      }
+    }
+  }
+  
+  NA_real_
+}
+
+# ------------------------------------------------------------
+# USER INTERFACE
 # ------------------------------------------------------------
 
 ui <- page_sidebar(
@@ -105,29 +403,21 @@ ui <- page_sidebar(
   
   shinyjs::useShinyjs(),
   
-  
   tags$head(
     tags$style(
       HTML(
         "
-        /* Make the full page fit the browser window */
         html,
         body {
           height: 100%;
           overflow: hidden;
         }
 
-        /* Keep the bslib page layout full height */
         .bslib-sidebar-layout {
           height: 100vh;
           max-height: 100vh;
         }
 
-        /*
-        Do not put the scrollbar on the outer sidebar.
-        The outer sidebar contains the bslib resize handle, so putting
-        a scrollbar there makes the scrollbar overlap with the drag handle.
-        */
         .bslib-sidebar-layout .sidebar,
         .bslib-sidebar-layout > .sidebar,
         .bslib-sidebar-layout > aside,
@@ -137,10 +427,6 @@ ui <- page_sidebar(
           overflow: hidden !important;
         }
 
-        /*
-        Scroll only the inner sidebar content.
-        This keeps the scrollbar away from the resize handle.
-        */
         #sidebar_scroll_content {
           max-height: calc(100vh - 20px);
           overflow-y: auto !important;
@@ -150,7 +436,6 @@ ui <- page_sidebar(
           scrollbar-width: thin;
         }
 
-        /* Chrome / Edge scrollbar for the inner sidebar only */
         #sidebar_scroll_content::-webkit-scrollbar {
           width: 10px;
         }
@@ -164,7 +449,6 @@ ui <- page_sidebar(
           background-color: #f1f1f1;
         }
 
-        /* Run analysis area */
         #run_analysis_scroll_zone {
           margin-bottom: 20px;
           padding-bottom: 10px;
@@ -178,7 +462,6 @@ ui <- page_sidebar(
           cursor: not-allowed;
         }
 
-        /* Keep long inputs and text inside the inner sidebar */
         #sidebar_scroll_content .form-group,
         #sidebar_scroll_content .shiny-input-container,
         #sidebar_scroll_content .selectize-control {
@@ -192,7 +475,6 @@ ui <- page_sidebar(
           word-wrap: break-word;
         }
 
-        /* Prevent horizontal page scrolling */
         body {
           overflow-x: hidden;
         }
@@ -204,11 +486,38 @@ ui <- page_sidebar(
         .dataTables_wrapper {
           overflow-x: auto;
         }
+
+        .results-note {
+          margin-top: 10px;
+          padding: 10px;
+          font-size: 13px;
+          color: #ffffff;
+          background-color: #111111;
+          border-left: 4px solid #ffd700;
+          border-radius: 4px;
+        }
+
+        .comparison-table-wrapper {
+          width: 100%;
+          max-height: 380px;
+          overflow-y: auto;
+          overflow-x: auto;
+          margin-bottom: 16px;
+          clear: both;
+        }
+
+        .comparison-download-row {
+          clear: both;
+          display: block;
+          margin-top: 16px;
+          margin-bottom: 16px;
+          position: relative;
+          z-index: 10;
+        }
         "
       )
     )
   ),
-  
   
   tags$script(
     HTML(
@@ -276,6 +585,21 @@ ui <- page_sidebar(
       ),
       
       conditionalPanel(
+        condition = "input.aoi_method == 'draw'",
+        
+        helpText(
+          "Use the polygon tool on the map to draw an AOI. Click points to trace the boundary, then click the first point again to finish the polygon. The finished polygon will become the active AOI."
+        ),
+        
+        actionButton(
+          inputId = "clear_drawn_aoi",
+          label = "Clear drawn AOI",
+          class = "btn-secondary",
+          width = "100%"
+        )
+      ),
+      
+      conditionalPanel(
         condition = "input.aoi_method == 'jambongan'",
         
         actionButton(
@@ -303,10 +627,16 @@ ui <- page_sidebar(
         ),
         
         helpText(
-          "Click the map to select the centre point."
+          "Enter a buffer distance, then click the map to create a circular AOI around that point. The buffer will become the active AOI."
+        ),
+        
+        actionButton(
+          inputId = "clear_point_buffer",
+          label = "Clear point buffer",
+          class = "btn-secondary",
+          width = "100%"
         )
       ),
-      
       
       textOutput(
         "active_aoi_status"
@@ -331,11 +661,11 @@ ui <- page_sidebar(
         choices = NULL
       ),
       
-      h4("4. Select variables"),
+      h4("4. Select variable"),
       
       selectInput(
         inputId = "variable_id",
-        label = "Select variable",
+        label = NULL,
         choices = NULL
       ),
       
@@ -344,10 +674,7 @@ ui <- page_sidebar(
       selectInput(
         inputId = "scenario",
         label = NULL,
-        choices = c(
-          "Baseline" = "baseline",
-          "SSP2-4.5" = "ssp245"
-        )
+        choices = NULL
       ),
       
       h4("6. Select time period"),
@@ -355,9 +682,46 @@ ui <- page_sidebar(
       selectInput(
         inputId = "period",
         label = NULL,
-        choices = c(
-          "1981–2010" = "1981-2010",
-          "2041–2070" = "2041-2070"
+        choices = NULL
+      ),
+      
+      h4("7. Comparison options"),
+      
+      checkboxInput(
+        inputId = "run_comparison",
+        label = "Run scenario and period comparison",
+        value = FALSE
+      ),
+      
+      h4("8. Output options"),
+      
+      checkboxInput(
+        inputId = "create_cropped_raster",
+        label = "Create cropped raster output",
+        value = FALSE
+      ),
+      
+      helpText(
+        "Only turn this on if you need to display or download a clipped GeoTIFF. Leaving it off keeps the map simpler and avoids offering unnecessary raster outputs."
+      ),
+      
+      conditionalPanel(
+        condition = "input.run_comparison == true",
+        
+        selectInput(
+          inputId = "comparison_scenarios",
+          label = "Compare scenarios",
+          choices = NULL,
+          selected = NULL,
+          multiple = TRUE
+        ),
+        
+        selectInput(
+          inputId = "comparison_periods",
+          label = "Compare periods",
+          choices = NULL,
+          selected = NULL,
+          multiple = TRUE
         )
       ),
       
@@ -410,6 +774,72 @@ ui <- page_sidebar(
         
         tableOutput(
           outputId = "result_table"
+        ),
+        
+        br(),
+        
+        div(
+          class = "results-note",
+          textOutput("results_note")
+        ),
+        
+        br(),
+        
+        h4("Scenario and period comparison"),
+        
+        textOutput(
+          outputId = "comparison_missing_note"
+        ),
+        
+        div(
+          class = "comparison-table-wrapper",
+          DTOutput(
+            outputId = "comparison_results"
+          )
+        ),
+        
+        div(
+          class = "results-note",
+          "Change from baseline is calculated as the selected row mean minus the baseline mean for the same AOI and variable. It is a simple comparison value, not a risk score."
+        ),
+        
+        br(),
+        
+        h4("Comparison graph"),
+        
+        uiOutput(
+          outputId = "comparison_graph_ui"
+        ),
+        
+        div(
+          class = "results-note",
+          "The graph shows mean values only. Minimum and maximum values are shown in the table. Interpretation depends on the selected variable; for some variables, higher values indicate greater concern, while for others, lower values indicate drier conditions."
+        ),
+        
+        div(
+          class = "results-note",
+          "This is especially important for Bio017 and PPETmin because they are lower-is-drier variables."
+        ),
+        
+        br(),
+        
+        h4("Downloads"),
+        
+        uiOutput(
+          outputId = "download_buttons"
+        ),
+        
+        br(),
+        
+        textOutput(
+          outputId = "cropped_raster_status"
+        ),
+        
+        br(),
+        
+        div(
+          class = "results-note",
+          "Cropped raster output is optional. If selected, the app creates a clipped GeoTIFF for GIS use. If not selected, only table and graph outputs are produced."
         )
       )
     ),
@@ -469,16 +899,41 @@ ui <- page_sidebar(
         
         p(
           paste(
-            "This prototype reads available variables, scenarios",
-            "and periods from configuration files."
+            "This prototype demonstrates AOI-based climate raster",
+            "screening using uploaded polygons, drawn polygons,",
+            "point buffers, and a built-in Jambongan test AOI."
           )
         ),
         
         p(
           paste(
-            "Raster processing, exact extraction, AOI upload,",
-            "drawing, buffering and downloads will be connected",
-            "in the next development stages."
+            "Draw polygon is active in this prototype.",
+            "Draw an AOI on the map, then run analysis."
+          )
+        ),
+        
+        p(
+          paste(
+            "Results are screening summaries only.",
+            "They describe raster values within the selected AOI",
+            "and should not be interpreted as a final risk score."
+          )
+        ),
+        
+        p(
+          paste(
+            "Drawn-polygon and point-buffer AOIs are intended for",
+            "rapid testing and exploratory screening.",
+            "For formal reporting, users should use a checked boundary",
+            "from a verified spatial file wherever possible."
+          )
+        ),
+        
+        p(
+          paste(
+            "No combined overall-risk score is produced at this stage.",
+            "A combined score will only be added after the scoring method,",
+            "weights and assumptions are agreed and documented."
           )
         )
       )
@@ -487,7 +942,7 @@ ui <- page_sidebar(
 )
 
 # ------------------------------------------------------------
-# 3. SERVER
+# SERVER
 # ------------------------------------------------------------
 
 server <- function(
@@ -497,85 +952,164 @@ server <- function(
 ) {
   
   # ----------------------------------------------------------
-  # REACTIVE APPLICATION VALUES
+  # REACTIVE VALUES
   # ----------------------------------------------------------
   
   rv <- reactiveValues(
     aoi = NULL,
     aoi_name = NULL,
     result = NULL,
+    comparison_results = NULL,
+    comparison_missing = NULL,
     cropped_raster = NULL
   )
   
+  # ----------------------------------------------------------
+  # CLEAR HELPERS
+  # ----------------------------------------------------------
+  
+  clear_analysis_outputs <- function() {
+    
+    rv$result <- NULL
+    rv$comparison_results <- NULL
+    rv$comparison_missing <- NULL
+    rv$cropped_raster <- NULL
+  }
+  
+  clear_analysis_map <- function() {
+    
+    leafletProxy("map") |>
+      clearGroup("Analysis result") |>
+      removeControl(
+        layerId = "analysis_result_legend"
+      )
+  }
   
   # ----------------------------------------------------------
-  # DISPLAY ACTIVE AOI STATUS
+  # LOAD ACTIVE AOI HELPER
+  # ----------------------------------------------------------
+  
+  load_active_aoi <- function(
+    aoi_object,
+    aoi_name,
+    clear_drawn_layer = FALSE
+  ) {
+    
+    rv$aoi <- aoi_object
+    rv$aoi_name <- aoi_name
+    
+    clear_analysis_outputs()
+    
+    if (isTRUE(clear_drawn_layer)) {
+      leafletProxy("map") |>
+        clearGroup("Drawn AOI")
+    }
+    
+    clear_analysis_map()
+    
+    showNotification(
+      paste(
+        "AOI loaded:",
+        rv$aoi_name
+      ),
+      type = "message"
+    )
+  }
+  
+  # ----------------------------------------------------------
+  # CLEAR RASTER MAP WHEN CROPPED OUTPUT IS TURNED OFF
+  # ----------------------------------------------------------
+  # If a user has previously displayed a cropped raster and then
+  # unticks the cropped-raster option, remove the raster layer and
+  # legend immediately while keeping the AOI outline on the map.
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    input$create_cropped_raster,
+    {
+      if (!isTRUE(input$create_cropped_raster)) {
+        rv$cropped_raster <- NULL
+        clear_analysis_map()
+      }
+    },
+    ignoreInit = TRUE
+  )
+  
+  # ----------------------------------------------------------
+  # ACTIVE AOI STATUS
   # ----------------------------------------------------------
   
   output$active_aoi_status <- renderText(
     {
-      
       if (is.null(rv$aoi)) {
         return(
           "No AOI currently loaded."
         )
       }
       
+      geometry_type <- unique(
+        as.character(
+          sf::st_geometry_type(rv$aoi)
+        )
+      )
+      
       paste(
         "Active AOI:",
-        rv$aoi_name
+        rv$aoi_name,
+        "| Features:",
+        nrow(rv$aoi),
+        "| Geometry:",
+        paste(
+          geometry_type,
+          collapse = ", "
+        )
       )
     }
   )
   
-  
   output$test_active_aoi_status <- renderText(
     {
-      
       if (is.null(rv$aoi)) {
         return(
           "No AOI currently loaded."
         )
       }
       
+      geometry_type <- unique(
+        as.character(
+          sf::st_geometry_type(rv$aoi)
+        )
+      )
+      
       paste(
         "Active AOI:",
-        rv$aoi_name
+        rv$aoi_name,
+        "| Features:",
+        nrow(rv$aoi),
+        "| Geometry:",
+        paste(
+          geometry_type,
+          collapse = ", "
+        )
       )
     }
   )
   
   output$aoi_test_selection <- renderText(
     {
-      
       if (is.null(rv$aoi)) {
-        return(
-          "No AOI currently loaded."
-        )
+        return("No AOI currently loaded.")
       }
       
       paste(
-        paste(
-          "AOI:",
-          rv$aoi_name
-        ),
-        paste(
-          "Variable:",
-          input$variable_id
-        ),
-        paste(
-          "Scenario:",
-          input$scenario
-        ),
-        paste(
-          "Period:",
-          input$period
-        ),
+        paste("AOI:", rv$aoi_name),
+        paste("Variable:", input$variable_id),
+        paste("Scenario:", input$scenario),
+        paste("Period:", input$period),
         sep = "\n"
       )
     }
   )
-  
   
   # ----------------------------------------------------------
   # ENABLE / DISABLE RUN ANALYSIS BUTTON
@@ -583,29 +1117,25 @@ server <- function(
   
   observe(
     {
-      
       shinyjs::toggleState(
         id = "run_analysis",
-        condition = !is.null(
-          rv$aoi
-        )
+        condition = !is.null(rv$aoi)
       )
     }
   )
+  
   # ----------------------------------------------------------
-  # LOAD UPLOADED AOI AS THE ACTIVE AOI
+  # LOAD UPLOADED AOI
   # ----------------------------------------------------------
   
   observeEvent(
     input$aoi_file,
     {
-      
       req(input$aoi_file)
       
       uploaded_names <- input$aoi_file$name
       uploaded_paths <- input$aoi_file$datapath
       
-      # Keep all shapefile components together under their original names.
       upload_dir <- tempfile("uploaded_aoi_")
       
       dir.create(
@@ -655,7 +1185,6 @@ server <- function(
         return()
       }
       
-      # Prefer a GeoPackage when more than one supported file is present.
       supported_names <- uploaded_names[
         spatial_file_index
       ]
@@ -689,7 +1218,6 @@ server <- function(
       
       uploaded_aoi <- tryCatch(
         {
-          
           if (file_extension == "gpkg") {
             
             gpkg_layers <- sf::st_layers(
@@ -729,11 +1257,6 @@ server <- function(
             selected_layer <- gpkg_layers$name[
               polygon_layer_index[1]
             ]
-            
-            message(
-              "Reading GeoPackage layer: ",
-              selected_layer
-            )
             
             uploaded_aoi <- sf::st_read(
               dsn = spatial_path,
@@ -790,53 +1313,789 @@ server <- function(
         return()
       }
       
-      # Replace the previous AOI with this uploaded AOI.
-      rv$aoi <- uploaded_aoi
+      load_active_aoi(
+        aoi_object = uploaded_aoi,
+        aoi_name = tools::file_path_sans_ext(
+          uploaded_name
+        ),
+        clear_drawn_layer = TRUE
+      )
+    },
+    ignoreInit = TRUE
+  )
+  
+  
+  # ----------------------------------------------------------
+  # LOAD DRAWN POLYGON AOI FROM MAP
+  # ----------------------------------------------------------
+  # User selects "Draw polygon", draws a polygon on the map,
+  # and the drawn polygon is stored as rv$aoi.
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    input$map_draw_new_feature,
+    {
       
-      rv$aoi_name <- tools::file_path_sans_ext(
-        uploaded_name
+      req(
+        input$aoi_method == "draw",
+        input$map_draw_new_feature
       )
       
-      # Clear outputs created for the previous AOI.
-      rv$result <- NULL
-      rv$cropped_raster <- NULL
+      drawn_feature <- input$map_draw_new_feature
       
+      if (
+        is.null(drawn_feature$geometry) ||
+        drawn_feature$geometry$type != "Polygon"
+      ) {
+        showNotification(
+          "Only polygon drawing is supported for AOI selection.",
+          type = "error",
+          duration = 8
+        )
+        
+        return()
+      }
+      
+      # Clear old AOI and analysis layers before loading the new drawn AOI.
+      # Do not clear "Drawn AOI" here; the newly drawn feature is still held
+      # by the leaflet draw layer and the active AOI display observer will
+      # show the final AOI outline through the normal "AOI" group.
       leafletProxy("map") |>
+        clearGroup("AOI") |>
         clearGroup("Analysis result") |>
         removeControl(
           layerId = "analysis_result_legend"
         )
       
-      showNotification(
-        paste(
-          "AOI loaded:",
-          rv$aoi_name
+      coordinates <- drawn_feature$geometry$coordinates[[1]]
+      
+      coordinate_matrix <- do.call(
+        rbind,
+        lapply(
+          coordinates,
+          function(x) {
+            c(
+              x[[1]],
+              x[[2]]
+            )
+          }
+        )
+      )
+      
+      drawn_polygon <- sf::st_polygon(
+        list(
+          coordinate_matrix
+        )
+      )
+      
+      drawn_aoi <- sf::st_sf(
+        aoi_name = "Drawn_AOI",
+        geometry = sf::st_sfc(
+          drawn_polygon,
+          crs = 4326
+        )
+      )
+      
+      drawn_aoi <- sf::st_make_valid(
+        drawn_aoi
+      )
+      
+      drawn_aoi <- prepare_aoi(
+        drawn_aoi
+      )
+      
+      load_active_aoi(
+        aoi_object = drawn_aoi,
+        aoi_name = paste0(
+          "Drawn_AOI_",
+          format(
+            Sys.time(),
+            "%Y%m%d_%H%M%S"
+          )
         ),
-        type = "message"
+        clear_drawn_layer = FALSE
       )
     },
     ignoreInit = TRUE
   )
   
   # ----------------------------------------------------------
-  # RESOLVE AOI NAME FOR DISPLAY
+  # CLEAR DRAWN AOI
+  # ----------------------------------------------------------
+  # Clears the drawn AOI layer.
+  # If the active AOI is a drawn AOI, it also clears the active AOI.
+  # This avoids accidentally deleting uploaded, Jambongan, or point-buffer AOIs.
   # ----------------------------------------------------------
   
-  displayed_aoi_name <- reactive(
+  observeEvent(
+    input$clear_drawn_aoi,
     {
+      
+      leafletProxy("map") |>
+        clearGroup("Drawn AOI") |>
+        clearGroup("Analysis result") |>
+        removeControl(
+          layerId = "analysis_result_legend"
+        )
+      
       if (
-        is.list(rv$result) &&
-        !is.null(rv$result$aoi_name) &&
-        length(rv$result$aoi_name) >= 1 &&
-        !is.na(rv$result$aoi_name[[1]]) &&
-        rv$result$aoi_name[[1]] != ""
+        !is.null(rv$aoi_name) &&
+        stringr::str_detect(
+          rv$aoi_name,
+          "^Drawn_AOI"
+        )
       ) {
-        return(
-          as.character(rv$result$aoi_name[[1]])
+        
+        rv$aoi <- NULL
+        rv$aoi_name <- NULL
+        
+        clear_analysis_outputs()
+        
+        leafletProxy("map") |>
+          clearGroup("AOI")
+        
+        showNotification(
+          "Drawn AOI cleared.",
+          type = "message"
+        )
+        
+      } else {
+        
+        showNotification(
+          "Drawn AOI layer cleared. The active AOI was not changed because it was not a drawn AOI.",
+          type = "message"
         )
       }
+    },
+    ignoreInit = TRUE
+  )
+  
+  # ----------------------------------------------------------
+  # LOAD TEMPORARY JAMBONGAN AOI
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    input$use_jambongan,
+    {
+      jambongan_path <- file.path(
+        "data",
+        "examples",
+        "Jambongan.gpkg"
+      )
       
+      validate(
+        need(
+          file.exists(jambongan_path),
+          paste(
+            "Jambongan test AOI was not found:",
+            jambongan_path
+          )
+        )
+      )
+      
+      jambongan_aoi <- sf::st_read(
+        jambongan_path,
+        quiet = TRUE
+      )
+      
+      validate(
+        need(
+          nrow(jambongan_aoi) > 0,
+          "The Jambongan GeoPackage contains no spatial features."
+        )
+      )
+      
+      load_active_aoi(
+        aoi_object = prepare_aoi(
+          jambongan_aoi
+        ),
+        aoi_name = "Jambongan",
+        clear_drawn_layer = TRUE
+      )
+    }
+  )
+  
+  
+  # ----------------------------------------------------------
+  # LOAD POINT-AND-BUFFER AOI FROM MAP CLICK
+  # ----------------------------------------------------------
+  # This provides a simple working AOI option for testing.
+  # User selects "Select point and buffer", enters a buffer distance,
+  # and clicks the map. The clicked point is buffered and stored as rv$aoi.
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    input$map_click,
+    {
+      req(
+        input$aoi_method == "point",
+        input$map_click,
+        input$buffer_km
+      )
+      
+      if (
+        is.na(input$buffer_km) ||
+        input$buffer_km <= 0
+      ) {
+        showNotification(
+          "Enter a buffer distance greater than 0 km before clicking the map.",
+          type = "error",
+          duration = 8
+        )
+        
+        return()
+      }
+      
+      clicked_lng <- input$map_click$lng
+      clicked_lat <- input$map_click$lat
+      
+      clicked_point <- sf::st_as_sf(
+        data.frame(
+          id = 1,
+          longitude = clicked_lng,
+          latitude = clicked_lat
+        ),
+        coords = c(
+          "longitude",
+          "latitude"
+        ),
+        crs = 4326
+      )
+      
+      buffer_metres <- input$buffer_km * 1000
+      
+      buffered_aoi <- clicked_point |>
+        sf::st_transform(
+          3857
+        ) |>
+        sf::st_buffer(
+          dist = buffer_metres
+        ) |>
+        sf::st_transform(
+          4326
+        ) |>
+        sf::st_make_valid()
+      
+      buffered_aoi <- prepare_aoi(
+        buffered_aoi
+      )
+      
+      load_active_aoi(
+        aoi_object = buffered_aoi,
+        aoi_name = paste0(
+          "Point_buffer_",
+          input$buffer_km,
+          "km_",
+          format(
+            Sys.time(),
+            "%Y%m%d_%H%M%S"
+          )
+        ),
+        clear_drawn_layer = TRUE
+      )
+    },
+    ignoreInit = TRUE
+  )
+  
+  # ----------------------------------------------------------
+  # CLEAR POINT-BUFFER AOI
+  # ----------------------------------------------------------
+  # Clears the active AOI only if it was created using
+  # point-and-buffer mode.
+  # This avoids accidentally deleting or hiding uploaded,
+  # drawn, or Jambongan AOIs.
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    input$clear_point_buffer,
+    {
+      if (
+        !is.null(rv$aoi_name) &&
+        stringr::str_detect(
+          rv$aoi_name,
+          "^Point_buffer"
+        )
+      ) {
+        
+        leafletProxy("map") |>
+          clearGroup("AOI") |>
+          clearGroup("Analysis result") |>
+          removeControl(
+            layerId = "analysis_result_legend"
+          )
+        
+        rv$aoi <- NULL
+        rv$aoi_name <- NULL
+        
+        clear_analysis_outputs()
+        
+        showNotification(
+          "Point buffer AOI cleared.",
+          type = "message"
+        )
+        
+      } else {
+        
+        showNotification(
+          "The active AOI was not changed because it is not a point-buffer AOI.",
+          type = "message"
+        )
+      }
+    },
+    ignoreInit = TRUE
+  )
+  
+  # ----------------------------------------------------------
+  # INITIAL MAP
+  # ----------------------------------------------------------
+  
+  output$map <- renderLeaflet(
+    {
+      leaflet(
+        options = leafletOptions(
+          minZoom = 6,
+          maxZoom = 18
+        )
+      ) |>
+        addProviderTiles(
+          providers$OpenStreetMap,
+          group = "OpenStreetMap"
+        ) |>
+        setView(
+          lng = 117.0,
+          lat = 5.3,
+          zoom = 7
+        ) |>
+        addScaleBar(
+          position = "bottomleft",
+          options = scaleBarOptions(
+            metric = TRUE,
+            imperial = FALSE
+          )
+        ) |>
+        addLayersControl(
+          baseGroups = c(
+            "OpenStreetMap"
+          ),
+          overlayGroups = c(
+            "AOI",
+            "Analysis result",
+            "Drawn AOI"
+          ),
+          options = layersControlOptions(
+            collapsed = TRUE
+          )
+        ) |>
+        addDrawToolbar(
+          targetGroup = "Drawn AOI",
+          
+          polygonOptions = drawPolygonOptions(
+            shapeOptions = drawShapeOptions(
+              color = "#7B2CBF",
+              weight = 3,
+              fillOpacity = 0.15
+            ),
+            showArea = TRUE,
+            metric = TRUE
+          ),
+          
+          rectangleOptions = FALSE,
+          circleOptions = FALSE,
+          markerOptions = FALSE,
+          circleMarkerOptions = FALSE,
+          polylineOptions = FALSE,
+          
+          editOptions = editToolbarOptions(
+            selectedPathOptions = selectedPathOptions()
+          )
+        )
+    }
+  )
+  
+  # ----------------------------------------------------------
+  # DISPLAY ACTIVE AOI ON MAP
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    list(
+      rv$aoi,
       rv$aoi_name
+    ),
+    {
+      req(
+        rv$aoi,
+        rv$aoi_name
+      )
+      
+      map_aoi <- sf::st_transform(
+        rv$aoi,
+        4326
+      )
+      
+      aoi_bbox <- sf::st_bbox(
+        map_aoi
+      )
+      
+      leafletProxy("map") |>
+        clearGroup("AOI") |>
+        addPolygons(
+          data = map_aoi,
+          group = "AOI",
+          color = "#7B2CBF",
+          weight = 3,
+          fillOpacity = 0.15,
+          label = rv$aoi_name
+        ) |>
+        fitBounds(
+          lng1 = aoi_bbox[["xmin"]],
+          lat1 = aoi_bbox[["ymin"]],
+          lng2 = aoi_bbox[["xmax"]],
+          lat2 = aoi_bbox[["ymax"]]
+        )
+    },
+    ignoreInit = TRUE
+  )
+  
+  # ----------------------------------------------------------
+  # UPDATE THEMES FROM SELECTED PATHWAY
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    input$pathway,
+    {
+      available_themes <- pathway_themes |>
+        dplyr::filter(
+          pathway == input$pathway
+        ) |>
+        dplyr::arrange(
+          display_order
+        ) |>
+        dplyr::distinct(
+          theme,
+          .keep_all = TRUE
+        )
+      
+      theme_choices <- available_themes$theme
+      
+      if (length(theme_choices) == 0) {
+        theme_choices <- theme_variables |>
+          dplyr::distinct(theme) |>
+          dplyr::arrange(theme) |>
+          dplyr::pull(theme)
+      }
+      
+      default_theme <- available_themes |>
+        dplyr::filter(
+          default_enabled
+        ) |>
+        dplyr::pull(theme)
+      
+      if (length(default_theme) == 0) {
+        default_theme <- theme_choices[1]
+      }
+      
+      updateSelectInput(
+        session = session,
+        inputId = "theme",
+        choices = theme_choices,
+        selected = default_theme[1]
+      )
+    },
+    ignoreInit = FALSE
+  )
+  
+  # ----------------------------------------------------------
+  # UPDATE VARIABLES FROM SELECTED THEME
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    input$theme,
+    {
+      req(input$theme)
+      
+      theme_variable_ids <- theme_variables |>
+        dplyr::filter(
+          theme == input$theme
+        ) |>
+        dplyr::pull(
+          variable_id
+        )
+      
+      enabled_variable_ids <- raster_catalogue |>
+        dplyr::filter(
+          enabled
+        ) |>
+        dplyr::distinct(
+          variable_id
+        ) |>
+        dplyr::pull(
+          variable_id
+        )
+      
+      available_variable_ids <- intersect(
+        theme_variable_ids,
+        enabled_variable_ids
+      )
+      
+      pilot_variable_ids <- intersect(
+        c(
+          "Bio05",
+          "Bio017"
+        ),
+        enabled_variable_ids
+      )
+      
+      available_variable_ids <- unique(
+        c(
+          available_variable_ids,
+          pilot_variable_ids
+        )
+      )
+      
+      if (length(available_variable_ids) == 0) {
+        available_variable_ids <- enabled_variable_ids
+      }
+      
+      available_variables <- tibble::tibble(
+        variable_id = available_variable_ids
+      ) |>
+        dplyr::left_join(
+          variable_metadata |>
+            dplyr::select(
+              variable_id,
+              display_name
+            ),
+          by = "variable_id"
+        ) |>
+        dplyr::mutate(
+          display_name = dplyr::case_when(
+            variable_id == "Bio05" &
+              (
+                is.na(display_name) |
+                  display_name == ""
+              ) ~ "Bio05 - Maximum temperature of warmest month",
+            variable_id == "Bio017" &
+              (
+                is.na(display_name) |
+                  display_name == ""
+              ) ~ "Bio017 - Precipitation of driest quarter",
+            variable_id == "WBGTmax" &
+              (
+                is.na(display_name) |
+                  display_name == ""
+              ) ~ "Maximum WBGT",
+            is.na(display_name) |
+              display_name == "" ~ variable_id,
+            TRUE ~ display_name
+          )
+        )
+      
+      variable_choices <- stats::setNames(
+        available_variables$variable_id,
+        available_variables$display_name
+      )
+      
+      updateSelectInput(
+        session = session,
+        inputId = "variable_id",
+        choices = variable_choices,
+        selected = available_variables$variable_id[1]
+      )
+    },
+    ignoreInit = FALSE
+  )
+  
+  # ----------------------------------------------------------
+  # UPDATE SCENARIOS FROM SELECTED VARIABLE
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    input$variable_id,
+    {
+      req(input$variable_id)
+      
+      available_scenarios <- raster_catalogue |>
+        dplyr::filter(
+          enabled,
+          variable_id == input$variable_id
+        ) |>
+        dplyr::distinct(
+          scenario
+        ) |>
+        dplyr::pull(
+          scenario
+        )
+      
+      available_scenarios <- available_scenarios[
+        available_scenarios %in% names(scenario_labels)
+      ]
+      
+      scenario_choices <- stats::setNames(
+        available_scenarios,
+        vapply(
+          available_scenarios,
+          get_scenario_label,
+          character(1)
+        )
+      )
+      
+      selected_scenario <- if (
+        "ssp245" %in% available_scenarios
+      ) {
+        "ssp245"
+      } else if (
+        "baseline" %in% available_scenarios
+      ) {
+        "baseline"
+      } else {
+        available_scenarios[1]
+      }
+      
+      updateSelectInput(
+        session = session,
+        inputId = "scenario",
+        choices = scenario_choices,
+        selected = selected_scenario
+      )
+      
+      updateSelectInput(
+        session = session,
+        inputId = "comparison_scenarios",
+        choices = scenario_choices,
+        selected = available_scenarios
+      )
+    },
+    ignoreInit = FALSE
+  )
+  
+  # ----------------------------------------------------------
+  # UPDATE PERIODS FROM SELECTED VARIABLE AND SCENARIO
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    list(
+      input$variable_id,
+      input$scenario
+    ),
+    {
+      req(
+        input$variable_id,
+        input$scenario
+      )
+      
+      available_periods <- raster_catalogue |>
+        dplyr::filter(
+          enabled,
+          variable_id == input$variable_id,
+          scenario == input$scenario
+        ) |>
+        dplyr::distinct(
+          period
+        ) |>
+        dplyr::pull(
+          period
+        )
+      
+      period_choices <- stats::setNames(
+        available_periods,
+        vapply(
+          available_periods,
+          get_period_label,
+          character(1)
+        )
+      )
+      
+      selected_period <- if (
+        input$scenario == "baseline" &&
+        "1981-2010" %in% available_periods
+      ) {
+        "1981-2010"
+      } else if (
+        input$scenario != "baseline" &&
+        "2041-2070" %in% available_periods
+      ) {
+        "2041-2070"
+      } else {
+        available_periods[1]
+      }
+      
+      updateSelectInput(
+        session = session,
+        inputId = "period",
+        choices = period_choices,
+        selected = selected_period
+      )
+    },
+    ignoreInit = FALSE
+  )
+  
+  # ----------------------------------------------------------
+  # UPDATE COMPARISON PERIODS FROM SELECTED VARIABLE
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    input$variable_id,
+    {
+      req(input$variable_id)
+      
+      available_periods <- raster_catalogue |>
+        dplyr::filter(
+          enabled,
+          variable_id == input$variable_id
+        ) |>
+        dplyr::distinct(
+          period
+        ) |>
+        dplyr::pull(
+          period
+        )
+      
+      period_choices <- stats::setNames(
+        available_periods,
+        vapply(
+          available_periods,
+          get_period_label,
+          character(1)
+        )
+      )
+      
+      default_periods <- intersect(
+        c(
+          "1981-2010",
+          "2041-2070"
+        ),
+        available_periods
+      )
+      
+      if (length(default_periods) == 0) {
+        default_periods <- available_periods
+      }
+      
+      updateSelectInput(
+        session = session,
+        inputId = "comparison_periods",
+        choices = period_choices,
+        selected = default_periods
+      )
+    },
+    ignoreInit = FALSE
+  )
+  
+  # ----------------------------------------------------------
+  # SELECTION STATUS
+  # ----------------------------------------------------------
+  
+  output$selection_status <- renderUI(
+    {
+      tagList(
+        strong("Current selection"),
+        br(),
+        paste("Variable:", input$variable_id),
+        br(),
+        paste("Scenario:", input$scenario),
+        br(),
+        paste("Period:", input$period)
+      )
     }
   )
   
@@ -846,7 +2105,6 @@ server <- function(
   
   output$analysis_status <- renderText(
     {
-      
       if (is.null(rv$aoi)) {
         return(
           "No AOI is currently selected."
@@ -886,13 +2144,499 @@ server <- function(
   )
   
   # ----------------------------------------------------------
+  # MAIN ANALYSIS
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    input$run_analysis,
+    {
+      req(
+        rv$aoi,
+        input$variable_id,
+        input$scenario,
+        input$period
+      )
+      
+      clear_analysis_outputs()
+      
+      variable_id <- input$variable_id
+      scenario_id <- input$scenario
+      period_id <- input$period
+      
+      matched_dataset <- raster_catalogue |>
+        dplyr::filter(
+          enabled,
+          variable_id == !!variable_id,
+          scenario == !!scenario_id,
+          period == !!period_id
+        ) |>
+        dplyr::slice(1)
+      
+      if (nrow(matched_dataset) == 0) {
+        showNotification(
+          "No matching raster was found for the selected variable, scenario and period.",
+          type = "error",
+          duration = 10
+        )
+        
+        return()
+      }
+      
+      raster_path <- matched_dataset$file_path[1]
+      
+      output_dir <- file.path(
+        "outputs",
+        safe_filename(rv$aoi_name),
+        safe_filename(variable_id),
+        safe_filename(scenario_id),
+        safe_filename(period_id)
+      )
+      
+      dir.create(
+        output_dir,
+        recursive = TRUE,
+        showWarnings = FALSE
+      )
+      
+      if (!file.exists(raster_path)) {
+        showNotification(
+          paste(
+            "Raster file was listed in the catalogue but could not be found:",
+            raster_path
+          ),
+          type = "error",
+          duration = NULL
+        )
+        
+        return()
+      }
+      
+      if (
+        !aoi_has_valid_raster_cells(
+          rv$aoi,
+          raster_path
+        )
+      ) {
+        
+        message("No valid raster cells found.")
+        message("Raster: ", raster_path)
+        message("AOI: ", rv$aoi_name)
+        message("Variable: ", variable_id)
+        message("Scenario: ", scenario_id)
+        message("Period: ", period_id)
+        message(
+          paste(
+            "This may mean the AOI is outside the raster extent,",
+            "over NoData cells, or the raster has a CRS/extent/NoData issue."
+          )
+        )
+        
+        showNotification(
+          "No valid raster cells found. Try a larger buffer or click further inside Sabah land area.",
+          type = "error",
+          duration = 8
+        )
+        
+        return()
+      }
+      
+      withProgress(
+        message = "Running climate analysis",
+        value = 0,
+        {
+          incProgress(
+            0.25,
+            detail = "Finding raster"
+          )
+          
+          incProgress(
+            0.50,
+            detail = "Preparing AOI"
+          )
+          
+          analysis_result <- tryCatch(
+            {
+              process_continuous_raster(
+                raster_path,
+                rv$aoi,
+                variable_id = variable_id,
+                scenario = scenario_id,
+                period = period_id,
+                output_dir = output_dir
+              )
+            },
+            error = function(error) {
+              
+              showNotification(
+                paste(
+                  "Continuous-raster processing failed:",
+                  error$message
+                ),
+                type = "error",
+                duration = 12
+              )
+              
+              NULL
+            }
+          )
+          
+          incProgress(
+            0.75,
+            detail = "Calculating statistics"
+          )
+          
+          if (is.null(analysis_result)) {
+            return()
+          }
+          
+          mean_value <- get_analysis_value(
+            analysis_result,
+            c(
+              "mean",
+              "unweighted_mean",
+              "Mean",
+              "mean_value",
+              "mean_value_rounded",
+              "average",
+              "Average",
+              "avg",
+              "AVG"
+            )
+          )
+          
+          min_value <- get_analysis_value(
+            analysis_result,
+            c(
+              "minimum",
+              "min",
+              "Minimum",
+              "Min",
+              "minimum_value"
+            )
+          )
+          
+          max_value <- get_analysis_value(
+            analysis_result,
+            c(
+              "maximum",
+              "max",
+              "Maximum",
+              "Max",
+              "maximum_value"
+            )
+          )
+          
+          if (is.na(mean_value[1])) {
+            showNotification(
+              paste(
+                "Mean value was not found in the processing result. Available result fields:",
+                paste(
+                  names(analysis_result),
+                  collapse = ", "
+                )
+              ),
+              type = "warning",
+              duration = 12
+            )
+          }
+          
+          variable_label <- get_variable_label(
+            variable_id
+          )
+          
+          scenario_label <- get_scenario_label(
+            scenario_id
+          )
+          
+          period_label <- get_period_label(
+            period_id
+          )
+          
+          units_value <- matched_dataset$units[1]
+          
+          if (
+            length(units_value) == 0 ||
+            is.na(units_value) ||
+            units_value == ""
+          ) {
+            units_value <- "Not specified"
+          }
+          
+          rv$result <- list(
+            aoi_name = rv$aoi_name,
+            variable_id = variable_id,
+            display_name = variable_label,
+            scenario_id = scenario_id,
+            scenario = scenario_label,
+            period_id = period_id,
+            period = period_label,
+            mean = as.numeric(mean_value[1]),
+            minimum = as.numeric(min_value[1]),
+            maximum = as.numeric(max_value[1]),
+            units = units_value,
+            raster_file = raster_path
+          )
+          
+          if (
+            isTRUE(input$create_cropped_raster) &&
+            is.list(analysis_result) &&
+            "cropped_raster" %in% names(analysis_result)
+          ) {
+            rv$cropped_raster <- analysis_result$cropped_raster
+          } else {
+            rv$cropped_raster <- NULL
+            clear_analysis_map()
+          }
+          
+          incProgress(
+            1,
+            detail = "Complete"
+          )
+        }
+      )
+      
+      if (isTRUE(input$run_comparison)) {
+        
+        comparison_grid <- tidyr::expand_grid(
+          Scenario_ID = input$comparison_scenarios,
+          Period_ID = input$comparison_periods
+        )
+        
+        comparison_results <- list()
+        comparison_missing <- list()
+        
+        for (i in seq_len(nrow(comparison_grid))) {
+          
+          selected_scenario <- comparison_grid$Scenario_ID[i]
+          selected_period <- comparison_grid$Period_ID[i]
+          
+          raster_row <- raster_catalogue |>
+            dplyr::filter(
+              enabled,
+              variable_id == !!variable_id,
+              scenario == !!selected_scenario,
+              period == !!selected_period
+            ) |>
+            dplyr::slice(1)
+          
+          if (
+            nrow(raster_row) == 0 ||
+            !file.exists(raster_row$file_path[1])
+          ) {
+            
+            comparison_missing[[length(comparison_missing) + 1]] <-
+              tibble::tibble(
+                Variable_ID = variable_id,
+                Scenario_ID = selected_scenario,
+                Period_ID = selected_period
+              )
+            
+            next
+          }
+          
+          if (
+            !aoi_has_valid_raster_cells(
+              rv$aoi,
+              raster_row$file_path[1]
+            )
+          ) {
+            
+            comparison_missing[[length(comparison_missing) + 1]] <-
+              tibble::tibble(
+                Variable_ID = variable_id,
+                Scenario_ID = selected_scenario,
+                Period_ID = selected_period
+              )
+            
+            next
+          }
+          
+          comparison_output_dir <- file.path(
+            "outputs",
+            safe_filename(rv$aoi_name),
+            safe_filename(variable_id),
+            safe_filename(selected_scenario),
+            safe_filename(selected_period)
+          )
+          
+          dir.create(
+            comparison_output_dir,
+            recursive = TRUE,
+            showWarnings = FALSE
+          )
+          
+          comparison_result <- tryCatch(
+            {
+              process_continuous_raster(
+                raster_row$file_path[1],
+                rv$aoi,
+                variable_id = variable_id,
+                scenario = selected_scenario,
+                period = selected_period,
+                output_dir = comparison_output_dir
+              )
+            },
+            error = function(error) {
+              
+              if (
+                !stringr::str_detect(
+                  error$message,
+                  "does not overlap"
+                )
+              ) {
+                showNotification(
+                  paste(
+                    "Comparison processing failed for",
+                    selected_scenario,
+                    selected_period,
+                    ":",
+                    error$message
+                  ),
+                  type = "warning",
+                  duration = 8
+                )
+              }
+              
+              NULL
+            }
+          )
+          
+          if (is.null(comparison_result)) {
+            
+            comparison_missing[[length(comparison_missing) + 1]] <-
+              tibble::tibble(
+                Variable_ID = variable_id,
+                Scenario_ID = selected_scenario,
+                Period_ID = selected_period
+              )
+            
+            next
+          }
+          
+          mean_value <- get_analysis_value(
+            comparison_result,
+            c(
+              "mean",
+              "unweighted_mean",
+              "Mean",
+              "mean_value",
+              "mean_value_rounded",
+              "average",
+              "Average",
+              "avg",
+              "AVG"
+            )
+          )
+          
+          min_value <- get_analysis_value(
+            comparison_result,
+            c(
+              "minimum",
+              "min",
+              "Minimum",
+              "Min",
+              "minimum_value"
+            )
+          )
+          
+          max_value <- get_analysis_value(
+            comparison_result,
+            c(
+              "maximum",
+              "max",
+              "Maximum",
+              "Max",
+              "maximum_value"
+            )
+          )
+          
+          if (is.na(mean_value[1])) {
+            comparison_missing[[length(comparison_missing) + 1]] <-
+              tibble::tibble(
+                Variable_ID = variable_id,
+                Scenario_ID = selected_scenario,
+                Period_ID = selected_period
+              )
+            
+            next
+          }
+          
+          comparison_results[[length(comparison_results) + 1]] <-
+            tibble::tibble(
+              AOI = rv$aoi_name,
+              Variable = get_variable_label(variable_id),
+              Variable_ID = variable_id,
+              Scenario = get_scenario_label(selected_scenario),
+              Scenario_ID = selected_scenario,
+              Period = get_period_label(selected_period),
+              Period_ID = selected_period,
+              Mean = round(
+                as.numeric(mean_value[1]),
+                2
+              ),
+              Minimum = round(
+                as.numeric(min_value[1]),
+                2
+              ),
+              Maximum = round(
+                as.numeric(max_value[1]),
+                2
+              ),
+              Change_from_baseline = NA_real_,
+              Units = raster_row$units[1],
+              Raster_file = raster_row$file_path[1]
+            )
+        }
+        
+        if (length(comparison_results) > 0) {
+          
+          rv$comparison_results <- dplyr::bind_rows(
+            comparison_results
+          )
+          
+          baseline_mean <- rv$comparison_results |>
+            dplyr::filter(
+              Scenario_ID == "baseline",
+              Period_ID == "1981-2010"
+            ) |>
+            dplyr::pull(
+              Mean
+            )
+          
+          if (length(baseline_mean) == 1) {
+            
+            rv$comparison_results <- rv$comparison_results |>
+              dplyr::mutate(
+                Change_from_baseline = round(
+                  Mean - baseline_mean,
+                  2
+                )
+              )
+          }
+        }
+        
+        if (length(comparison_missing) > 0) {
+          rv$comparison_missing <- dplyr::bind_rows(
+            comparison_missing
+          )
+        } else {
+          rv$comparison_missing <- tibble::tibble()
+        }
+      }
+      
+      showNotification(
+        "Analysis completed.",
+        type = "message"
+      )
+    }
+  )
+  
   # ----------------------------------------------------------
   # SIMPLE RESULTS TABLE
   # ----------------------------------------------------------
   
   output$result_table <- renderTable(
     {
-      
       if (is.null(rv$aoi)) {
         return(
           tibble::tibble(
@@ -917,17 +2661,6 @@ server <- function(
         )
       }
       
-      req(
-        rv$result$aoi_name,
-        rv$result$display_name,
-        rv$result$scenario,
-        rv$result$period,
-        rv$result$mean,
-        rv$result$minimum,
-        rv$result$maximum,
-        rv$result$units
-      )
-      
       tibble::tibble(
         Field = c(
           "AOI",
@@ -939,7 +2672,6 @@ server <- function(
           "Maximum",
           "Units"
         ),
-        
         Value = c(
           rv$result$aoi_name,
           rv$result$display_name,
@@ -967,191 +2699,537 @@ server <- function(
     width = "100%"
   )
   
-  # LOAD TEMPORARY JAMBONGAN AOI
+  # ----------------------------------------------------------
+  # DYNAMIC DOWNLOAD BUTTONS
   # ----------------------------------------------------------
   
-  observeEvent(
-    input$use_jambongan,
+  output$download_buttons <- renderUI(
     {
-      
-      jambongan_path <- file.path(
-        "data",
-        "examples",
-        "Jambongan.gpkg"
-      )
-      
-      validate(
-        need(
-          file.exists(jambongan_path),
-          paste(
-            "Jambongan test AOI was not found:",
-            jambongan_path
+      if (is.null(rv$result)) {
+        return(
+          div(
+            class = "text-muted",
+            "Run an analysis to enable downloads."
           )
         )
-      )
+      }
       
-      jambongan_aoi <- sf::st_read(
-        "data/examples/Jambongan.gpkg",
-        quiet = TRUE
-      )
-      
-      validate(
-        need(
-          nrow(jambongan_aoi) > 0,
-          "The Jambongan GeoPackage contains no spatial features."
+      download_items <- list(
+        downloadButton(
+          outputId = "download_result_csv",
+          label = "Download result CSV"
+        ),
+        
+        br(),
+        br(),
+        
+        downloadButton(
+          outputId = "download_comparison_csv",
+          label = "Download comparison CSV"
         )
       )
       
-      rv$aoi <- prepare_aoi(
-        jambongan_aoi
-      )
+      if (!is.null(rv$cropped_raster)) {
+        download_items <- c(
+          download_items,
+          list(
+            br(),
+            br(),
+            downloadButton(
+              outputId = "download_cropped_raster",
+              label = "Download cropped raster"
+            )
+          )
+        )
+      }
       
-      rv$aoi_name <- "Jambongan"
-      rv$result <- NULL
-      rv$cropped_raster <- NULL
-      
-      leafletProxy("map") |>
-        clearGroup("Analysis result") |>
-        removeControl(layerId = "analysis_result_legend")
-      
-      showNotification(
-        paste(
-          "AOI loaded:",
-          rv$aoi_name
-        ),
-        type = "message"
+      tagList(
+        download_items
       )
     }
   )
   
   # ----------------------------------------------------------
-  # DISPLAY ACTIVE AOI ON MAP
+  # DOWNLOAD MAIN RESULT CSV
   # ----------------------------------------------------------
   
-  observeEvent(
-    list(
-      rv$aoi,
-      rv$aoi_name
-    ),
-    {
+  output$download_result_csv <- downloadHandler(
+    
+    filename = function() {
       
       req(
-        rv$aoi,
-        rv$aoi_name
+        rv$result
       )
       
-      # Transform the active AOI to WGS 84 for Leaflet.
-      map_aoi <- sf::st_transform(
-        rv$aoi,
-        4326
+      safe_aoi_name <- safe_filename(
+        rv$result$aoi_name
       )
       
-      message(
-        "\n---------------- MAP AOI VS ANALYSIS AOI ----------------"
+      safe_variable_id <- safe_filename(
+        rv$result$variable_id
       )
       
-      message(
-        "AOI name: ",
-        rv$aoi_name
+      paste0(
+        safe_aoi_name,
+        "_",
+        safe_variable_id,
+        "_",
+        rv$result$scenario_id,
+        "_",
+        rv$result$period_id,
+        "_result.csv"
       )
-      
-      message(
-        "Analysis AOI CRS: ",
-        sf::st_crs(rv$aoi)$input
-      )
-      
-      message(
-        "Map AOI CRS: ",
-        sf::st_crs(map_aoi)$input
-      )
-      
-      message(
-        "Analysis AOI feature count: ",
-        nrow(rv$aoi)
-      )
-      
-      message(
-        "Map AOI feature count: ",
-        nrow(map_aoi)
-      )
-      
-      message(
-        "Analysis AOI bbox:"
-      )
-      
-      print(
-        sf::st_bbox(
-          rv$aoi
-        )
-      )
-      
-      message(
-        "Map AOI bbox:"
-      )
-      
-      print(
-        sf::st_bbox(
-          map_aoi
-        )
-      )
-      
-      message(
-        "Analysis AOI geometry type:"
-      )
-      
-      print(
-        unique(
-          sf::st_geometry_type(
-            rv$aoi
-          )
-        )
-      )
-      
-      message(
-        "Map AOI geometry type:"
-      )
-      
-      print(
-        unique(
-          sf::st_geometry_type(
-            map_aoi
-          )
-        )
-      )
-      
-      message(
-        "---------------------------------------------------------\n"
-      )
-      
-      
-      # Calculate the AOI extent for map zooming.
-      aoi_bbox <- sf::st_bbox(
-        map_aoi
-      )
-      
-      # Replace the previous AOI and zoom to the current AOI.
-      leafletProxy(
-        "map"
-      ) |>
-        clearGroup(
-          "AOI"
-        ) |>
-        addPolygons(
-          data = map_aoi,
-          group = "AOI",
-          color = "#7B2CBF",
-          weight = 3,
-          fillOpacity = 0.15,
-          label = rv$aoi_name
-        ) |>
-        fitBounds(
-          lng1 = aoi_bbox[["xmin"]],
-          lat1 = aoi_bbox[["ymin"]],
-          lng2 = aoi_bbox[["xmax"]],
-          lat2 = aoi_bbox[["ymax"]]
-        )
     },
-    ignoreInit = TRUE
+    
+    content = function(file) {
+      
+      req(
+        rv$result
+      )
+      
+      result_export <- tibble::tibble(
+        AOI = rv$result$aoi_name,
+        Variable = rv$result$display_name,
+        Variable_ID = rv$result$variable_id,
+        Scenario = rv$result$scenario,
+        Scenario_ID = rv$result$scenario_id,
+        Period = rv$result$period,
+        Period_ID = rv$result$period_id,
+        Mean = round(
+          rv$result$mean,
+          2
+        ),
+        Minimum = round(
+          rv$result$minimum,
+          2
+        ),
+        Maximum = round(
+          rv$result$maximum,
+          2
+        ),
+        Units = rv$result$units,
+        Raster_file = rv$result$raster_file
+      )
+      
+      readr::write_csv(
+        result_export,
+        file
+      )
+    }
+  )
+  
+  # ----------------------------------------------------------
+  # DOWNLOAD CROPPED RASTER
+  # ----------------------------------------------------------
+  
+  output$download_cropped_raster <- downloadHandler(
+    
+    filename = function() {
+      
+      req(
+        rv$result
+      )
+      
+      safe_aoi_name <- safe_filename(
+        rv$result$aoi_name
+      )
+      
+      safe_variable_id <- safe_filename(
+        rv$result$variable_id
+      )
+      
+      paste0(
+        safe_aoi_name,
+        "_",
+        safe_variable_id,
+        "_",
+        rv$result$scenario_id,
+        "_",
+        rv$result$period_id,
+        "_cropped.tif"
+      )
+    },
+    
+    content = function(file) {
+      
+      req(
+        isTRUE(input$create_cropped_raster),
+        rv$cropped_raster
+      )
+      
+      cropped_raster <- rv$cropped_raster
+      
+      if (
+        is.character(cropped_raster) &&
+        length(cropped_raster) == 1 &&
+        file.exists(cropped_raster)
+      ) {
+        
+        file.copy(
+          from = cropped_raster,
+          to = file,
+          overwrite = TRUE
+        )
+        
+      } else if (
+        inherits(
+          cropped_raster,
+          "SpatRaster"
+        )
+      ) {
+        
+        terra::writeRaster(
+          cropped_raster,
+          filename = file,
+          overwrite = TRUE
+        )
+        
+      } else {
+        
+        stop(
+          "No cropped raster is available for download."
+        )
+      }
+    }
+  )
+  
+  # ----------------------------------------------------------
+  # COMPARISON MISSING NOTE
+  # ----------------------------------------------------------
+  
+  output$comparison_missing_note <- renderText(
+    {
+      if (
+        is.null(rv$comparison_missing) ||
+        nrow(rv$comparison_missing) == 0
+      ) {
+        return("")
+      }
+      
+      paste(
+        "Skipped",
+        nrow(rv$comparison_missing),
+        "scenario-period combination(s) because the raster was unavailable, missing, or did not contain valid cells within the active AOI."
+      )
+    }
+  )
+  
+  # ----------------------------------------------------------
+  # USER-FACING COMPARISON TABLE HELPER
+  # ----------------------------------------------------------
+  
+  comparison_display_table <- reactive(
+    {
+      req(
+        rv$comparison_results
+      )
+      
+      rv$comparison_results |>
+        dplyr::select(
+          AOI,
+          Variable,
+          Scenario,
+          Period,
+          Mean,
+          Change_from_baseline,
+          Minimum,
+          Maximum,
+          Units
+        )
+    }
+  )
+  
+  # ----------------------------------------------------------
+  # DOWNLOAD COMPARISON CSV HELPER
+  # ----------------------------------------------------------
+  # This is the full exported version.
+  # It includes IDs and Raster_file for traceability.
+  # ----------------------------------------------------------
+  
+  comparison_export_table <- reactive(
+    {
+      req(
+        rv$comparison_results
+      )
+      
+      rv$comparison_results |>
+        dplyr::mutate(
+          Change_from_baseline = as.numeric(
+            Change_from_baseline
+          )
+        ) |>
+        dplyr::select(
+          AOI,
+          Variable,
+          Variable_ID,
+          Scenario,
+          Scenario_ID,
+          Period,
+          Period_ID,
+          Mean,
+          Minimum,
+          Maximum,
+          Change_from_baseline,
+          Units,
+          Raster_file
+        )
+    }
+  )
+  
+  # ----------------------------------------------------------
+  # COMPARISON RESULTS TABLE
+  # ----------------------------------------------------------
+  
+  output$comparison_results <- renderDT(
+    {
+      if (is.null(rv$comparison_results)) {
+        return(
+          DT::datatable(
+            tibble::tibble(
+              Status = "No comparison results yet. Run an analysis first."
+            ),
+            rownames = FALSE,
+            options = list(
+              dom = "t",
+              ordering = FALSE,
+              paging = FALSE,
+              searching = FALSE,
+              info = FALSE
+            )
+          )
+        )
+      }
+      
+      DT::datatable(
+        comparison_display_table(),
+        rownames = FALSE,
+        options = list(
+          pageLength = 8,
+          scrollX = TRUE,
+          scrollY = "300px",
+          scrollCollapse = TRUE,
+          autoWidth = TRUE
+        )
+      )
+    }
+  )
+  
+  # ----------------------------------------------------------
+  # COMPARISON GRAPH UI
+  # ----------------------------------------------------------
+  
+  output$comparison_graph_ui <- renderUI(
+    {
+      if (is.null(rv$comparison_results)) {
+        return(
+          div(
+            class = "text-muted",
+            "Run a comparison analysis to show the graph."
+          )
+        )
+      }
+      
+      plotOutput(
+        outputId = "comparison_plot",
+        height = "520px",
+        width = "700px"
+      )
+    }
+  )
+  
+  # ----------------------------------------------------------
+  # COMPARISON GRAPH
+  # ----------------------------------------------------------
+  
+  output$comparison_plot <- renderPlot(
+    {
+      req(
+        rv$comparison_results
+      )
+      
+      plot_data <- rv$comparison_results |>
+        dplyr::mutate(
+          Scenario_Period = paste(
+            Scenario,
+            Period,
+            sep = " / "
+          )
+        )
+      
+      validate(
+        need(
+          nrow(plot_data) >= 1,
+          "No comparison results are available to plot."
+        )
+      )
+      
+      old_par <- par(
+        no.readonly = TRUE
+      )
+      
+      on.exit(
+        par(old_par)
+      )
+      
+      par(
+        mar = c(4, 8, 3, 1) + 0.1,
+        cex.main = 0.9,
+        cex.lab = 0.8,
+        cex.axis = 0.75
+      )
+      
+      barplot(
+        height = plot_data$Mean,
+        names.arg = plot_data$Scenario_Period,
+        horiz = TRUE,
+        las = 1,
+        xlab = paste0(
+          "Mean",
+          " (",
+          plot_data$Units[[1]],
+          ")"
+        ),
+        main = paste(
+          plot_data$Variable[[1]],
+          "within",
+          plot_data$AOI[[1]]
+        )
+      )
+    },
+    height = 520,
+    width = 700
+  )
+  
+  # ----------------------------------------------------------
+  # DOWNLOAD COMPARISON CSV
+  # ----------------------------------------------------------
+  # Updated export columns:
+  # AOI, Variable, Variable_ID, Scenario, Scenario_ID,
+  # Period, Period_ID, Mean, Minimum, Maximum,
+  # Change_from_baseline, Units, Raster_file
+  # ----------------------------------------------------------
+  
+  output$download_comparison_csv <- downloadHandler(
+    
+    filename = function() {
+      
+      safe_aoi_name <- safe_filename(
+        rv$aoi_name
+      )
+      
+      safe_variable_id <- safe_filename(
+        input$variable_id
+      )
+      
+      paste0(
+        safe_aoi_name,
+        "_",
+        safe_variable_id,
+        "_comparison.csv"
+      )
+    },
+    
+    content = function(file) {
+      
+      req(
+        comparison_export_table()
+      )
+      
+      readr::write_csv(
+        comparison_export_table(),
+        file
+      )
+    }
+  )
+  
+  # ----------------------------------------------------------
+  # RESULTS TABLE NOTE
+  # ----------------------------------------------------------
+  
+  output$results_note <- renderText(
+    {
+      base_note <- paste(
+        "Results summarise the selected raster within the active AOI.",
+        "The raster resolution reflects the source climate dataset and should not be interpreted as fine-scale local variation."
+      )
+      
+      if (
+        !is.null(input$variable_id) &&
+        input$variable_id == "Bio05"
+      ) {
+        return(
+          paste(
+            base_note,
+            "For Bio05, higher values indicate hotter maximum temperature conditions."
+          )
+        )
+      }
+      
+      if (
+        !is.null(input$variable_id) &&
+        input$variable_id == "Bio017"
+      ) {
+        return(
+          paste(
+            base_note,
+            "For Bio017, lower values indicate lower precipitation in the driest quarter and therefore drier conditions."
+          )
+        )
+      }
+      
+      if (
+        !is.null(input$variable_id) &&
+        input$variable_id == "PPETmin"
+      ) {
+        return(
+          paste(
+            base_note,
+            "For PPETmin, lower values indicate drier moisture-balance conditions."
+          )
+        )
+      }
+      
+      if (
+        !is.null(input$variable_id) &&
+        input$variable_id == "WBGTmax"
+      ) {
+        return(
+          paste(
+            base_note,
+            "For WBGTmax, higher values indicate hotter heat-stress conditions. Interpret this as a screening indicator, not as a site-level occupational safety assessment."
+          )
+        )
+      }
+      
+      base_note
+    }
+  )
+  
+  # ----------------------------------------------------------
+  # CROPPED RASTER STATUS
+  # ----------------------------------------------------------
+  
+  output$cropped_raster_status <- renderText(
+    {
+      if (is.null(rv$result)) {
+        return("")
+      }
+      
+      if (isTRUE(input$create_cropped_raster)) {
+        
+        if (!is.null(rv$cropped_raster)) {
+          return(
+            "Cropped raster output is available for download."
+          )
+        }
+        
+        return(
+          "Cropped raster output was requested, but no cropped raster is currently available."
+        )
+      }
+      
+      "Cropped raster output was not requested for this analysis."
+    }
   )
   
   # ----------------------------------------------------------
@@ -1161,12 +3239,10 @@ server <- function(
   observeEvent(
     rv$cropped_raster,
     {
-      
       req(
+        isTRUE(input$create_cropped_raster),
         rv$cropped_raster,
-        input$variable_id,
-        input$scenario,
-        input$period
+        input$variable_id
       )
       
       cropped_raster <- rv$cropped_raster
@@ -1175,7 +3251,6 @@ server <- function(
         is.character(cropped_raster) &&
         length(cropped_raster) == 1
       ) {
-        
         validate(
           need(
             file.exists(cropped_raster),
@@ -1218,50 +3293,21 @@ server <- function(
         )
       )
       
-      selected_metadata <- variable_metadata |>
-        dplyr::filter(
-          variable_id == input$variable_id
-        )
-      
-      selected_record <- raster_catalogue |>
-        dplyr::filter(
-          enabled,
-          variable_id == input$variable_id,
-          scenario == input$scenario,
-          period == input$period
-        )
-      
-      validate(
-        need(
-          nrow(selected_metadata) >= 1,
-          "No metadata was found for the selected variable."
-        ),
-        need(
-          nrow(selected_record) == 1,
-          "No unique raster record was found."
-        )
+      variable_name <- get_variable_label(
+        input$variable_id
       )
       
-      variable_name <- selected_metadata$display_name[[1]]
-      
-      if (
-        is.na(variable_name) ||
-        variable_name == ""
+      units_value <- if (
+        !is.null(rv$result$units)
       ) {
-        variable_name <- input$variable_id
-      }
-      
-      units_value <- selected_record$units[[1]]
-      
-      if (
-        is.na(units_value) ||
-        units_value == ""
-      ) {
-        units_value <- "Not specified"
+        rv$result$units
+      } else {
+        "Not specified"
       }
       
       palette_name <- dplyr::case_when(
         input$variable_id == "Bio05" ~ "inferno",
+        input$variable_id == "WBGTmax" ~ "inferno",
         input$variable_id == "Bio017" ~ "viridis",
         TRUE ~ "viridis"
       )
@@ -1279,15 +3325,9 @@ server <- function(
         ")"
       )
       
-      leafletProxy(
-        "map"
-      ) |>
-        clearGroup(
-          "Analysis result"
-        ) |>
-        removeControl(
-          layerId = "analysis_result_legend"
-        ) |>
+      clear_analysis_map()
+      
+      leafletProxy("map") |>
         addRasterImage(
           x = cropped_raster,
           colors = palette_function,
@@ -1311,873 +3351,106 @@ server <- function(
   )
   
   # ----------------------------------------------------------
-  # INITIAL MAP
+  # CATALOGUE TABLE
   # ----------------------------------------------------------
   
-  output$map <- renderLeaflet({
-    
-    leaflet(
-      options = leafletOptions(
-        minZoom = 6,
-        maxZoom = 18
-      )
-    ) %>%
-      
-      addProviderTiles(
-        providers$OpenStreetMap,
-        group = "OpenStreetMap"
-      ) %>%
-      
-      setView(
-        lng = 117.0,
-        lat = 5.3,
-        zoom = 7
-      ) %>%
-      
-      addScaleBar(
-        position = "bottomleft",
-        options = scaleBarOptions(
-          metric = TRUE,
-          imperial = FALSE
-        )
-      ) %>%
-      
-      addLayersControl(
-        baseGroups = c(
-          "OpenStreetMap"
-        ),
-        
-        overlayGroups = c(
-          "AOI",
-          "Analysis result"
-        ),
-        
-        options = layersControlOptions(
-          collapsed = TRUE
-        )
-      )
-  })
-  
-  # ----------------------------------------------------------
-  # UPDATE THEMES FROM SELECTED PATHWAY
-  # ----------------------------------------------------------
-  
-  observeEvent(
-    input$pathway,
+  output$catalogue_table <- renderDT(
     {
-      
-      available_themes <- pathway_themes %>%
-        filter(
-          pathway == input$pathway
-        ) %>%
-        arrange(
-          display_order
-        ) %>%
-        distinct(
-          theme,
-          .keep_all = TRUE
-        )
-      
-      theme_choices <- available_themes$theme
-      
-      if (length(theme_choices) == 0) {
-        
-        theme_choices <- theme_variables %>%
-          distinct(theme) %>%
-          arrange(theme) %>%
-          pull(theme)
-      }
-      
-      default_theme <- available_themes %>%
-        filter(
-          default_enabled
-        ) %>%
-        pull(theme)
-      
-      if (length(default_theme) == 0) {
-        default_theme <- theme_choices[1]
-      }
-      
-      updateSelectInput(
-        session = session,
-        inputId = "theme",
-        choices = theme_choices,
-        selected = default_theme[1]
-      )
-    },
-    ignoreInit = FALSE
-  )
-  
-  # ----------------------------------------------------------
-  # UPDATE VARIABLE FROM SELECTED THEME
-  # ----------------------------------------------------------
-  
-  observeEvent(
-    input$theme,
-    {
-      
-      req(input$theme)
-      
-      theme_variable_ids <- theme_variables %>%
-        filter(
-          theme == input$theme
-        ) %>%
-        pull(
-          variable_id
-        )
-      
-      additional_variable_ids <- c(
-        "Bio05",
-        "Bio017"
-      )
-      
-      enabled_variable_ids <- raster_catalogue %>%
-        filter(
-          enabled
-        ) %>%
-        distinct(
-          variable_id
-        ) %>%
-        pull(
-          variable_id
-        )
-      
-      available_variable_ids <- union(
-        theme_variable_ids,
-        intersect(
-          additional_variable_ids,
-          enabled_variable_ids
-        )
-      )
-      
-      available_variables <- tibble(
-        variable_id = available_variable_ids
-      ) %>%
-        left_join(
-          variable_metadata %>%
-            select(
-              variable_id,
-              display_name
-            ),
-          by = "variable_id"
-        ) %>%
-        mutate(
-          display_name = if_else(
-            is.na(display_name) |
-              display_name == "",
-            variable_id,
-            display_name
-          )
-        )
-      
-      variable_choices <- setNames(
-        available_variables$variable_id,
-        available_variables$display_name
-      )
-      
-      default_variable <- if (
-        "Bio05" %in% available_variables$variable_id
-      ) {
-        "Bio05"
-      } else if (
-        "Bio017" %in% available_variables$variable_id
-      ) {
-        "Bio017"
-      } else {
-        available_variables$variable_id[[1]]
-      }
-      
-      updateSelectInput(
-        session = session,
-        inputId = "variable_id",
-        choices = variable_choices,
-        selected = default_variable
-      )
-    },
-    ignoreInit = FALSE
-  )
-  
-  # ----------------------------------------------------------
-  # UPDATE SCENARIOS FROM SELECTED VARIABLE
-  # ----------------------------------------------------------
-  
-  observeEvent(
-    input$variable_id,
-    {
-      
-      req(
-        input$variable_id
-      )
-      
-      available_scenarios <- raster_catalogue |>
-        dplyr::filter(
-          enabled,
-          variable_id == input$variable_id
-        ) |>
-        dplyr::distinct(
-          scenario
-        ) |>
-        dplyr::pull(
-          scenario
-        )
-      
-      scenario_labels <- c(
-        baseline = "Baseline",
-        ssp245 = "SSP2-4.5"
-      )
-      
-      available_scenarios <- available_scenarios[
-        available_scenarios %in% names(
-          scenario_labels
-        )
-      ]
-      
-      validate(
-        need(
-          length(available_scenarios) > 0,
-          "No scenario is available for the selected variable."
-        )
-      )
-      
-      scenario_choices <- stats::setNames(
-        available_scenarios,
-        scenario_labels[
-          available_scenarios
-        ]
-      )
-      
-      selected_scenario <- if (
-        "ssp245" %in% available_scenarios
-      ) {
-        "ssp245"
-      } else {
-        available_scenarios[[1]]
-      }
-      
-      updateSelectInput(
-        session = session,
-        inputId = "scenario",
-        choices = scenario_choices,
-        selected = selected_scenario
-      )
-    },
-    ignoreInit = FALSE
-  )
-  
-  # ----------------------------------------------------------
-  # UPDATE PERIODS FROM SELECTED VARIABLE AND SCENARIO
-  # ----------------------------------------------------------
-  
-  observeEvent(
-    list(
-      input$variable_id,
-      input$scenario
-    ),
-    {
-      
-      req(
-        input$variable_id,
-        input$scenario
-      )
-      
-      available_periods <- raster_catalogue |>
-        dplyr::filter(
-          enabled,
-          variable_id == input$variable_id,
-          scenario == input$scenario
-        ) |>
-        dplyr::distinct(
-          period
-        ) |>
-        dplyr::pull(
-          period
-        )
-      
-      period_labels <- c(
-        "1981-2010" = "1981–2010",
-        "2041-2070" = "2041–2070"
-      )
-      
-      available_periods <- available_periods[
-        available_periods %in% names(
-          period_labels
-        )
-      ]
-      
-      validate(
-        need(
-          length(available_periods) > 0,
-          "No period is available for the selected scenario."
-        )
-      )
-      
-      period_choices <- stats::setNames(
-        available_periods,
-        period_labels[
-          available_periods
-        ]
-      )
-      
-      preferred_period <- if (
-        input$scenario == "baseline" &&
-        "1981-2010" %in% available_periods
-      ) {
-        "1981-2010"
-      } else if (
-        input$scenario == "ssp245" &&
-        "2041-2070" %in% available_periods
-      ) {
-        "2041-2070"
-      } else {
-        available_periods[[1]]
-      }
-      
-      updateSelectInput(
-        session = session,
-        inputId = "period",
-        choices = period_choices,
-        selected = preferred_period
-      )
-    },
-    ignoreInit = FALSE
-  )
-  
-  # ----------------------------------------------------------
-  # DISPLAY CURRENT SELECTION
-  # ----------------------------------------------------------
-  
-  
-  output$selection_status <- renderUI({
-    
-    if (
-      is.null(input$variable_id) ||
-      input$variable_id == ""
-    ) {
-      
-      return(
-        div(
-          class = "text-muted",
-          "Select a variable."
-        )
-      )
-    }
-    
-    tagList(
-      
-      strong(
-        "Current selection"
-      ),
-      
-      tags$br(),
-      
-      paste0(
-        "Active AOI: ",
-        ifelse(
-          is.null(rv$aoi_name),
-          "None selected",
-          rv$aoi_name
-        )
-      ),
-      
-      tags$br(),
-      
-      paste0(
-        "Theme: ",
-        input$theme
-      ),
-      
-      tags$br(),
-      
-      paste0(
-        "Variable: ",
-        input$variable_id
-      ),
-      
-      tags$br(),
-      
-      paste0(
-        "Scenario: ",
-        input$scenario
-      ),
-      
-      tags$br(),
-      
-      paste0(
-        "Period: ",
-        input$period
-      )
-    )
-  })
-  
-  # ----------------------------------------------------------
-  # DATA AVAILABILITY TABLE
-  # ----------------------------------------------------------
-  
-  
-  output$catalogue_table <- renderDT({
-    
-    raster_catalogue %>%
-      select(
-        dataset_id,
-        variable_id,
-        scenario,
-        period,
-        file_path,
-        enabled
-      ) %>%
-      datatable(
-        rownames = FALSE,
-        filter = "top",
-        options = list(
-          pageLength = 15,
-          scrollX = TRUE,
-          scrollY = "55vh",
-          scrollCollapse = TRUE
-        )
-      )
-  })
-  
-  # ----------------------------------------------------------
-  # RUN ANALYSIS BUTTON
-  # ----------------------------------------------------------
-  
-  observeEvent(
-    input$run_analysis,
-    {
-      
-      validation_errors <- character(0)
-      
-      if (
-        is.null(rv$aoi) ||
-        is.null(rv$aoi_name)
-      ) {
-        validation_errors <- c(
-          validation_errors,
-          "Select or upload an AOI before running the analysis."
-        )
-      }
-      
-      if (
-        is.null(input$variable_id) ||
-        input$variable_id == ""
-      ) {
-        validation_errors <- c(
-          validation_errors,
-          "Select a variable."
-        )
-      }
-      
-      if (
-        is.null(input$scenario) ||
-        input$scenario == ""
-      ) {
-        validation_errors <- c(
-          validation_errors,
-          "Select a scenario."
-        )
-      }
-      
-      if (
-        is.null(input$period) ||
-        input$period == ""
-      ) {
-        validation_errors <- c(
-          validation_errors,
-          "Select a time period."
-        )
-      }
-      
-      if (length(validation_errors) > 0) {
-        
-        showNotification(
-          paste(
-            validation_errors,
-            collapse = "\n"
+      display_catalogue <- raster_catalogue |>
+        dplyr::mutate(
+          Scenario = vapply(
+            scenario,
+            get_scenario_label,
+            character(1)
           ),
-          type = "error",
-          duration = 10
+          Period = vapply(
+            period,
+            get_period_label,
+            character(1)
+          )
+        ) |>
+        dplyr::select(
+          dplyr::any_of(
+            c(
+              "dataset_id",
+              "variable_id",
+              "Scenario",
+              "Period",
+              "file_path",
+              "units",
+              "enabled"
+            )
+          )
         )
-        
-        return()
-      }
       
-      withProgress(
-        message = "Running climate analysis",
-        value = 0,
-        {
-          
-          setProgress(
-            value = 0.25,
-            detail = "Finding raster"
-          )
-          
-          selected_record <- tryCatch(
-            {
-              find_raster(
-                raster_catalogue = raster_catalogue,
-                variable_id = input$variable_id,
-                scenario = input$scenario,
-                period = input$period
-              )
-            },
-            error = function(e) {
-              
-              showNotification(
-                paste(
-                  "Raster lookup failed:",
-                  conditionMessage(e)
-                ),
-                type = "error",
-                duration = NULL
-              )
-              
-              NULL
-            }
-          )
-          
-          if (is.null(selected_record)) {
-            return()
-          }
-          
-          if (!is.data.frame(selected_record)) {
-            
-            showNotification(
-              "find_raster() did not return a data-frame record.",
-              type = "error",
-              duration = NULL
-            )
-            
-            return()
-          }
-          
-          if (nrow(selected_record) != 1) {
-            
-            showNotification(
-              "No unique raster was found for this selection.",
-              type = "error",
-              duration = NULL
-            )
-            
-            return()
-          }
-          
-          if (
-            !"file_path" %in% names(selected_record) ||
-            is.na(selected_record$file_path[[1]]) ||
-            selected_record$file_path[[1]] == ""
-          ) {
-            
-            showNotification(
-              "The selected raster record has no valid file path.",
-              type = "error",
-              duration = NULL
-            )
-            
-            return()
-          }
-          
-          raster_path <- file.path(
-            getwd(),
-            selected_record$file_path[[1]]
-          )
-          
-          raster_path <- normalizePath(
-            raster_path,
-            winslash = "/",
-            mustWork = FALSE
-          )
-          
-          if (!file.exists(raster_path)) {
-            
-            showNotification(
-              "The selected raster file could not be found.",
-              type = "error",
-              duration = NULL
-            )
-            
-            return()
-          }
-          
-          setProgress(
-            value = 0.50,
-            detail = "Preparing AOI"
-          )
-          
-          req(
-            rv$aoi
-          )
-          
-          processing_output_dir <- file.path(
-            getwd(),
-            "outputs",
-            "app_processing",
-            stringr::str_replace_all(
-              rv$aoi_name,
-              "[^A-Za-z0-9_-]",
-              "_"
-            ),
-            input$variable_id,
-            input$scenario,
-            input$period
-          )
-          
-          dir.create(
-            processing_output_dir,
-            recursive = TRUE,
-            showWarnings = FALSE
-          )
-          
-          setProgress(
-            value = 0.75,
-            detail = "Calculating statistics"
-          )
-          
-          tryCatch(
-            {
-              
-              message(
-                "Running analysis for AOI: ",
-                rv$aoi_name
-              )
-              
-              print(
-                sf::st_bbox(
-                  rv$aoi
-                )
-              )
-              
-              # Temporarily save the exact active AOI passed into raster processing.
-              dir.create(
-                file.path(
-                  "outputs",
-                  "tests"
-                ),
-                recursive = TRUE,
-                showWarnings = FALSE
-              )
-              
-              sf::st_write(
-                rv$aoi,
-                file.path(
-                  "outputs",
-                  "tests",
-                  "current_active_aoi.gpkg"
-                ),
-                delete_dsn = TRUE,
-                quiet = TRUE
-              )
-              
-              analysis_result <- process_continuous_raster(
-                raster_file = raster_path,
-                variable_id = input$variable_id,
-                scenario = input$scenario,
-                period = input$period,
-                aoi = rv$aoi,
-                output_dir = processing_output_dir
-              )
-              
-              selected_metadata <- variable_metadata |>
-                dplyr::filter(
-                  variable_id == input$variable_id
-                )
-              
-              selected_record <- raster_catalogue |>
-                dplyr::filter(
-                  enabled,
-                  variable_id == input$variable_id,
-                  scenario == input$scenario,
-                  period == input$period
-                )
-              
-              if (nrow(selected_metadata) < 1) {
-                stop(
-                  "No variable metadata was found for the selected variable."
-                )
-              }
-              
-              if (nrow(selected_record) != 1) {
-                stop(
-                  paste(
-                    "No unique raster record was found for",
-                    "the selected variable, scenario and period."
-                  )
-                )
-              }
-              
-              variable_display_name <- selected_metadata$display_name[[1]]
-              
-              if (
-                is.na(variable_display_name) ||
-                variable_display_name == ""
-              ) {
-                variable_display_name <- input$variable_id
-              }
-              
-              units_value <- selected_record$units[[1]]
-              
-              if (
-                is.na(units_value) ||
-                units_value == ""
-              ) {
-                units_value <- "Not specified"
-              }
-              
-              get_analysis_value <- function(
-    result_object,
-    possible_names
-              ) {
-                
-                matching_names <- possible_names[
-                  possible_names %in% names(result_object)
-                ]
-                
-                if (length(matching_names) < 1) {
-                  stop(
-                    paste(
-                      "The analysis result is missing:",
-                      paste(
-                        possible_names,
-                        collapse = " or "
-                      )
-                    )
-                  )
-                }
-                
-                value <- result_object[[matching_names[1]]]
-                
-                if (length(value) == 0) {
-                  stop(
-                    paste(
-                      "The analysis result value is empty:",
-                      matching_names[1]
-                    )
-                  )
-                }
-                
-                value[[1]]
-              }
-              
-              mean_value <- get_analysis_value(
-                analysis_result,
-                c(
-                  "mean",
-                  "unweighted_mean"
-                )
-              )
-              
-              minimum_value <- get_analysis_value(
-                analysis_result,
-                c(
-                  "minimum",
-                  "min"
-                )
-              )
-              
-              maximum_value <- get_analysis_value(
-                analysis_result,
-                c(
-                  "maximum",
-                  "max"
-                )
-              )
-              
-              rv$result <- list(
-                aoi_name = rv$aoi_name,
-                variable_id = input$variable_id,
-                display_name = variable_display_name,
-                scenario = input$scenario,
-                period = input$period,
-                mean = mean_value,
-                minimum = minimum_value,
-                maximum = maximum_value,
-                units = units_value
-              )
-              
-              if (
-                is.list(analysis_result) &&
-                "cropped_raster" %in% names(analysis_result)
-              ) {
-                
-                rv$cropped_raster <-
-                  analysis_result$cropped_raster
-                
-              } else if (
-                is.data.frame(analysis_result) &&
-                "cropped_raster" %in% names(analysis_result)
-              ) {
-                
-                rv$cropped_raster <-
-                  analysis_result$cropped_raster[[1]]
-                
-              } else {
-                
-                rv$cropped_raster <- NULL
-              }
-              
-              setProgress(
-                value = 1,
-                detail = "Complete"
-              )
-              
-              showNotification(
-                paste(
-                  "Analysis completed for:",
-                  rv$result$aoi_name
-                ),
-                type = "message"
-              )
-            },
-    
-    error = function(e) {
-      
-      rv$result <- NULL
-      rv$cropped_raster <- NULL
-      
-      showNotification(
-        paste(
-          "Analysis failed:",
-          conditionMessage(e)
-        ),
-        type = "error",
-        duration = NULL
-      )
-    }
-          )
-        }
+      DT::datatable(
+        display_catalogue,
+        rownames = FALSE,
+        options = list(
+          pageLength = 10,
+          scrollX = TRUE
+        )
       )
     }
   )
   
   # ----------------------------------------------------------
-  # TEMPORARY AOI TEST RESULTS
+  # TEMPORARY DEVELOPER TEST
+  # ----------------------------------------------------------
+  # The Run test button now runs its own AOI test only.
+  # It does not click Run analysis and does not depend on rv$result.
   # ----------------------------------------------------------
   
   aoi_test_results <- eventReactive(
     input$run_aoi_test,
     {
+      if (is.null(rv$aoi)) {
+        showNotification(
+          "Load an AOI before running the AOI test.",
+          type = "error",
+          duration = 8
+        )
+        
+        return(
+          tibble::tibble(
+            Field = "Status",
+            Result = "No AOI currently loaded."
+          )
+        )
+      }
       
       req(
-        rv$aoi,
-        rv$aoi_name,
         input$variable_id,
         input$scenario,
         input$period
       )
       
-      matched_dataset <- raster_catalogue %>%
-        filter(
+      matched_dataset <- raster_catalogue |>
+        dplyr::filter(
           enabled,
           variable_id == input$variable_id,
           scenario == input$scenario,
           period == input$period
-        ) %>%
-        slice(1)
+        ) |>
+        dplyr::slice(1)
+      
+      variable_label <- get_variable_label(
+        input$variable_id
+      )
+      
+      scenario_label <- get_scenario_label(
+        input$scenario
+      )
+      
+      period_label <- get_period_label(
+        input$period
+      )
       
       if (nrow(matched_dataset) == 0) {
-        
         showNotification(
-          "No matching raster was found.",
-          type = "error"
+          "No matching raster was found for the AOI test.",
+          type = "error",
+          duration = 8
         )
         
         return(
@@ -2194,9 +3467,9 @@ server <- function(
             ),
             Result = c(
               rv$aoi_name,
-              input$variable_id,
-              input$scenario,
-              input$period,
+              variable_label,
+              scenario_label,
+              period_label,
               "No matching raster",
               "No matching raster",
               "No matching raster",
@@ -2206,56 +3479,14 @@ server <- function(
         )
       }
       
-      variable_display_name <- variable_metadata %>%
-        filter(
-          variable_id == input$variable_id
-        ) %>%
-        pull(
-          display_name
-        )
-      
-      if (
-        length(variable_display_name) == 0 ||
-        is.na(variable_display_name[1]) ||
-        variable_display_name[1] == ""
-      ) {
-        variable_display_name <- input$variable_id
-      }
-      
-      scenario_display_name <- case_when(
-        input$scenario == "baseline" ~ "Baseline",
-        input$scenario == "ssp126" ~ "SSP1-2.6",
-        input$scenario == "ssp245" ~ "SSP2-4.5",
-        input$scenario == "ssp370" ~ "SSP3-7.0",
-        input$scenario == "ssp585" ~ "SSP5-8.5",
-        TRUE ~ input$scenario
-      )
-      
-      units_value <- matched_dataset$units[1]
-      
-      if (
-        length(units_value) == 0 ||
-        is.na(units_value) ||
-        units_value == ""
-      ) {
-        units_value <- "Not specified"
-      }
-      
-      raster_path <- file.path(
-        getwd(),
-        matched_dataset$file_path[1]
-      )
-      
-      raster_path <- normalizePath(
-        raster_path,
-        winslash = "/",
-        mustWork = FALSE
-      )
+      raster_path <- matched_dataset$file_path[1]
       
       if (!file.exists(raster_path)) {
-        
         showNotification(
-          "The selected raster file could not be found.",
+          paste(
+            "The selected AOI test raster file could not be found:",
+            raster_path
+          ),
           type = "error",
           duration = NULL
         )
@@ -2274,31 +3505,35 @@ server <- function(
             ),
             Result = c(
               rv$aoi_name,
-              variable_display_name[1],
-              scenario_display_name,
-              input$period,
+              variable_label,
+              scenario_label,
+              period_label,
               "Raster file not found",
               "Raster file not found",
               "Raster file not found",
-              units_value
+              matched_dataset$units[1]
             )
           )
         )
       }
       
+      units_value <- matched_dataset$units[1]
+      
+      if (
+        length(units_value) == 0 ||
+        is.na(units_value) ||
+        units_value == ""
+      ) {
+        units_value <- "Not specified"
+      }
+      
       test_output_dir <- file.path(
-        getwd(),
         "outputs",
-        "app_processing",
-        stringr::str_replace_all(
-          rv$aoi_name,
-          "[^A-Za-z0-9_-]",
-          "_"
-        ),
-        input$variable_id,
-        input$scenario,
-        input$period,
-        "aoi_test"
+        "aoi_tests",
+        safe_filename(rv$aoi_name),
+        safe_filename(input$variable_id),
+        safe_filename(input$scenario),
+        safe_filename(input$period)
       )
       
       dir.create(
@@ -2307,23 +3542,28 @@ server <- function(
         showWarnings = FALSE
       )
       
+      showNotification(
+        "Running AOI test using the current AOI, variable, scenario and period.",
+        type = "message"
+      )
+      
       analysis_result <- tryCatch(
         {
           process_continuous_raster(
-            raster_file = raster_path,
+            raster_path,
+            rv$aoi,
             variable_id = input$variable_id,
             scenario = input$scenario,
             period = input$period,
-            aoi = rv$aoi,
             output_dir = test_output_dir
           )
         },
-        error = function(e) {
+        error = function(error) {
           
           showNotification(
             paste(
-              "AOI test analysis failed:",
-              conditionMessage(e)
+              "AOI test processing failed:",
+              error$message
             ),
             type = "error",
             duration = NULL
@@ -2334,7 +3574,6 @@ server <- function(
       )
       
       if (is.null(analysis_result)) {
-        
         return(
           tibble::tibble(
             Field = c(
@@ -2349,9 +3588,9 @@ server <- function(
             ),
             Result = c(
               rv$aoi_name,
-              variable_display_name[1],
-              scenario_display_name,
-              input$period,
+              variable_label,
+              scenario_label,
+              period_label,
               "Analysis failed",
               "Analysis failed",
               "Analysis failed",
@@ -2361,62 +3600,40 @@ server <- function(
         )
       }
       
-      get_analysis_value <- function(
-    result_object,
-    possible_names
-      ) {
-        
-        matching_names <- possible_names[
-          possible_names %in% names(result_object)
-        ]
-        
-        if (length(matching_names) < 1) {
-          stop(
-            paste(
-              "The AOI test result is missing:",
-              paste(
-                possible_names,
-                collapse = " or "
-              )
-            )
-          )
-        }
-        
-        value <- result_object[[matching_names[1]]]
-        
-        if (length(value) == 0) {
-          stop(
-            paste(
-              "The AOI test result value is empty:",
-              matching_names[1]
-            )
-          )
-        }
-        
-        value[[1]]
-      }
-      
       mean_value <- get_analysis_value(
         analysis_result,
         c(
           "mean",
-          "unweighted_mean"
+          "unweighted_mean",
+          "Mean",
+          "mean_value",
+          "mean_value_rounded",
+          "average",
+          "Average",
+          "avg",
+          "AVG"
         )
       )
       
-      minimum_value <- get_analysis_value(
+      min_value <- get_analysis_value(
         analysis_result,
         c(
           "minimum",
-          "min"
+          "min",
+          "Minimum",
+          "Min",
+          "minimum_value"
         )
       )
       
-      maximum_value <- get_analysis_value(
+      max_value <- get_analysis_value(
         analysis_result,
         c(
           "maximum",
-          "max"
+          "max",
+          "Maximum",
+          "Max",
+          "maximum_value"
         )
       )
       
@@ -2433,19 +3650,19 @@ server <- function(
         ),
         Result = c(
           rv$aoi_name,
-          variable_display_name[1],
-          scenario_display_name,
-          input$period,
+          variable_label,
+          scenario_label,
+          period_label,
           round(
             mean_value,
             2
           ),
           round(
-            minimum_value,
+            min_value,
             2
           ),
           round(
-            maximum_value,
+            max_value,
             2
           ),
           units_value
@@ -2454,36 +3671,47 @@ server <- function(
     }
   )
   
-  output$aoi_test_results <- renderDT({
-    
-    req(
-      aoi_test_results()
-    )
-    
-    datatable(
-      aoi_test_results(),
-      rownames = FALSE,
-      colnames = c(
-        "Field",
-        "Result"
-      ),
-      options = list(
-        dom = "t",
-        ordering = FALSE,
-        paging = FALSE,
-        searching = FALSE,
-        info = FALSE,
-        autoWidth = TRUE,
-        scrollX = TRUE,
-        scrollY = "35vh",
-        scrollCollapse = TRUE
+  output$aoi_test_results <- renderDT(
+    {
+      if (is.null(aoi_test_results())) {
+        return(
+          DT::datatable(
+            tibble::tibble(
+              Field = "Status",
+              Result = "No test result yet. Click Run test."
+            ),
+            rownames = FALSE,
+            options = list(
+              dom = "t",
+              ordering = FALSE,
+              paging = FALSE,
+              searching = FALSE,
+              info = FALSE
+            )
+          )
+        )
+      }
+      
+      DT::datatable(
+        aoi_test_results(),
+        rownames = FALSE,
+        options = list(
+          dom = "t",
+          ordering = FALSE,
+          paging = FALSE,
+          searching = FALSE,
+          info = FALSE,
+          autoWidth = TRUE,
+          scrollX = TRUE
+        )
       )
-    )
-  })
+    }
+  )
+  
 }
 
 # ------------------------------------------------------------
-# 4. RUN APPLICATION
+# RUN APPLICATION
 # ------------------------------------------------------------
 
 shinyApp(
