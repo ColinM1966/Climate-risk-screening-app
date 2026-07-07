@@ -62,3 +62,10 @@ Add monthly average maximum Wet Bulb Globe Temperature (WBGT) as a new climate v
 | theme_variable.csv | Yes | Updated |
 | thresholds.csv | Yes | Updated |
 
+
+## WBGT label check
+
+| Check | Result |
+| ----- | ------ |
+| WBGT label appears in selector | Done |
+| Label uses user-facing wording | Done |
