@@ -5,3 +5,4 @@ Bio017,Precipitation of Driest Quarter,Total precipitation during the driest thr
 Fire,Fire Probability,Modelled probability of fire occurrence,probability,mean;p90,high,continuous
 PPETConDryMth,Consecutive Moisture-Deficit Months,Maximum number of consecutive months where precipitation is below potential evapotranspiration,months,mean;p90;max,high,continuous
 PPETmin,Minimum Monthly P:PET,Minimum monthly precipitation-to-potential-evapotranspiration ratio,ratio,mean;min,low,continuous
+WBGT,Wet Bulb Globe Temperature,An approximation of  the WBGT is calculated using the formula in Bernard & Iheanacho (2015). As the approximation is based on the HI under shade conditions, an additional 3.5°C is added to the estimated WBGT to account for direct radiant effects.,degrees C,mean;max,high,continuous
