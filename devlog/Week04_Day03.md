@@ -86,6 +86,7 @@ Test and stabilise the WBGT workflow, improve Data Availability, and prepare WBG
 | CSV downloads | Done |
 
 ## WBGT cropped raster ON test
+
 | Check | Result |
 | ----- | ------ |
 | Raster appears | Done |
@@ -94,6 +95,7 @@ Test and stabilise the WBGT workflow, improve Data Availability, and prepare WBG
 | Raster opens | Done |
 
 ## WBGT value sanity check
+
 | Statistic | Value | Plausible? | Notes |
 | --------- | ----- | ---------- | ----- |
 | Mean | 30.62 | Yes | The mean is correct. |
@@ -101,9 +103,74 @@ Test and stabilise the WBGT workflow, improve Data Availability, and prepare WBG
 | Maximum | 31.51 | Yes | The maximum is correct. Maximum WBGT is a heat-stress indicator. Higher values indicate greater potential heat exposure and reduced outdoor workability. This layer represents monthly average maximum WBGT, not daily extreme WBGT. |
 
 ## WBGT second AOI test
+
 | Check | Result |
 | ----- | ------ |
 | AOI used | Done |
 | Analysis runs | Done |
 | CSV downloads | Done |
 
+## WBGT comparison test 
+
+| Scenario | Period | Row appears? | Notes |
+| -------- | ------ | ------------ | ----- |
+| SSP2-4.5 | 2041-2070 | Yes | It is correct. |
+
+## SSP3-7.0 and SSP5-8.5 selector check
+
+| Scenario | Main selector | Comparison selector | Data Availability | Notes |
+| -------- | ------------- | ------------------- | ----------------- | ----- |
+| SSP3-7.0 | Done | Done | Done | It is completed. |
+| SSP5-8.5 | Done | Done | Done | It is completed. |
+
+## Data Availability update
+
+| Check | Result |
+| ----- | ------ |
+| Data Availability note updated | Done |
+| WBGT monthly climatology note added | Done |
+| Scenario labels readable | Done |
+| File exists status clear | Done |
+
+## Result note check
+
+| Variable | Note correct? |
+| -------- | ------------- |
+| WBGTmax | Maximum WBGT is a heat-stress indicator. Higher values indicate greater potential heat exposure and reduced outdoor workability. This layer represents monthly average maximum WBGT, not daily extreme WBGT. |
+| Bio017 | Bio017 lower values indicate drier conditions. |
+| PPETmin | PPETmin lower values indicate drier conditions. |
+
+## Optional WBGT demo
+
+Use this only if the main demo is working.
+AOI: Jambongan
+Variable: Maximum
+WBGT Scenario: [available WBGT scenario]
+Period: [available WBGT climatology]
+Comparison: Off first
+Create cropped raster output: On
+
+Explain that this is monthly average maximum WBGT and is used as a heat-stress indicator.
+
+## Known limitations after Day 3
+
+- WBGT is currently added as monthly average maximum WBGT.
+- WBGT should not be interpreted as daily maximum WBGT unless the source raster specifically represents daily maxima.
+- WBGT comparison is only possible where multiple WBGT scenario or period rasters are connected.
+- Not all variables are available for every scenario and period.
+- No combined overall-risk score is produced.
+
+## Day 3 summary
+
+Week 4 Day 3 focused on stabilising the WBGT workflow after the initial monthly average maximum WBGT raster was added. WBGT was checked in the raster catalogue,
+Data Availability tab, variable selector, result table, downloads and optional cropped raster output. Additional WBGT scenario rows were added only where
+matching raster files existed. Known limitations were recorded for the friendly technical testing session.
+
+## Proposed Day 4 priorities
+
+1. Fix any remaining WBGT labels, unit or catalogue issues.
+2. Improve the Data Availability tab if testers may use it.
+3. Prepare the final friendly testing workflow and feedback sheets.
+4. Rehearse the Jambongan Fire comparison demo.
+5. Rehearse the optional WBGT demo.
+6. Freeze the testing version if the core workflows are stable.
