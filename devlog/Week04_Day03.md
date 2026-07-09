@@ -85,3 +85,10 @@ Test and stabilise the WBGT workflow, improve Data Availability, and prepare WBG
 | Units correct | Done |
 | CSV downloads | Done |
 
+## WBGT cropped raster ON test
+| Check | Result |
+| ----- | ------ |
+| Raster appears | Done |
+| Legend appears | Done |
+| Cropped raster downloads | Done |
+| Raster opens | Done |
