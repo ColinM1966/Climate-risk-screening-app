@@ -92,3 +92,18 @@ Test and stabilise the WBGT workflow, improve Data Availability, and prepare WBG
 | Legend appears | Done |
 | Cropped raster downloads | Done |
 | Raster opens | Done |
+
+## WBGT value sanity check
+| Statistic | Value | Plausible? | Notes |
+| --------- | ----- | ---------- | ----- |
+| Mean | 30.62 | Yes | The mean is correct. |
+| Minimum | 30.01 | Yes | The minimum is correct. |
+| Maximum | 31.51 | Yes | The maximum is correct. Maximum WBGT is a heat-stress indicator. Higher values indicate greater potential heat exposure and reduced outdoor workability. This layer represents monthly average maximum WBGT, not daily extreme WBGT. |
+
+## WBGT second AOI test
+| Check | Result |
+| ----- | ------ |
+| AOI used | Done |
+| Analysis runs | Done |
+| CSV downloads | Done |
+
