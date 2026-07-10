@@ -86,3 +86,34 @@ Prepare the prototype for friendly technical testing by rehearsing demo workflow
 | Bio017 | Yes | No |
 | PPETmin | Yes | No |
 | WBGTmax | Yes | No |
+
+## Backup workflow
+
+If upload, draw polygon, point-buffer, WBGT or cropped raster fails, use the Jambongan Fire comparison workflow as the reliable fallback.
+
+## Known issues before testing
+
+| Issue | Severity | Workaround |
+| ----- | -------- | ---------- |
+| None | Don't know | Done |
+
+## Candidate testing version
+
+Git commit:
+
+Notes:
+
+This may become the testing version if Day 4 is stable.
+
+## Day 4 summary
+
+Week 4 Day 4 focused on preparing the app for friendly technical testing. The main Jambongan Fire comparison demo, uploaded AOI demo, optional WBGT demo, downloads, cropped raster option and Data Availability tab were checked. Tester task lists, feedback sheets and the Dr Corine observation record were prepared or updated. Remaining issues were recorded with suggested workarounds.
+
+## Proposed Day 5 priorities
+
+1. Fix only critical issues found during Day 4 rehearsal.
+2. Run the full testing-session rehearsal from start to finish.
+3. Check the app on both Colin's and Marcolm's computers.
+4. Print or prepare tester feedback sheets.
+5. Freeze the testing version.
+6. Do not add new features unless absolutely necessary.
