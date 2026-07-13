@@ -38,3 +38,13 @@ Finalise friendly testing files, rehearse the testing workflow, check the app on
 | Main demo included | Done |
 | Optional WBGT demo included | Done |
 | Backup workflow included | Done |
+
+## Testing file review
+
+| File | Reviewed? | Fixes needed? |
+| ---- | --------- | ------------- |
+| friendly_testing_guide.md |  |  |
+| technical_feedback_sheet.md |  |  |
+| tester_task_list.md |  |  |
+| dr_corine_observation_record.md |  |  |
+| test_session_notes_template.md |  |  |
