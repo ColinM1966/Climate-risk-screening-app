@@ -43,8 +43,27 @@ Finalise friendly testing files, rehearse the testing workflow, check the app on
 
 | File | Reviewed? | Fixes needed? |
 | ---- | --------- | ------------- |
-| friendly_testing_guide.md |  |  |
-| technical_feedback_sheet.md |  |  |
-| tester_task_list.md |  |  |
-| dr_corine_observation_record.md |  |  |
-| test_session_notes_template.md |  |  |
+| friendly_testing_guide.md | Yes | No |
+| technical_feedback_sheet.md | Yes | No |
+| tester_task_list.md | Yes | No |
+| dr_corine_observation_record.md | Yes | No |
+| test_session_notes_template.md | Yes | No |
+
+## Opening script practice
+
+| Practice | Result |
+| -------- | ------ |
+| First practice | Done |
+| Second practice | Done |
+| What was easy to explain | Done |
+| What was difficult to explain | Done |
+
+## Main demo rehearsal
+
+| Check | Result |
+| ----- | ------ |
+| Demo completed without crash | Done |
+| Explantion was clear | Done |
+| Comparison table appeared | Done |
+| Graph appeared | Done |
+| Comparison CSV downloaded | Done |
