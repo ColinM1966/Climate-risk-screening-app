@@ -28,3 +28,13 @@ Finalise friendly testing files, rehearse the testing workflow, check the app on
 | testing/tester_task_list.md | Yes | Yes |
 | testing/dr_corine_observation_record.md | Yes | Yes |
 | testing/test_session_notes_template.md | Yes | Yes |
+
+## Friendly testing guide update
+
+| Check | Result |
+| ----- | ------ |
+| Purpose is clear | Done |
+| Local-run setup is clear | Done |
+| Main demo included | Done |
+| Optional WBGT demo included | Done |
+| Backup workflow included | Done |
