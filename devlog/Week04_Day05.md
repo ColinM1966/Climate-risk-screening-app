@@ -108,10 +108,10 @@ Finalise friendly testing files, rehearse the testing workflow, check the app on
 
 | Check | Result |
 | ----- | ------ |
-| App starts |  |
-| Rasters found |  |
-| Jambongan Fire demo works |  |
-| WBGT optional demo works |  |
+| App starts | Done |
+| Rasters found | Done |
+| Jambongan Fire demo works | Done |
+| WBGT optional demo works | Done |
 
 ## Colin laptop check
 
@@ -123,3 +123,37 @@ Finalise friendly testing files, rehearse the testing workflow, check the app on
 | WBGT optional demo works | Dpne |
 | Download work | Done |
 
+## Candidate testing version
+
+Git commit:
+
+Date:
+
+Status:
+- Ready for testing
+- Ready with known issues
+- Not ready yet
+
+Notes:
+
+## Freeze rules
+
+After Day 5, no new features should be added before the friendly technical testing unless they are needed to fix a serious blocker.
+
+Allowed changes:
+- app does not start;
+- main demo fails;
+- download fails;
+- serious confusing label;
+- missing testing files.
+
+Avoid:
+- new variables;
+- new scenarios;
+- new graph types;
+- risk scoring;
+- layout redesign.
+
+## Day 5 summary
+
+Week 4 Day 5 focused on preparing for friendly technical testing. Testing files were created or reviewed, including the friendly testing guide, tester task list, technical feedback sheet, Dr Corine observation record, test session notes template, and known issues list. The main Jambongan Fire comparison demo, uploaded AOI demo, optional WBGT demo, AOI tools and downloads were rehearsed. A candidate testing version was recorded.
