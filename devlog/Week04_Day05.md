@@ -67,3 +67,23 @@ Finalise friendly testing files, rehearse the testing workflow, check the app on
 | Comparison table appeared | Done |
 | Graph appeared | Done |
 | Comparison CSV downloaded | Done |
+
+## Uploaded AOI demo rehearsal
+
+| Check | Result |
+| ----- | ------ |
+| Segama upload works | Done |
+| Bio05 result appears | Done |
+| Cropped raster appears | Done |
+| Downloads work | Done |
+
+## Optional WBGT demo rehearsal
+
+| Check | Result |
+| ----- | ------ |
+| WBGT analysis works | Done |
+| Units are °C | Done |
+| Note is clear | Done |
+| Cropped raster works | Done |
+| Explanation was accurate | Done |
+
