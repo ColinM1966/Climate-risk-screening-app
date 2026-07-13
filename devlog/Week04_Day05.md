@@ -87,3 +87,39 @@ Finalise friendly testing files, rehearse the testing workflow, check the app on
 | Cropped raster works | Done |
 | Explanation was accurate | Done |
 
+## AOI stability check
+
+| AOI mwthod | Loads? | Analysis works? | Safe for testing? | Notes |
+| ---------- | ------ | --------------- | ----------------- | ----- |
+| Jambongan | Yes | Yes | Yes | It works! |
+| Upload AOI | Yes | Yes | Yes | It works! |
+| Draw polygon | Yes | Yes | Yes | It works! |
+| Point-buffer | Yes | Yes | Yes | It works! |
+
+## Final download check
+
+| Download | Works? | Notes |
+| -------- | ------ | ----- |
+| Result CSV | Yes | It works! |
+| Comparison CSV | Yes | It works! |
+| Cropped raster GeoTIFF | Yes | It works! |
+
+## Colin laptop check
+
+| Check | Result |
+| ----- | ------ |
+| App starts |  |
+| Rasters found |  |
+| Jambongan Fire demo works |  |
+| WBGT optional demo works |  |
+
+## Colin laptop check
+
+| Check | Result |
+| ----- | ------ |
+| App starts | Done |
+| Rasters found | Done |
+| Jambongan Fire demo works | Done |
+| WBGT optional demo works | Dpne |
+| Download work | Done |
+
