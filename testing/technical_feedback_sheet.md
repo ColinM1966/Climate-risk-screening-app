@@ -2,20 +2,20 @@
 
 ## Tester details
 
-Name:
+Name: Marcolm R. Maycock
 
 Background / organisation.
 
-Date:
+Date: 13/7/2026
 
 ## Experience
 
 | Area | None | Basic | Moderate | Strong |
 | ---- | ---- | ----- | -------- | ------ |
-| GIS |  |  |  |  |
-| Climate data |  |  |  |  |
-| Conservation / land-use planning |  |  |  |  |
-| R / Shiny apps |  |  |  |  |
+| GIS |  |  | Yes |  |
+| Climate data |  |  |  | Yes |
+| Conservation / land-use planning |  |  |  | Yes |
+| R / Shiny apps |  |  |  | Yes |
 
 ## Workflow tested
 
