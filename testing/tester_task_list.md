@@ -6,15 +6,48 @@ You do not need to install anything.
 
 Please try the following tasks:
 
-1. Load the Jambongan test AOI.
-2. Run Fire Probability comparison.
-3. Look at the comparison table.
-4. Look at the graph.
-5. Download the comparison CSV.
-6. Try one user-created AOI, either Draw polygon or Point-buffer.
-7. Run Bio05 for that AOI.
-8. Turn cropped raster output on and run again.
-9. Download the cropped raster if available.
-10. Optional: try Maximum WBGT and explain what you think the result means.
+## Main task
 
-Please focus on what is confusing, fragile, unclear or useful.
+1. Load the Jambongan test AOI.
+2. Select Fire Probability.
+3. Turn comparison on.
+4. Compare baseline and SSP2-4.5.
+5. Run analysis.
+6. Look at the result table.
+7. Look at the comparison table.
+8. Look at the graph.
+9. Download the comparison CSV.
+10. Explain what you think the result means.
+
+## AOI task
+
+Try one of these:
+
+- Upload polygon;
+- Draw polygon;
+- Point and buffer.
+
+Then run Bio05 or another available variable.
+
+## Cropped raster task
+
+1. Run an analysis with cropped raster output off.
+2. Run again with cropped raster output on.
+3. Check whether the raster appears on the map.
+4. Check whether the cropped raster download appears.
+
+## OptionalWBGT task
+
+1. Select Maximum WBGT.
+2. Run analysis for an available scenario and period.
+3. Check whether the result note is clear.
+4. Explain what you think the WBGT result means.
+
+## Please focus on
+
+- what is confusing;
+- what breaks;
+- what labels are unclear;
+- whether the graph helps;
+- whether the downloads are useful;
+- whether the app feels useful for technical screening.
