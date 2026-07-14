@@ -89,3 +89,88 @@ Final pre-testing readiness check for the friendly technical testing session.
 | Units correct | Done |
 | Result note clear | Done |
 | Cropped raster downloads | Done |
+
+## Cropped raster ON/OFF check
+
+| Check | Result |
+| ----- | ------ |
+| OFF: table appears | Done |
+| OFF: cropped raster button hidden | Done |
+| ON: raster appears | Done |
+| ON: cropped raster downloads | Done |
+
+## AOI method check
+
+| AOI method | Loads? | Analysis works? | Safe for testing? | Notes |
+| ---------- | ------ | --------------- | ----------------- | ----- |
+| Jambongan | Yes | Yes | Yes | It work! |
+| Upload polygon | Yes | Yes | Yes | It work! |
+| Draw polygon | Yes | Yes | Yes | It work! |
+| Point-buffer | Yes | Yes | Yes | It work! |
+
+## Data Availability check
+
+| Check | Result |
+| ----- | ------ |
+| Data Availability tab opens | Done |
+| WBGT visible | Done |
+| WBGT monthly note visible | Done |
+| SSP3-7.0 visible where connected | Done |
+| SSP5-8.5 visible where connected | Done |
+| File exists column understandable | Done |
+| Enabled column understandable | Done |
+
+## Result note check
+
+| Variable | Note correct? | Needs fixing? |
+| -------- | ------------- | ------------- |
+| Fire Probability | Yes | Yes |
+| Bio05 | Yes | Yes |
+| Bio017 | Yes | Yes |
+| PPETmin | Yes | Yes |
+| WBGTmax | Yes | Yes |
+
+## Testing files check
+
+| File | Exists? | Reviewed |
+| ---- | ------- | -------- |
+| friendly_testing_guide.md | Yes | Done |
+| techical_feedback_sheet.md | Yes | Done |
+| tester_task_list.md | Yes | Done |
+| dr_corine_observation_record.md | Yes | Done |
+| test_session_notes_template.md | Yes | Done |
+| known_issues_for_testing.md | Yes | Done |
+
+## Tester task list review
+
+| Check | Result |
+| ----- | ------ |
+| Local-run setup clear | Done |
+| Main demo included | Done |
+| AOI task included | Done |
+| Cropped raster task included | Done |
+| Optional WBGT included | Done |
+
+## Feedback sheet review
+
+| Check | Result |
+| ----- | ------ |
+| AOI feedback included | Done |
+| Result table feedback included | Done |
+| Comparison feedback included | Done |
+| Graph feedback included | Done |
+| Cropped raster feedback included | Done |
+| WBGT feedback included | Done |
+| Priority improvement question included | Done |
+
+## Dr Corine observation record review
+
+| Check | Result |
+| ----- | ------ |
+| Preparation section included | Done |
+| Communication section included | Done |
+| Response to feedback included | Done |
+| Problem solving included | Done |
+| Supports included | Done |
+| Summary section included | Done |
+
