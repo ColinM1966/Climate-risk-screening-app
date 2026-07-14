@@ -62,3 +62,30 @@ Final pre-testing readiness check for the friendly technical testing session.
 | Change from baseline appears | Done |
 | Graph appears | Done |
 | Comparison CSV downloads | Done |
+
+## Main demo explanation practice
+
+| Practice | Result |
+| -------- | ------ |
+| First practice | Done |
+| Second practice | Done |
+| What was difficult to explain | Done |
+
+## Uploaded AOI demo rehearsal
+
+| Check | Result |
+| ----- | ------ |
+| Segama upload works | Done |
+| Bio05 analysis works | Done |
+| Cropped raster appears | Done |
+| Result CSV downloads | Done |
+| Cropped raster downloads | Done |
+
+## Optional WBGT demo rehearsal
+
+| WBGT scenario tested | Done |
+| WBGT period tested | Done |
+| WBGT analysis runs | Done |
+| Units correct | Done |
+| Result note clear | Done |
+| Cropped raster downloads | Done |
