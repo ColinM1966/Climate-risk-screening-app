@@ -50,3 +50,38 @@ Run the final pre-testing rehearsal, fix only serious blockers, check both lapto
 | Comparison CSV downloads | Done |
 | Explanation clear | Done |
 
+## Uploaded AOI rehearsal
+
+| Check | Result |
+| ----- | ------ |
+| Segama upload works | Done |
+| Bio05 analsis works | Done |
+| Cropped raster appears | Done |
+| Result CSV downloads | Done |
+| Cropped raster downloads | Done |
+
+## Optional WBGT rehearsal
+
+| Check | Result |
+| ----- | ------ |
+| WBGT analysis works | Done |
+| Units correct | Done |
+| WBGT note clear | Done |
+| Cropped raster works | Done |
+| Explanation accurate | Done |
+
+## Cropped raster final check
+
+| Test | Result |
+| ---- | ------ |
+| Cropped raster OFF behaves correctly | Done |
+| Cropped raster ON behaves correctly | Done |
+| Cropped raster download works | Done |
+
+## Final download check
+
+| Download | Works? | Opened? | Notes |
+| -------- | ------ | ------- | ----- |
+| Result CSV | Yes | Yes | It works! |
+| Comparison CSV | Yes | Yes | It works! |
+| Cropped raster GeoTIFF | Yes | Yes | It works! |
