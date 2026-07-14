@@ -174,3 +174,35 @@ Final pre-testing readiness check for the friendly technical testing session.
 | Supports included | Done |
 | Summary section included | Done |
 
+## Candidate testing version
+
+Git commit:
+
+Status:
+- Ready for testing
+- Ready with known issues
+- Not ready yet
+
+Notes:
+
+## Freeze rules
+
+After this point, no new features should be added before the firendly technical testing session unless they are required to fix a serious blocker.
+
+Allowed changes:
+- app does not start;
+- main demo fails;
+- downloads fail;
+- a major label is misleading;
+- a testing file is missing.
+
+Avoid:
+- new variables;
+- new scenarios;
+- new graph types;
+- risk scoring;
+- layout redesign.
+
+## Day 1 summary
+
+Week 5 Day 1 focused on final pre-testing readiness. The main Jambongan Fire comparison demo, uploaded AOI demo, optional WBGT demo, cropped raster ON/OFF behaviour, downloads, Data Availability tab and testing files were checked. Known issues and the candidate testing version were recorded. After this point, only serious blockers should be fixed before the friendly technical testing session.
