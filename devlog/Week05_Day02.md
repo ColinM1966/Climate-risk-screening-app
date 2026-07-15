@@ -150,3 +150,6 @@ Avoid:
 - layout redesign;
 - major refactoring.
 
+## Day 2 summary
+
+Week 5 Day 2 focused on the final testing-session rehearsal and freeze. Critical Day 1 issues were reviewed, the main Jambongan Fire comparison demo was rehearsed, the uploaded AOI demo and optional WBGT demo were checked, downloads were tested, testing materials were reviewed, the backup workflow were confirmed, and the frozen testing version was recorded.
