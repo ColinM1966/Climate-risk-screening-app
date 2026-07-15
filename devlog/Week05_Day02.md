@@ -85,3 +85,79 @@ Run the final pre-testing rehearsal, fix only serious blockers, check both lapto
 | Result CSV | Yes | Yes | It works! |
 | Comparison CSV | Yes | Yes | It works! |
 | Cropped raster GeoTIFF | Yes | Yes | It works! |
+
+## Marcolm laptop check
+
+| Check | Result |
+| ----- | ------ |
+| App starts | Done |
+| Rasters found | Done |
+| Main demo works | Done |
+| WBGT demo works | Done |
+| Downloads work | Done |
+
+## Testing files final check
+
+| File | Exists? | Ready |
+| ---- | ------- | ----- |
+| friendly_testing_guide.md | Yes | Yes |
+| technical_feedback_sheet.md | Yes | Yes |
+| tester_test_list.md | Yes | Yes |
+| dr_corine_observation_record.md | Yes | Yes |
+| test_session_notes_template.md | Yes | Yes |
+| known_issues_for_testing.md | Yes | Yes |
+
+## Backup workflow confirmed
+
+Fallback workflow:
+
+Jambongan → Fire Probability → comparison → graph → comparison CSV.
+
+Use this if upload AOI, draw polygon, point-buffer, WBGT or cropped raster output fails.
+
+## Known Issues for Friendly Testing
+
+| Issue | Severity | Workaround |
+| ----- | -------- | ---------- |
+| Not all variables are available for every scenario and period | Medium | Check Data Availability tab |
+| WBGT is monthly average maximum, not daily extreme WBGT | Medium | Explain before showing WBGT |
+| Cropped raster output can be slower | Low | Leave cropped raster output off unless needed |
+| Large AOIs may take longer to process | Medium | Use Jambongan for demo |
+| Draw polygon may be experimental | Low/Medium | Use upload AOI or Jambongan if it fails |
+| Point-buffer may be experimental | Low/Medium | Use upload AOI or Jambongan if it fails |
+
+## Frozen testing version
+
+Git commit:
+
+Date:
+
+Status:
+- Ready for testing
+- Read with known issues
+- Not ready yet
+
+Notes:
+
+If the app is ready, mark: "Ready with known issues" That is usually more honest than "perfect".
+
+## Freeze rule
+
+After this point, no new features should be added before the friendly technical testing session unless they are required to fix a serious blocker.
+
+Allowed changes:
+- app does not start;
+- main demo fails;
+- downloads fail;
+- a major label is misleading;
+- a testing file is missing;
+- raster catalogue row needed for the demo is broken.
+
+Avoid:
+- new variables;
+- new scenarios;
+- new graph types;
+- risk scoring;
+- layout redesign;
+- major refactoring.
+
