@@ -115,17 +115,6 @@ Jambongan → Fire Probability → comparison → graph → comparison CSV.
 
 Use this if upload AOI, draw polygon, point-buffer, WBGT or cropped raster output fails.
 
-## Known Issues for Friendly Testing
-
-| Issue | Severity | Workaround |
-| ----- | -------- | ---------- |
-| Not all variables are available for every scenario and period | Medium | Check Data Availability tab |
-| WBGT is monthly average maximum, not daily extreme WBGT | Medium | Explain before showing WBGT |
-| Cropped raster output can be slower | Low | Leave cropped raster output off unless needed |
-| Large AOIs may take longer to process | Medium | Use Jambongan for demo |
-| Draw polygon may be experimental | Low/Medium | Use upload AOI or Jambongan if it fails |
-| Point-buffer may be experimental | Low/Medium | Use upload AOI or Jambongan if it fails |
-
 ## Frozen testing version
 
 Git commit:
