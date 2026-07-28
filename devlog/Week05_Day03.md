@@ -88,3 +88,39 @@ Make small user-facing improvements before friendly technical testing, especiall
 | Fire Probability | Yes | Yes | The comparison scenarios and periods are sensible. |
 | WBGTmax | Yes | Yes | The comparison scenarios and periods are sensible. |
 | Bio05 | Yes | Yes | The comparison scenarios and periods are sensible. |
+
+## Missing combination warning
+
+| Check | Result |
+| ----- | ------ |
+| Missing combinations skipped safely | Done |
+| Warning message understandable | Done |
+| App does not crash | Done |
+
+## About tab check
+
+| Check | Result |
+| ----- | ------ |
+| Prototype status clear | Done |
+| No risk score statement clear | Done |
+| Draw/point-buffer limitation clear | Done |
+| Formal boundary wording clear | Done |
+
+## Developer Test tab decision
+
+| Decision | Notes |
+| -------- | ----- |
+| Keep | Do not use Developer Test tab during friendly testing. |
+
+## Main demo after improvements
+
+| Check | Result |
+| ----- | ------ |
+| App starts | Done |
+| Jambongan loads | Done |
+| Fire comparison works | Done |
+| Table appears | Done |
+| Graph appears | Done |
+| Comparison CSV downloads | Done |
+| Notes are clear | Done |
+
