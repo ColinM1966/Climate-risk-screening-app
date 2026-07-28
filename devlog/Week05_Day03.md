@@ -124,3 +124,13 @@ Make small user-facing improvements before friendly technical testing, especiall
 | Comparison CSV downloads | Done |
 | Notes are clear | Done |
 
+## WBGT demo after improvements
+
+| Check | Result |
+| ----- | ------ |
+| WBGT analysis works | Done |
+| Units correct | Done |
+| Note clear | Done |
+| Cropped raster appears | Done |
+| Cropped raster downloads | Done |
+
