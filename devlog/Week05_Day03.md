@@ -134,3 +134,17 @@ Make small user-facing improvements before friendly technical testing, especiall
 | Cropped raster appears | Done |
 | Cropped raster downloads | Done |
 
+## Updated candidate testing version
+
+Git commit:
+
+Status:
+- Ready for testing
+- Ready with known issues
+- Not ready yet
+
+Notes:
+
+## Day 3 summary
+
+Week 5 Day 3 focused on small user-facing improvements before friendly technical testing. The selection status, AOI status, result notes, graph notes, Data Availability display, About tab wording and testing files were reviewed. The main Jambongan Fire comparison demo and optional WBGT demo were retested after improvements. No new major features were added.
