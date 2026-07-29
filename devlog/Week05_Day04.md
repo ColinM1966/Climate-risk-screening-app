@@ -29,6 +29,6 @@ Prepare the final friendly testing pack, run a full dry run, confirm the backup 
 | dr_corine_observation_record.md | Yes | Yes |
 | test_session_notes_template.md | Yes | Yes |
 | known_issues_for_testing.md | Yes | Yes |
-| marcolm_demo_prompt_card.md | No | No |
+| marcolm_demo_prompt_card.md | Yes | Yes |
 
 
