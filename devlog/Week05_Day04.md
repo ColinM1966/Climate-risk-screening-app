@@ -86,3 +86,28 @@ Prepare the final friendly testing pack, run a full dry run, confirm the backup 
 | Known issues | Yes | Yes | Yes |
 | Dr Corine observation record | Yes | Yes | Yes |
 | Demo prompt card | Yes | Yes | Yes |
+
+## Timed dry run
+
+| Section | Target time | Actual time | Notes |
+| ------- | ----------: | ----------: | ----- |
+| Opening explanation | 3 min | 4 min | It's 1 minute late |
+| Main Fire demo | 10 min | 8 min | It's 2 minutes early |
+| AOI task | 8 min | 6min | It's 2 minutes early |
+| Optional WBGT demo | 5 min | 4 min | It's 1 minutes early |
+| Downloads and Data Availability | 5 min | 6 min | It's 1 minute late |
+| Feedback questions | 10 min | 6 min | It's 4 minutes early |
+| Wrap-up | 2 min | 3 min | It's 1 minute late |
+
+## Main demo dry run
+
+| Check | Result |
+| ----- | ------ |
+| Jambongan loads | Done |
+| Fire comparison works | Done |
+| Result table appears | Done |
+| Comparison table appears | Done |
+| Graph appears | Done |
+| Comparison CSV download | Done |
+| Explanation clear | Done |
+
