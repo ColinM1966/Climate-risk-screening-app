@@ -31,4 +31,58 @@ Prepare the final friendly testing pack, run a full dry run, confirm the backup 
 | known_issues_for_testing.md | Yes | Yes |
 | marcolm_demo_prompt_card.md | Yes | Yes |
 
+## Tester task list final review
 
+| Check | Result |
+| ----- | ------ |
+| Local-run setup clear | Done |
+| Main demo included | Done |
+| AOI task included | Done |
+| Cropped raster task included | Done |
+| Optional WBGT task included | Done |
+| Feedback focus clear | Done |
+
+## Technical feedback sheet final review
+
+| Check | Result |
+| ----- | ------ |
+| AOI questions included | Done |
+| Table questions included | Done |
+| Graph questions included | Done |
+| Download questions included | Done |
+| WBGT question included | Done |
+| Priority improvement question included | Done |
+
+## Dr Corine observation record final review
+
+| Check | Result |
+| ----- | ------ |
+| Preparation section ready | Done |
+| Communication section ready | Done |
+| Feedback response section ready | Done |
+| Problem-solving section ready | Done |
+| Supports section ready | Done |
+| Summary section ready | Done |
+
+## Known Issues for Friendly Testing
+
+| Issue | Severity | Workaround |
+| ----- | -------- | ---------- |
+| Not all variables are available for every scenario and period | Medium | Check Data Availability tab |
+| WBGT is monthly average maximum, not daily extreme WBGT | Medium | Explain before showing WBGT |
+| Cropped raster output can be slower | Low | Leave cropped raster output off unless needed |
+| Large AOIs may take longer to process | Medium | Use Jambongan for demo |
+| Draw polygon is for exploratory testing | Low | Use uploaded AOI for formal boundaries |
+| Point-buffer is for exploratory testing | Low | Use uploaded AOI for formal boundaries |
+
+## Testing materials prepared
+
+| Material | Paper copy? | Digital copy? | Ready? |
+| -------- | ----------- | ------------- | ------ |
+| Tester task list | Yes | Yes | Yes |
+| Technical feedback sheet | Yes | Yes | Yes |
+| Friendly testing guide | Yes | Yes | Yes |
+| Session notes template | Yes | Yes | Yes |
+| Known issues | Yes | Yes | Yes |
+| Dr Corine observation record | Yes | Yes | Yes |
+| Demo prompt card | Yes | Yes | Yes |
