@@ -167,3 +167,36 @@ If the app freezes:
 
 If a tester asks for a feature that is not ready:
 "I will record that as a suggestion for later development."
+
+## Testing version
+
+Git commit: Done
+
+Status: Ready with known issues
+
+Notes: It is ready.
+
+## Final freeze rule
+
+No new features should be added before the friendly technical testing session.
+
+Allowed changes only:
+- app does not start;
+- main demo fails;
+- downloads fail;
+- wrong or misleading WBGT wording;
+- missing testing file;
+- broken raster catalogue row needed for the demo.
+
+Avoid:
+- new variables;
+- new scenarios;
+- new graphs;
+- risk scoring;
+- layout redesign;
+- major refactoring.
+
+## Day 4 summary
+
+Week 5 Day 4 focused on preparing the final friendly testing pack and running a full dry run. Testing files were checked, printed or prepared digitally, the main Jambongan Fire comparison demo was rehearsed, the AOI task and optional WBGT demo were tested, downloads and Data Availability were checked, the backup plan was confirmed, and the testing version was recorded.
+
