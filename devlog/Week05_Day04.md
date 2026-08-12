@@ -111,3 +111,59 @@ Prepare the final friendly testing pack, run a full dry run, confirm the backup 
 | Comparison CSV download | Done |
 | Explanation clear | Done |
 
+## AOI task dry run
+
+| Check | Result |
+| ----- | ------ |
+| AOI method used | Done |
+| AOI loads | Done |
+| Active AOI status clear | Done |
+| Bio05 analysis works | Done |
+| Result table appears | Done |
+| Result CSV downloads | Done |
+
+## Optional WBGT dry run
+
+| Check | Result |
+| ----- | ------ |
+| WBGT analysis works |  |
+| Units correct |  |
+| WBGT note clear |  |
+| Cropped raster appears |  |
+| Cropped raster downloads |  |
+| Explanation accurate |  |
+
+## Downloads and Data Availability dry run
+
+| Check | Result |
+| ----- | ------ |
+| Result CSV downloads | Done |
+| Comparison CSV downloads | Done |
+| Cropped raster downloads | Done |
+| Data Availability opens | Done |
+| Data Availability explanation clear | Done |
+
+## Marcolm laptop readiness
+
+| Check | Result |
+| ----- | ------ |
+| App starts | Done |
+| Rasters found | Done |
+| Main demo works | Done |
+| WBGT demo works | Done |
+| Downloads work | Done |
+
+## Backup plan for testing session
+
+If upload AOI, draw polygon, point-buffer, WBGT or cropped raster output fails, use the reliable fallback:
+
+Jambongan → Fire Probability → comparison → graph → comparison CSV.
+
+If the app freezes:
+1. stop the app;
+2. restart RStudio if needed;
+3. run the app again;
+4. use Jambongan Fire comparison only.
+
+If a tester asks for a feature that is not ready:
+"I will record that as a suggestion for later development."
