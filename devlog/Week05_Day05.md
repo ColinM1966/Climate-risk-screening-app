@@ -34,11 +34,31 @@ Run the friendly technical testing session, collect feedback, record issues, and
 
 | Check | Result |
 | ----- | ------ |
-| Jambongan loaded |  |
-| Fire probability selected |  |
-| Comparison ran |  |
-| Result table appeared |  |
-| Comparison table appeared |  |
-| Graph appeared |  |
-| Comparison CSV downloaded |  |
-| Tester understood the workflow |  |
+| Jambongan loaded | Done |
+| Fire probability selected | Done |
+| Comparison ran | Done |
+| Result table appeared | Done |
+| Comparison table appeared | Done |
+| Graph appeared | Done |
+| Comparison CSV downloaded | Done |
+| Tester understood the workflow | Done |
+
+## Cropped raster test
+
+| Check | Result |
+| ----- | ------ |
+| OFF behaviour clear | Done |
+| ON behaviour clear | Done |
+| Raster appeared on map | Done |
+| Cropped raster downloaded | Done |
+| Tester understood it is GIS data | Done |
+
+## Optional WBGT data
+
+| Check | Result |
+| ----- | ------ |
+| WBGT analysis worked | Done |
+| Units were clear | Done |
+| WBGT note was clear | Done |
+| Cropped raster worked | Done |
+| Tester understood monthly average maximum wording | Done |
