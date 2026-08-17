@@ -120,4 +120,35 @@ Make final small app improvements before friendly technical testing, then retest
 - [ ✔ ] Feedback sheet explained.
 - [ ✔ ] Backup workflow confirmed.
 
+## Updated testing version
+
+Git commit: Completed
+
+Status: Ready for testing.
+
+Notes: Ready for known issues.
+
+## Final freeze rule
+
+After Day 5, no new app improvements should be added before the friendly technical testing session unless they fix a serious blocker.
+
+Allowed changes:
+- app does not start;
+- main demo fails;
+- downloads fail;
+- WBGT wording is wrong or misleading;
+- missing testing file;
+- broken raster catalogue row needed for the demo.
+
+Avoid:
+- new variables:
+- new scenarios;
+- new graph types;
+- risk scoring;
+- layout redesign;
+- major refactoring.
+
+## Day 5 summary
+
+Week 5 Day 5 focused on final small app improvements before friendly technical testing. Result notes, Data Availability display, AOI instructions, DeveloperTest tab use, testing files and known issues were reviewed. The main Jambongan Fire comparison demo, optional WBGT demo, user-created AOI workflow and downloads were retested after improvements. The testing version was recorded and the app was frozen for testing except for serious blockers.
 
