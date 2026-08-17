@@ -14,6 +14,7 @@ Make final small app improvements before friendly technical testing, then retest
 - [ ✔ ] Testing files exist.
 - [ ✔ ] Known issues file updated.
 
+
 ## Day 5 improvement decisions
 
 - [ ✔ ] Make Results notes variable-specific.
@@ -73,3 +74,50 @@ Make final small app improvements before friendly technical testing, then retest
 - [ ✔ ] WBGT note says monthly average maximum.
 - [ ✔ ] Raster appears when cropped raster is ON.
 - [ ✔ ] Cropped raster downloads.
+
+## User-created AOI retest
+
+- [ ✔ ] AOI method tested:
+- [ ✔ ] AOI loads.
+- [ ✔ ] Active AOI status updates.
+- [ ✔ ] Bio05 analysis runs.
+- [ ✔ ] Result CSV downloads.
+
+## Download retest
+
+- [ ✔ ] Result CSV downloads
+- [ ✔ ] Comparison CSV downloads.
+- [ ✔ ] Cropped raster GeoTIFF downloads.
+- [ ✔ ] CSV fields are readable.
+- [ ✔ ] Download buttons appear only when relevant.
+
+## Testing file updates
+
+- [ ✔ ] tester_task_list.md checked
+- [ ✔ ] technical_feedback_sheet.md checked
+- [ ✔ ] known_issues_for_testing.md checked
+- [ ✔ ] marcolm_demo_prompt_card.md checked
+- [ ✔ ] friendly_testing_guide.md checked
+
+## Marcolm observation notes
+
+| Observation | Notes |
+| ----------- | ----- |
+| Explained purpose clearly | It completed! |
+| Managed feedback calmly | It completed! |
+| Asked for clarification | It completed! |
+| Recorded issues | It completed! |
+| Used backup workflow if needed | It completed! |
+
+## Short final dry run
+
+- [ ✔ ] Opening script practised.
+- [ ✔ ] Main Fire demo completed.
+- [ ✔ ] AOI task completed.
+- [ ✔ ] Optional WBGT demo completed or skipped.
+- [ ✔ ] Downloads shown.
+- [ ✔ ] Data Availability shown.
+- [ ✔ ] Feedback sheet explained.
+- [ ✔ ] Backup workflow confirmed.
+
+
