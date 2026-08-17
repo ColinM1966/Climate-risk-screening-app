@@ -64,4 +64,12 @@ Make final small app improvements before friendly technical testing, then retest
 - [ ✔ ] Comparison CSV downloads.
 - [ ✔ ] Result notes are clear.
 
+## Optional WBGT retest
 
+- [ ✔ ] WBGT appears in variable selector.
+- [ ✔ ] WBGT analysis runs.
+- [ ✔ ] Units show °C.
+- [ ✔ ] WBGT note appears.
+- [ ✔ ] WBGT note says monthly average maximum.
+- [ ✔ ] Raster appears when cropped raster is ON.
+- [ ✔ ] Cropped raster downloads.
