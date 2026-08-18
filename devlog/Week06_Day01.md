@@ -73,4 +73,16 @@ Notes: It is completed!
 - [ ✔ ] Tester understood WBGT purpose.
 - [ ✔ ] Cropped raster downloaded.
 
+## Downloads and Data Availability
 
+- [ ✔ ] Result CSV shown.
+- [ ✔ ] Comparison CSV shown.
+- [ ✔ ] Cropped raster explained.
+- [ ✔ ] Data Availability tab shown.
+- [ ✔ ] Tester understood why some scenario-period combinations may be missing.
+
+## Backup workflow use
+
+- [ ✔ ] Backup workflow was needed.
+- [ ✔ ] Reason: To try if it works.
+- [ ✔ ] Did it work?
