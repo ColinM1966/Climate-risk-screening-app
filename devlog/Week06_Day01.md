@@ -64,4 +64,13 @@ Notes: It is completed!
 - [ ✔ ] Tester understood the purpose.
 - [ ✔ ] Tester understood change from baseline.
 
+## Optional WBGT demo
+
+- [ ✔ ] WBGT demo shown.
+- [ ✔ ] WBGT analysis worked.
+- [ ✔ ] Units were clear.
+- [ ✔ ] Monthly average maximum wording was explained.
+- [ ✔ ] Tester understood WBGT purpose.
+- [ ✔ ] Cropped raster downloaded.
+
 
