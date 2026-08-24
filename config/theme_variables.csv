@@ -7,3 +7,11 @@ Temperature,Bio05,1,TRUE,TRUE
 Temperature,Bio017,2,TRUE,TRUE
 Rainfall,Bio017,1,TRUE,TRUE
 Humid heat,WBGT,1,TRUE,TRUE
+Ocean warming,T_surface,1,TRUE,
+Ocean warming,T_bottom,2,FALSE,
+Coastal hydrography,S_surface,1,TRUE,
+Marine deoxygenation,O2_bottom,1,TRUE,
+Ocean acidification,pH_surface,1,TRUE,
+Ocean acidification,pH_bottom,2,FALSE,
+Ocean acidification,satarag_surface,3,FALSE,
+Marine productivity,netPP_total,1,TRUE,

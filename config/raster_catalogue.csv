@@ -1,70 +1,120 @@
-dataset_id,variable_id,scenario,period,file_path,units,dataset_type,nodata_value,enabled
-CDD_BASE,CDD,baseline,1981-2010,rasters/baseline/CDD_AllGCMs_historical_1981-2010.tif,days,continuous,-9999,TRUE
-CDD_245_4170,CDD,ssp245,2041-2070,rasters/future/ssp245/2041-2070/CDD_AllGCMs_ssp245_2041-2070.tif,days,continuous,-9999,TRUE
-CDD_245_7100,CDD,ssp245,2071-2100,rasters/future/ssp245/2071-2100/CDD_AllGCMs_ssp245_2071-2100.tif,days,continuous,-9999,TRUE
-CDD_126_4170,CDD,ssp126,2041-2070,rasters/future/ssp126/2041-2070/CDD_AllGCMs_ssp126_2041-2070.tif,days,continuous,-9999,TRUE
-CDD_126_7100,CDD,ssp126,2071-2100,rasters/future/ssp126/2071-2100/CDD_AllGCMs_ssp126_2071-2100.tif,days,continuous,-9999,TRUE
-CDD_370_4170,CDD,ssp370,2041-2070,rasters/future/ssp370/2041-2070/CDD_AllGCMs_ssp370_2041-2070.tif,days,continuous,-9999,TRUE
-CDD_370_7100,CDD,ssp370,2071-2100,rasters/future/ssp370/2071-2100/CDD_AllGCMs_ssp370_2071-2100.tif,days,continuous,-9999,TRUE
-CDD_585_4170,CDD,ssp585,2041-2070,rasters/future/ssp585/2041-2070/CDD_AllGCMs_ssp585_2041-2070.tif,days,continuous,-9999,TRUE
-CDD_585_7100,CDD,ssp585,2071-2100,rasters/future/ssp585/2071-2100/CDD_AllGCMs_ssp585_2071-2100.tif,days,continuous,-9999,TRUE
-
-Bio05_BASE,Bio05,baseline,1981-2010,rasters/baseline/Bio05_AllGCMs_historical_1981-2010.tif,degrees C,continuous,-9998,TRUE
-Bio05_245_4170,Bio05,ssp245,2041-2070,rasters/future/ssp245/2041-2070/Bio05_AllGCMs_ssp245_2041-2070.tif,degrees C,continuous,-9997,TRUE
-Bio05_245_7100,Bio05,ssp245,2071-2100,rasters/future/ssp245/2071-2100/Bio05_AllGCMs_ssp245_2071-2100.tif,degrees C,continuous,-9997,TRUE
-Bio05_126_4170,Bio05,ssp126,2041-2070,rasters/future/ssp126/2041-2070/Bio05_AllGCMs_ssp126_2041-2070.tif,degrees C,continuous,-9997,TRUE
-Bio05_126_7100,Bio05,ssp126,2071-2100,rasters/future/ssp126/2071-2100/Bio05_AllGCMs_ssp126_2071-2100.tif,degrees C,continuous,-9997,TRUE
-Bio05_370_4170,Bio05,ssp370,2041-2070,rasters/future/ssp370/2041-2070/Bio05_AllGCMs_ssp370_2041-2070.tif,degrees C,continuous,-9997,TRUE
-Bio05_370_7100,Bio05,ssp370,2071-2100,rasters/future/ssp370/2071-2100/Bio05_AllGCMs_ssp370_2071-2100.tif,degrees C,continuous,-9997,TRUE
-Bio05_585_4170,Bio05,ssp585,2041-2070,rasters/future/ssp585/2041-2070/Bio05_AllGCMs_ssp585_2041-2070.tif,degrees C,continuous,-9997,TRUE
-Bio05_585_7100,Bio05,ssp585,2071-2100,rasters/future/ssp585/2071-2100/Bio05_AllGCMs_ssp585_2071-2100.tif,degrees C,continuous,-9997,TRUE
-
-Bio017_BASE,Bio017,baseline,1981-2010,rasters/baseline/Bio17_AllGCMs_historical_1981-2010.tif,millimeters,continuous,-9996,TRUE
-Bio017_245_4170,Bio017,ssp245,2041-2070,rasters/future/ssp245/2041-2070/Bio17_AllGCMs_ssp245_2041-2070.tif,millimeters,continuous,-9995,TRUE
-Bio017_245_7100,Bio017,ssp245,2071-2100,rasters/future/ssp245/2071-2100/Bio17_AllGCMs_ssp245_2071-2100.tif,millimeters,continuous,-9995,TRUE
-Bio017_126_4170,Bio017,ssp126,2041-2070,rasters/future/ssp126/2041-2070/Bio17_AllGCMs_ssp126_2041-2070.tif,millimeters,continuous,-9995,TRUE
-Bio017_126_7100,Bio017,ssp126,2071-2100,rasters/future/ssp126/2071-2100/Bio17_AllGCMs_ssp126_2071-2100.tif,millimeters,continuous,-9995,TRUE
-Bio017_370_4170,Bio017,ssp370,2041-2070,rasters/future/ssp370/2041-2070/Bio17_AllGCMs_ssp370_2041-2070.tif,millimeters,continuous,-9995,TRUE
-Bio017_370_7100,Bio017,ssp370,2071-2100,rasters/future/ssp370/2071-2100/Bio17_AllGCMs_ssp370_2071-2100.tif,millimeters,continuous,-9995,TRUE
-Bio017_585_4170,Bio017,ssp585,2041-2070,rasters/future/ssp585/2041-2070/Bio17_AllGCMs_ssp585_2041-2070.tif,millimeters,continuous,-9995,TRUE
-Bio017_585_7100,Bio017,ssp585,2071-2100,rasters/future/ssp585/2071-2100/Bio17_AllGCMs_ssp585_2071-2100.tif,millimeters,continuous,-9995,TRUE
-
-Fire_BASE,Fire,baseline,1981-2010,rasters/baseline/Fire_AllGCMs_historical_1981-2010.asc,probability,continuous,-9994,TRUE
-Fire_245_4170,Fire,ssp245,2041-2070,rasters/future/ssp245/2041-2070/Fire_AllGCMs_ssp245_2041-2070.asc,probability,continuous,-9993,TRUE
-Fire_245_7100,Fire,ssp245,2071-2100,rasters/future/ssp245/2071-2100/Fire_AllGCMs_ssp245_2071-2100.asc,probability,continuous,-9993,TRUE
-Fire_126_4170,Fire,ssp126,2041-2070,rasters/future/ssp126/2041-2070/Fire_AllGCMs_ssp126_2041-2070.asc,probability,continuous,-9993,TRUE
-Fire_126_7100,Fire,ssp126,2071-2100,rasters/future/ssp126/2071-2100/Fire_AllGCMs_ssp126_2071-2100.asc,probability,continuous,-9993,TRUE
-Fire_370_4170,Fire,ssp370,2041-2070,rasters/future/ssp370/2041-2070/Fire_AllGCMs_ssp370_2041-2070.asc,probability,continuous,-9993,TRUE
-Fire_370_7100,Fire,ssp370,2071-2100,rasters/future/ssp370/2071-2100/Fire_AllGCMs_ssp370_2071-2100.asc,probability,continuous,-9993,TRUE
-Fire_585_4170,Fire,ssp585,2041-2070,rasters/future/ssp585/2041-2070/Fire_AllGCMs_ssp585_2041-2070.asc,probability,continuous,-9993,TRUE
-Fire_585_7100,Fire,ssp585,2071-2100,rasters/future/ssp585/2071-2100/Fire_AllGCMs_ssp585_2071-2100.asc,probability,continuous,-9993,TRUE
-
-PPETConDryMth_Base,PPETConDryMth,baseline,1981-2010,rasters/baseline/PPETConDryMth_AllGCMs_historical_1981-2010.tif,months,continuous,-9992,TRUE
-PPETConDryMth_245_4170,PPETConDryMth,ssp245,2041-2070,rasters/future/ssp245/2041-2070/PPETConDryMth_AllGCMs_ssp245_2041-2070.tif,months,continuous,-9991,TRUE
-PPETConDryMth_245_7100,PPETConDryMth,ssp245,2071-2100,rasters/future/ssp245/2071-2100/PPETConDryMth_AllGCMs_ssp245_2071-2100.tif,months,continuous,-9991,TRUE
-PPETConDryMth_126_4170,PPETConDryMth,ssp126,2041-2070,rasters/future/ssp126/2041-2070/PPETConDryMth_AllGCMs_ssp126_2041-2070.tif,months,continuous,-9991,TRUE
-PPETConDryMth_126_7100,PPETConDryMth,ssp126,2071-2100,rasters/future/ssp126/2071-2100/PPETConDryMth_AllGCMs_ssp126_2071-2100.tif,months,continuous,-9991,TRUE
-PPETConDryMth_370_4170,PPETConDryMth,ssp370,2041-2070,rasters/future/ssp370/2041-2070/PPETConDryMth_AllGCMs_ssp370_2041-2070.tif,months,continuous,-9991,TRUE
-PPETConDryMth_370_7100,PPETConDryMth,ssp370,2071-2100,rasters/future/ssp370/2071-2100/PPETConDryMth_AllGCMs_ssp370_2071-2100.tif,months,continuous,-9991,TRUE
-PPETConDryMth_585_4170,PPETConDryMth,ssp585,2041-2070,rasters/future/ssp585/2041-2070/PPETConDryMth_AllGCMs_ssp585_2041-2070.tif,months,continuous,-9991,TRUE
-PPETConDryMth_585_7100,PPETConDryMth,ssp585,2071-2100,rasters/future/ssp585/2071-2100/PPETConDryMth_AllGCMs_ssp585_2071-2100.tif,months,continuous,-9991,TRUE
-
-PPETmin_Base,PPETmin,baseline,1981-2010,rasters/baseline/PPETmin_AllGCMs_historical_1981-2010.tif,ratio,continuous,-9990,TRUE
-PPETmin_245_4170,PPETmin,ssp245,2041-2070,rasters/future/ssp245/2041-2070/PPETMin_AllGCMs_ssp245_2041-2070.tif,ratio,continuous,-9989,TRUE
-PPETmin_245_7100,PPETmin,ssp245,2071-2100,rasters/future/ssp245/2071-2100/PPETMin_AllGCMs_ssp245_2071-2100.tif,ratio,continuous,-9989,TRUE
-PPETmin_126_4170,PPETmin,ssp126,2041-2070,rasters/future/ssp126/2041-2070/PPETMin_AllGCMs_ssp126_2041-2070.tif,ratio,continuous,-9989,TRUE
-PPETmin_126_7100,PPETmin,ssp126,2071-2100,rasters/future/ssp126/2071-2100/PPETMin_AllGCMs_ssp126_2071-2100.tif,ratio,continuous,-9989,TRUE
-PPETmin_370_4170,PPETmin,ssp370,2041-2070,rasters/future/ssp370/2041-2070/PPETMin_AllGCMs_ssp370_2041-2070.tif,ratio,continuous,-9989,TRUE
-PPETmin_370_7100,PPETmin,ssp370,2071-2100,rasters/future/ssp370/2071-2100/PPETMin_AllGCMs_ssp370_2071-2100.tif,ratio,continuous,-9989,TRUE
-PPETmin_585_4170,PPETmin,ssp585,2041-2070,rasters/future/ssp585/2041-2070/PPETMin_AllGCMs_ssp585_2041-2070.tif,ratio,continuous,-9989,TRUE
-PPETmin_585_7100,PPETmin,ssp585,2071-2100,rasters/future/ssp585/2071-2100/PPETMin_AllGCMs_ssp585_2071-2100.tif,ratio,continuous,-9989,TRUE
-
-WBGT_BASE,WBGT,baseline,1981-2010,rasters/baseline/WBGT-Sun_Max_AllGCMs_historical_1981-2010.tif,degrees C,continuous,-9999,TRUE
-WBGT_245_4170,WBGT,ssp245,2041-2070,rasters/future/ssp245/2041-2070/WBGT-Sun_Max_AllGCMs_ssp245_2041-2070.tif,degrees C,continuous,-9999,TRUE
-WBGT_245_7100,WBGT,ssp245,2071-2100,rasters/future/ssp245/2071-2100/WBGT-Sun_Max_AllGCMs_ssp245_2071-2100.tif,degrees C,continuous,-9999,TRUE
-WBGT_126_4170,WBGT,ssp126,2041-2070,rasters/future/ssp126/2041-2070/WBGT-Sun_Max_AllGCMs_ssp126_2041-2070.tif,degrees C,continuous,-9999,TRUE
-WBGT_126_7100,WBGT,ssp126,2071-2100,rasters/future/ssp126/2071-2100/WBGT-Sun_Max_AllGCMs_ssp126_2071-2100.tif,degrees C,continuous,-9999,TRUE
-WBGT_370_4170,WBGT,ssp370,2041-2070,rasters/future/ssp370/2041-2070/WBGT-Sun_Max_AllGCMs_ssp370_2041-2070.tif,degrees C,continuous,-9999,TRUE
-WBGT_370_7100,WBGT,ssp370,2071-2100,rasters/future/ssp370/2071-2100/WBGT-Sun_Max_AllGCMs_ssp370_2071-2100.tif,degrees C,continuous,-9999,TRUE
-WBGT_585_4170,WBGT,ssp585,2041-2070,rasters/future/ssp585/2041-2070/WBGT-Sun_Max_AllGCMs_ssp585_2041-2070.tif,degrees C,continuous,-9999,TRUE
-WBGT_585_7100,WBGT,ssp585,2071-2100,rasters/future/ssp585/2071-2100/WBGT-Sun_Max_AllGCMs_ssp585_2071-2100.tif,degrees C,continuous,-9999,TRUE
+dataset_id,variable_id,scenario,period,file_path,units,dataset_type,nodata_value,enabled,file_format,resolution
+CDD_BASE,CDD,baseline,1981-2010,rasters/baseline/CDD_AllGCMs_historical_1981-2010.tif,days,continuous,-9999,TRUE,,
+CDD_245_4170,CDD,ssp245,2041-2070,rasters/future/ssp245/2041-2070/CDD_AllGCMs_ssp245_2041-2070.tif,days,continuous,-9999,TRUE,,
+CDD_245_7100,CDD,ssp245,2071-2100,rasters/future/ssp245/2071-2100/CDD_AllGCMs_ssp245_2071-2100.tif,days,continuous,-9999,TRUE,,
+CDD_126_4170,CDD,ssp126,2041-2070,rasters/future/ssp126/2041-2070/CDD_AllGCMs_ssp126_2041-2070.tif,days,continuous,-9999,TRUE,,
+CDD_126_7100,CDD,ssp126,2071-2100,rasters/future/ssp126/2071-2100/CDD_AllGCMs_ssp126_2071-2100.tif,days,continuous,-9999,TRUE,,
+CDD_370_4170,CDD,ssp370,2041-2070,rasters/future/ssp370/2041-2070/CDD_AllGCMs_ssp370_2041-2070.tif,days,continuous,-9999,TRUE,,
+CDD_370_7100,CDD,ssp370,2071-2100,rasters/future/ssp370/2071-2100/CDD_AllGCMs_ssp370_2071-2100.tif,days,continuous,-9999,TRUE,,
+CDD_585_4170,CDD,ssp585,2041-2070,rasters/future/ssp585/2041-2070/CDD_AllGCMs_ssp585_2041-2070.tif,days,continuous,-9999,TRUE,,
+CDD_585_7100,CDD,ssp585,2071-2100,rasters/future/ssp585/2071-2100/CDD_AllGCMs_ssp585_2071-2100.tif,days,continuous,-9999,TRUE,,
+Bio05_BASE,Bio05,baseline,1981-2010,rasters/baseline/Bio05_AllGCMs_historical_1981-2010.tif,degrees C,continuous,-9998,TRUE,,
+Bio05_245_4170,Bio05,ssp245,2041-2070,rasters/future/ssp245/2041-2070/Bio05_AllGCMs_ssp245_2041-2070.tif,degrees C,continuous,-9997,TRUE,,
+Bio05_245_7100,Bio05,ssp245,2071-2100,rasters/future/ssp245/2071-2100/Bio05_AllGCMs_ssp245_2071-2100.tif,degrees C,continuous,-9997,TRUE,,
+Bio05_126_4170,Bio05,ssp126,2041-2070,rasters/future/ssp126/2041-2070/Bio05_AllGCMs_ssp126_2041-2070.tif,degrees C,continuous,-9997,TRUE,,
+Bio05_126_7100,Bio05,ssp126,2071-2100,rasters/future/ssp126/2071-2100/Bio05_AllGCMs_ssp126_2071-2100.tif,degrees C,continuous,-9997,TRUE,,
+Bio05_370_4170,Bio05,ssp370,2041-2070,rasters/future/ssp370/2041-2070/Bio05_AllGCMs_ssp370_2041-2070.tif,degrees C,continuous,-9997,TRUE,,
+Bio05_370_7100,Bio05,ssp370,2071-2100,rasters/future/ssp370/2071-2100/Bio05_AllGCMs_ssp370_2071-2100.tif,degrees C,continuous,-9997,TRUE,,
+Bio05_585_4170,Bio05,ssp585,2041-2070,rasters/future/ssp585/2041-2070/Bio05_AllGCMs_ssp585_2041-2070.tif,degrees C,continuous,-9997,TRUE,,
+Bio05_585_7100,Bio05,ssp585,2071-2100,rasters/future/ssp585/2071-2100/Bio05_AllGCMs_ssp585_2071-2100.tif,degrees C,continuous,-9997,TRUE,,
+Bio017_BASE,Bio017,baseline,1981-2010,rasters/baseline/Bio17_AllGCMs_historical_1981-2010.tif,millimeters,continuous,-9996,TRUE,,
+Bio017_245_4170,Bio017,ssp245,2041-2070,rasters/future/ssp245/2041-2070/Bio17_AllGCMs_ssp245_2041-2070.tif,millimeters,continuous,-9995,TRUE,,
+Bio017_245_7100,Bio017,ssp245,2071-2100,rasters/future/ssp245/2071-2100/Bio17_AllGCMs_ssp245_2071-2100.tif,millimeters,continuous,-9995,TRUE,,
+Bio017_126_4170,Bio017,ssp126,2041-2070,rasters/future/ssp126/2041-2070/Bio17_AllGCMs_ssp126_2041-2070.tif,millimeters,continuous,-9995,TRUE,,
+Bio017_126_7100,Bio017,ssp126,2071-2100,rasters/future/ssp126/2071-2100/Bio17_AllGCMs_ssp126_2071-2100.tif,millimeters,continuous,-9995,TRUE,,
+Bio017_370_4170,Bio017,ssp370,2041-2070,rasters/future/ssp370/2041-2070/Bio17_AllGCMs_ssp370_2041-2070.tif,millimeters,continuous,-9995,TRUE,,
+Bio017_370_7100,Bio017,ssp370,2071-2100,rasters/future/ssp370/2071-2100/Bio17_AllGCMs_ssp370_2071-2100.tif,millimeters,continuous,-9995,TRUE,,
+Bio017_585_4170,Bio017,ssp585,2041-2070,rasters/future/ssp585/2041-2070/Bio17_AllGCMs_ssp585_2041-2070.tif,millimeters,continuous,-9995,TRUE,,
+Bio017_585_7100,Bio017,ssp585,2071-2100,rasters/future/ssp585/2071-2100/Bio17_AllGCMs_ssp585_2071-2100.tif,millimeters,continuous,-9995,TRUE,,
+Fire_BASE,Fire,baseline,1981-2010,rasters/baseline/Fire_AllGCMs_historical_1981-2010.asc,probability,continuous,-9994,TRUE,,
+Fire_245_4170,Fire,ssp245,2041-2070,rasters/future/ssp245/2041-2070/Fire_AllGCMs_ssp245_2041-2070.asc,probability,continuous,-9993,TRUE,,
+Fire_245_7100,Fire,ssp245,2071-2100,rasters/future/ssp245/2071-2100/Fire_AllGCMs_ssp245_2071-2100.asc,probability,continuous,-9993,TRUE,,
+Fire_126_4170,Fire,ssp126,2041-2070,rasters/future/ssp126/2041-2070/Fire_AllGCMs_ssp126_2041-2070.asc,probability,continuous,-9993,TRUE,,
+Fire_126_7100,Fire,ssp126,2071-2100,rasters/future/ssp126/2071-2100/Fire_AllGCMs_ssp126_2071-2100.asc,probability,continuous,-9993,TRUE,,
+Fire_370_4170,Fire,ssp370,2041-2070,rasters/future/ssp370/2041-2070/Fire_AllGCMs_ssp370_2041-2070.asc,probability,continuous,-9993,TRUE,,
+Fire_370_7100,Fire,ssp370,2071-2100,rasters/future/ssp370/2071-2100/Fire_AllGCMs_ssp370_2071-2100.asc,probability,continuous,-9993,TRUE,,
+Fire_585_4170,Fire,ssp585,2041-2070,rasters/future/ssp585/2041-2070/Fire_AllGCMs_ssp585_2041-2070.asc,probability,continuous,-9993,TRUE,,
+Fire_585_7100,Fire,ssp585,2071-2100,rasters/future/ssp585/2071-2100/Fire_AllGCMs_ssp585_2071-2100.asc,probability,continuous,-9993,TRUE,,
+PPETConDryMth_Base,PPETConDryMth,baseline,1981-2010,rasters/baseline/PPETConDryMth_AllGCMs_historical_1981-2010.tif,months,continuous,-9992,TRUE,,
+PPETConDryMth_245_4170,PPETConDryMth,ssp245,2041-2070,rasters/future/ssp245/2041-2070/PPETConDryMth_AllGCMs_ssp245_2041-2070.tif,months,continuous,-9991,TRUE,,
+PPETConDryMth_245_7100,PPETConDryMth,ssp245,2071-2100,rasters/future/ssp245/2071-2100/PPETConDryMth_AllGCMs_ssp245_2071-2100.tif,months,continuous,-9991,TRUE,,
+PPETConDryMth_126_4170,PPETConDryMth,ssp126,2041-2070,rasters/future/ssp126/2041-2070/PPETConDryMth_AllGCMs_ssp126_2041-2070.tif,months,continuous,-9991,TRUE,,
+PPETConDryMth_126_7100,PPETConDryMth,ssp126,2071-2100,rasters/future/ssp126/2071-2100/PPETConDryMth_AllGCMs_ssp126_2071-2100.tif,months,continuous,-9991,TRUE,,
+PPETConDryMth_370_4170,PPETConDryMth,ssp370,2041-2070,rasters/future/ssp370/2041-2070/PPETConDryMth_AllGCMs_ssp370_2041-2070.tif,months,continuous,-9991,TRUE,,
+PPETConDryMth_370_7100,PPETConDryMth,ssp370,2071-2100,rasters/future/ssp370/2071-2100/PPETConDryMth_AllGCMs_ssp370_2071-2100.tif,months,continuous,-9991,TRUE,,
+PPETConDryMth_585_4170,PPETConDryMth,ssp585,2041-2070,rasters/future/ssp585/2041-2070/PPETConDryMth_AllGCMs_ssp585_2041-2070.tif,months,continuous,-9991,TRUE,,
+PPETConDryMth_585_7100,PPETConDryMth,ssp585,2071-2100,rasters/future/ssp585/2071-2100/PPETConDryMth_AllGCMs_ssp585_2071-2100.tif,months,continuous,-9991,TRUE,,
+PPETmin_Base,PPETmin,baseline,1981-2010,rasters/baseline/PPETmin_AllGCMs_historical_1981-2010.tif,ratio,continuous,-9990,TRUE,,
+PPETmin_245_4170,PPETmin,ssp245,2041-2070,rasters/future/ssp245/2041-2070/PPETMin_AllGCMs_ssp245_2041-2070.tif,ratio,continuous,-9989,TRUE,,
+PPETmin_245_7100,PPETmin,ssp245,2071-2100,rasters/future/ssp245/2071-2100/PPETMin_AllGCMs_ssp245_2071-2100.tif,ratio,continuous,-9989,TRUE,,
+PPETmin_126_4170,PPETmin,ssp126,2041-2070,rasters/future/ssp126/2041-2070/PPETMin_AllGCMs_ssp126_2041-2070.tif,ratio,continuous,-9989,TRUE,,
+PPETmin_126_7100,PPETmin,ssp126,2071-2100,rasters/future/ssp126/2071-2100/PPETMin_AllGCMs_ssp126_2071-2100.tif,ratio,continuous,-9989,TRUE,,
+PPETmin_370_4170,PPETmin,ssp370,2041-2070,rasters/future/ssp370/2041-2070/PPETMin_AllGCMs_ssp370_2041-2070.tif,ratio,continuous,-9989,TRUE,,
+PPETmin_370_7100,PPETmin,ssp370,2071-2100,rasters/future/ssp370/2071-2100/PPETMin_AllGCMs_ssp370_2071-2100.tif,ratio,continuous,-9989,TRUE,,
+PPETmin_585_4170,PPETmin,ssp585,2041-2070,rasters/future/ssp585/2041-2070/PPETMin_AllGCMs_ssp585_2041-2070.tif,ratio,continuous,-9989,TRUE,,
+PPETmin_585_7100,PPETmin,ssp585,2071-2100,rasters/future/ssp585/2071-2100/PPETMin_AllGCMs_ssp585_2071-2100.tif,ratio,continuous,-9989,TRUE,,
+WBGT_BASE,WBGT,baseline,1981-2010,rasters/baseline/WBGT-Sun_Max_AllGCMs_historical_1981-2010.tif,degrees C,continuous,-9999,TRUE,,
+WBGT_245_4170,WBGT,ssp245,2041-2070,rasters/future/ssp245/2041-2070/WBGT-Sun_Max_AllGCMs_ssp245_2041-2070.tif,degrees C,continuous,-9999,TRUE,,
+WBGT_245_7100,WBGT,ssp245,2071-2100,rasters/future/ssp245/2071-2100/WBGT-Sun_Max_AllGCMs_ssp245_2071-2100.tif,degrees C,continuous,-9999,TRUE,,
+WBGT_126_4170,WBGT,ssp126,2041-2070,rasters/future/ssp126/2041-2070/WBGT-Sun_Max_AllGCMs_ssp126_2041-2070.tif,degrees C,continuous,-9999,TRUE,,
+WBGT_126_7100,WBGT,ssp126,2071-2100,rasters/future/ssp126/2071-2100/WBGT-Sun_Max_AllGCMs_ssp126_2071-2100.tif,degrees C,continuous,-9999,TRUE,,
+WBGT_370_4170,WBGT,ssp370,2041-2070,rasters/future/ssp370/2041-2070/WBGT-Sun_Max_AllGCMs_ssp370_2041-2070.tif,degrees C,continuous,-9999,TRUE,,
+WBGT_370_7100,WBGT,ssp370,2071-2100,rasters/future/ssp370/2071-2100/WBGT-Sun_Max_AllGCMs_ssp370_2071-2100.tif,degrees C,continuous,-9999,TRUE,,
+WBGT_585_4170,WBGT,ssp585,2041-2070,rasters/future/ssp585/2041-2070/WBGT-Sun_Max_AllGCMs_ssp585_2041-2070.tif,degrees C,continuous,-9999,TRUE,,
+WBGT_585_7100,WBGT,ssp585,2071-2100,rasters/future/ssp585/2071-2100/WBGT-Sun_Max_AllGCMs_ssp585_2071-2100.tif,degrees C,continuous,-9999,TRUE,,
+SMV_T_surface_BASELINE_19802005,T_surface,baseline,1980-2005,rasters/marine/historical/1980-2005/T_surface_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_T_bottom_BASELINE_19802005,T_bottom,baseline,1980-2005,rasters/marine/historical/1980-2005/T_bottom_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_S_surface_BASELINE_19802005,S_surface,baseline,1980-2005,rasters/marine/historical/1980-2005/S_surface_annual_climatological_mean.tif,psu,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_O2_bottom_BASELINE_19802005,O2_bottom,baseline,1980-2005,rasters/marine/historical/1980-2005/O2_bottom_lowest_climatological_month.tif,mmol/m^3,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_surface_BASELINE_19802005,pH_surface,baseline,1980-2005,rasters/marine/historical/1980-2005/pH_surface_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_bottom_BASELINE_19802005,pH_bottom,baseline,1980-2005,rasters/marine/historical/1980-2005/pH_bottom_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_satarag_surface_BASELINE_19802005,satarag_surface,baseline,1980-2005,rasters/marine/historical/1980-2005/satarag_surface_lowest_climatological_month.tif,dimensionless,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_netPP_total_BASELINE_19802005,netPP_total,baseline,1980-2005,rasters/marine/historical/1980-2005/netPP_total_annual_climatological_mean.tif,mg C/m^2/d,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_T_surface_RCP45_20202039,T_surface,rcp45,2020-2039,rasters/marine/rcp45/2020-2039/T_surface_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_T_bottom_RCP45_20202039,T_bottom,rcp45,2020-2039,rasters/marine/rcp45/2020-2039/T_bottom_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_S_surface_RCP45_20202039,S_surface,rcp45,2020-2039,rasters/marine/rcp45/2020-2039/S_surface_annual_climatological_mean.tif,psu,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_O2_bottom_RCP45_20202039,O2_bottom,rcp45,2020-2039,rasters/marine/rcp45/2020-2039/O2_bottom_lowest_climatological_month.tif,mmol/m^3,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_surface_RCP45_20202039,pH_surface,rcp45,2020-2039,rasters/marine/rcp45/2020-2039/pH_surface_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_bottom_RCP45_20202039,pH_bottom,rcp45,2020-2039,rasters/marine/rcp45/2020-2039/pH_bottom_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_satarag_surface_RCP45_20202039,satarag_surface,rcp45,2020-2039,rasters/marine/rcp45/2020-2039/satarag_surface_lowest_climatological_month.tif,dimensionless,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_netPP_total_RCP45_20202039,netPP_total,rcp45,2020-2039,rasters/marine/rcp45/2020-2039/netPP_total_annual_climatological_mean.tif,mg C/m^2/d,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_T_surface_RCP45_20402059,T_surface,rcp45,2040-2059,rasters/marine/rcp45/2040-2059/T_surface_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_T_bottom_RCP45_20402059,T_bottom,rcp45,2040-2059,rasters/marine/rcp45/2040-2059/T_bottom_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_S_surface_RCP45_20402059,S_surface,rcp45,2040-2059,rasters/marine/rcp45/2040-2059/S_surface_annual_climatological_mean.tif,psu,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_O2_bottom_RCP45_20402059,O2_bottom,rcp45,2040-2059,rasters/marine/rcp45/2040-2059/O2_bottom_lowest_climatological_month.tif,mmol/m^3,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_surface_RCP45_20402059,pH_surface,rcp45,2040-2059,rasters/marine/rcp45/2040-2059/pH_surface_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_bottom_RCP45_20402059,pH_bottom,rcp45,2040-2059,rasters/marine/rcp45/2040-2059/pH_bottom_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_satarag_surface_RCP45_20402059,satarag_surface,rcp45,2040-2059,rasters/marine/rcp45/2040-2059/satarag_surface_lowest_climatological_month.tif,dimensionless,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_netPP_total_RCP45_20402059,netPP_total,rcp45,2040-2059,rasters/marine/rcp45/2040-2059/netPP_total_annual_climatological_mean.tif,mg C/m^2/d,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_T_surface_RCP45_20792098,T_surface,rcp45,2079-2098,rasters/marine/rcp45/2079-2098/T_surface_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_T_bottom_RCP45_20792098,T_bottom,rcp45,2079-2098,rasters/marine/rcp45/2079-2098/T_bottom_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_S_surface_RCP45_20792098,S_surface,rcp45,2079-2098,rasters/marine/rcp45/2079-2098/S_surface_annual_climatological_mean.tif,psu,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_O2_bottom_RCP45_20792098,O2_bottom,rcp45,2079-2098,rasters/marine/rcp45/2079-2098/O2_bottom_lowest_climatological_month.tif,mmol/m^3,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_surface_RCP45_20792098,pH_surface,rcp45,2079-2098,rasters/marine/rcp45/2079-2098/pH_surface_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_bottom_RCP45_20792098,pH_bottom,rcp45,2079-2098,rasters/marine/rcp45/2079-2098/pH_bottom_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_satarag_surface_RCP45_20792098,satarag_surface,rcp45,2079-2098,rasters/marine/rcp45/2079-2098/satarag_surface_lowest_climatological_month.tif,dimensionless,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_netPP_total_RCP45_20792098,netPP_total,rcp45,2079-2098,rasters/marine/rcp45/2079-2098/netPP_total_annual_climatological_mean.tif,mg C/m^2/d,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_T_surface_RCP85_20202039,T_surface,rcp85,2020-2039,rasters/marine/rcp85/2020-2039/T_surface_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_T_bottom_RCP85_20202039,T_bottom,rcp85,2020-2039,rasters/marine/rcp85/2020-2039/T_bottom_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_S_surface_RCP85_20202039,S_surface,rcp85,2020-2039,rasters/marine/rcp85/2020-2039/S_surface_annual_climatological_mean.tif,psu,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_O2_bottom_RCP85_20202039,O2_bottom,rcp85,2020-2039,rasters/marine/rcp85/2020-2039/O2_bottom_lowest_climatological_month.tif,mmol/m^3,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_surface_RCP85_20202039,pH_surface,rcp85,2020-2039,rasters/marine/rcp85/2020-2039/pH_surface_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_bottom_RCP85_20202039,pH_bottom,rcp85,2020-2039,rasters/marine/rcp85/2020-2039/pH_bottom_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_satarag_surface_RCP85_20202039,satarag_surface,rcp85,2020-2039,rasters/marine/rcp85/2020-2039/satarag_surface_lowest_climatological_month.tif,dimensionless,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_netPP_total_RCP85_20202039,netPP_total,rcp85,2020-2039,rasters/marine/rcp85/2020-2039/netPP_total_annual_climatological_mean.tif,mg C/m^2/d,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_T_surface_RCP85_20402059,T_surface,rcp85,2040-2059,rasters/marine/rcp85/2040-2059/T_surface_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_T_bottom_RCP85_20402059,T_bottom,rcp85,2040-2059,rasters/marine/rcp85/2040-2059/T_bottom_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_S_surface_RCP85_20402059,S_surface,rcp85,2040-2059,rasters/marine/rcp85/2040-2059/S_surface_annual_climatological_mean.tif,psu,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_O2_bottom_RCP85_20402059,O2_bottom,rcp85,2040-2059,rasters/marine/rcp85/2040-2059/O2_bottom_lowest_climatological_month.tif,mmol/m^3,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_surface_RCP85_20402059,pH_surface,rcp85,2040-2059,rasters/marine/rcp85/2040-2059/pH_surface_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_bottom_RCP85_20402059,pH_bottom,rcp85,2040-2059,rasters/marine/rcp85/2040-2059/pH_bottom_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_satarag_surface_RCP85_20402059,satarag_surface,rcp85,2040-2059,rasters/marine/rcp85/2040-2059/satarag_surface_lowest_climatological_month.tif,dimensionless,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_netPP_total_RCP85_20402059,netPP_total,rcp85,2040-2059,rasters/marine/rcp85/2040-2059/netPP_total_annual_climatological_mean.tif,mg C/m^2/d,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_T_surface_RCP85_20792098,T_surface,rcp85,2079-2098,rasters/marine/rcp85/2079-2098/T_surface_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_T_bottom_RCP85_20792098,T_bottom,rcp85,2079-2098,rasters/marine/rcp85/2079-2098/T_bottom_warmest_climatological_month.tif,degrees C,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_S_surface_RCP85_20792098,S_surface,rcp85,2079-2098,rasters/marine/rcp85/2079-2098/S_surface_annual_climatological_mean.tif,psu,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_O2_bottom_RCP85_20792098,O2_bottom,rcp85,2079-2098,rasters/marine/rcp85/2079-2098/O2_bottom_lowest_climatological_month.tif,mmol/m^3,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_surface_RCP85_20792098,pH_surface,rcp85,2079-2098,rasters/marine/rcp85/2079-2098/pH_surface_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_pH_bottom_RCP85_20792098,pH_bottom,rcp85,2079-2098,rasters/marine/rcp85/2079-2098/pH_bottom_lowest_climatological_month.tif,pH,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_satarag_surface_RCP85_20792098,satarag_surface,rcp85,2079-2098,rasters/marine/rcp85/2079-2098/satarag_surface_lowest_climatological_month.tif,dimensionless,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)
+SMV_netPP_total_RCP85_20792098,netPP_total,rcp85,2079-2098,rasters/marine/rcp85/2079-2098/netPP_total_annual_climatological_mean.tif,mg C/m^2/d,continuous,-9999,TRUE,tif,~0.1 degree (~11 km)

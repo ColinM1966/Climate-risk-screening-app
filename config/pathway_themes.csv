@@ -6,3 +6,8 @@ Restoration Planning,Drought and Fire,1,TRUE
 Restoration Planning,Temperature,2,TRUE
 Restoration Planning,Rainfall,3,TRUE
 Humid Heat,Humid heat,1,TRUE
+Coastal & Marine Climate Stress,Ocean warming,1,TRUE
+Coastal & Marine Climate Stress,Marine deoxygenation,2,FALSE
+Coastal & Marine Climate Stress,Ocean acidification,3,FALSE
+Coastal & Marine Climate Stress,Marine productivity,4,FALSE
+Coastal & Marine Climate Stress,Coastal hydrography,5,FALSE

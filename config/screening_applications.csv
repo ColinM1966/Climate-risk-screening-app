@@ -1,0 +1,15 @@
+﻿application_id,application_name,purpose,status
+general,General Climate Screening,Inspect individual climate/hazard layers without combining them.,Active
+oil_palm,Oil Palm Climate Stress,Crop-climate stress plus optional operational dimensions.,Active/developing
+restoration,Forest Restoration Planning,"Climate constraints on establishment, persistence, fire and site operations.",Existing pathway -> restructure
+worker_heat,Outdoor Workability & Heat Stress,Potential constraints on outdoor physical work.,Existing pathway -> rename/expand
+fire_drought,Fire & Drought Screening,"Dryness, hot-dry conditions and fire-weather/fire-probability exposure.",Proposed
+extreme_rain,Extreme Rainfall & Flood Pressure,"Extreme rainfall, wet-spell persistence and optional flood susceptibility.",Proposed
+livestock,Livestock Heat Stress,Cattle/poultry heat exposure and optional water stress.,Existing layers -> package
+rice,Rice Climate Stress,"Crop heat, water stress, excess rainfall/flooding and field-worker heat.",Existing impact layer -> package
+rubber,Rubber Climate Stress,"Temperature/yield stress, rainfall disruption, water stress and worker heat.",Existing impact layer -> package
+peatland,Peatland & Wetland Climate Stress,"Drying, fire, extreme wetness/flooding and coastal exposure.",Proposed
+biodiversity,Biodiversity & Protected Area Climate Exposure,"Climate displacement/stability plus drought, fire and extreme events.",Proposed
+marine,Coastal & Marine Climate Stress,"Marine warming, oxygen, acidification, productivity and inundation.",Current marine workflow -> package
+fisheries,Fisheries & Aquaculture Climate Stress,"Marine climate conditions, biomass response and aquaculture exposure.",Older/current marine products -> package
+infrastructure,Infrastructure & Settlements Climate Stress,"Extreme rainfall/flood, landslide, heat/cooling demand and coastal inundation.",Proposed

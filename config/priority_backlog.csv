@@ -1,0 +1,13 @@
+﻿priority,task,inputs,importance,effort,benefit
+1,Confirm actual raster_catalogue,Run audit script in Marcolm project and merge script-generated catalogues,Very High,Low,Exact current inventory; removes uncertainty about which outputs already exist.
+2,Integrate existing daily precipitation outputs,"RX1DAY, RX5DAY, R20MM, R50MM plus compound rainfall indices",Very High,Low-Medium,"Immediately expands restoration, infrastructure, flood/erosion and operations screening."
+3,Integrate existing temperature/humid-heat outputs,"HI thresholds, WBGT thresholds, tropical nights, cattle THI",Very High,Low-Medium,Immediately expands worker heat and livestock dimensions.
+4,Build DryMonth100 / ConDryMonth100,Monthly precipitation,Very High,Low,Directly strengthens Oil Palm screening with Malaysian evidence.
+5,Build heavy-work workability loss,Daily WBGT,Very High,Low,"Reusable optional operational dimension across oil palm, restoration, rice and rubber."
+6,Build climatic water deficit,Monthly precipitation + PET,Very High,Low,Adds severity in mm and improves oil palm/restoration/peat screening.
+7,Build VPD mean/P90,Daily temperature + RH,High,Low-Medium,Adds atmospheric demand not captured by rainfall alone.
+8,Implement KBDI,Daily Tmax + precipitation + annual rainfall,High,Medium,Adds operationally familiar fire-drought metric for Forestry; validate local implementation.
+9,Build percentile heat indices,"WSDI, TX90P, TN90P",High,Medium,Improves heat-duration and night-recovery dimensions.
+10,Audit/bring in flood and landslide susceptibility,Static hazard layers,High,Medium,Enables compound climate + susceptibility applications.
+11,Package current marine v9 outputs,Marine climatologies and change layers,High,Medium,Creates coherent Coastal & Marine screening application.
+12,Climate velocity/stability prototype,Baseline/future climate surfaces,Medium,Medium-High,Extends biodiversity/protected-area screening.

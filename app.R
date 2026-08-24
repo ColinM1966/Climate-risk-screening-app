@@ -62,6 +62,18 @@ source(
 )
 
 # ------------------------------------------------------------
+# OIL PALM IMPACT SCREENING
+# ------------------------------------------------------------
+
+source(
+  file.path(
+    "R",
+    "processing",
+    "oil_palm_screening_app.R"
+  )
+)
+
+# ------------------------------------------------------------
 # LOAD CONFIGURATION TABLES
 # ------------------------------------------------------------
 
@@ -93,6 +105,47 @@ if (length(pathway_choices) == 0) {
 }
 
 # ------------------------------------------------------------
+# SCREENING APPLICATION CHOICES
+# ------------------------------------------------------------
+get_screening_application_label <- function(pathway_name) {
+  x <- stringr::str_to_lower(pathway_name)
+  if (stringr::str_detect(x, "general.*climate")) return("General Climate Screening")
+  if (stringr::str_detect(x, "restoration")) return("Forest Restoration Planning")
+  if (stringr::str_detect(x, "humid.*heat|heat.*stress|workability")) return("Outdoor Workability & Heat Stress")
+  if (stringr::str_detect(x, "coastal.*marine|marine.*climate|marine.*stress")) return("Coastal & Marine Climate Stress")
+  pathway_name
+}
+
+general_pathway_matches <- pathway_choices[
+  stringr::str_detect(stringr::str_to_lower(pathway_choices), "general.*climate")
+]
+
+general_pathway <- if (length(general_pathway_matches) > 0) {
+  general_pathway_matches[1]
+} else {
+  pathway_choices[1]
+}
+
+other_pathways <- setdiff(pathway_choices, general_pathway)
+
+screening_application_choices <- c(
+  stats::setNames(paste0("pathway::", general_pathway), "General Climate Screening"),
+  "Oil Palm Climate Stress" = "oil_palm"
+)
+
+if (length(other_pathways) > 0) {
+  screening_application_choices <- c(
+    screening_application_choices,
+    stats::setNames(
+      paste0("pathway::", other_pathways),
+      vapply(other_pathways, get_screening_application_label, character(1))
+    )
+  )
+}
+
+default_screening_application <- paste0("pathway::", general_pathway)
+
+# ------------------------------------------------------------
 # LABEL HELPERS
 # ------------------------------------------------------------
 
@@ -101,14 +154,20 @@ scenario_labels <- c(
   ssp126 = "SSP1-2.6",
   ssp245 = "SSP2-4.5",
   ssp370 = "SSP3-7.0",
-  ssp585 = "SSP5-8.5"
+  ssp585 = "SSP5-8.5",
+  rcp45 = "RCP4.5",
+  rcp85 = "RCP8.5"
 )
 
 period_labels <- c(
+  "1980-2005" = "1980–2005",
   "1981-2010" = "1981–2010",
   "2011-2040" = "2011–2040",
+  "2020-2039" = "2020–2039",
+  "2040-2059" = "2040–2059",
   "2041-2070" = "2041–2070",
-  "2071-2100" = "2071–2100"
+  "2071-2100" = "2071–2100",
+  "2079-2098" = "2079–2098"
 )
 
 get_scenario_label <- function(scenario_id) {
@@ -164,7 +223,22 @@ get_variable_label <- function(selected_variable_id) {
   # been updated, but the preferred fix is still to add the label
   # to config/variable_metadata.
   fallback_variable_labels <- c(
-    WBGTmax = "Maximum WBGT"
+    WBGTmax = "Maximum WBGT",
+    Bio05 = "Maximum temperature of warmest month",
+    Bio017 = "Precipitation of driest quarter",
+    CDD = "Consecutive dry days",
+    FIRE_PROB = "Fire probability",
+    Fire = "Fire probability",
+    PPETConDryMth = "Consecutive dry months (P/PET < 1)",
+    PPETmin = "Minimum precipitation-to-PET ratio",
+    T_surface = "Sea surface temperature",
+    T_bottom = "Bottom temperature",
+    S_surface = "Surface salinity",
+    O2_bottom = "Bottom dissolved oxygen",
+    pH_surface = "Surface pH",
+    pH_bottom = "Bottom pH",
+    satarag_surface = "Surface aragonite saturation state",
+    netPP_total = "Column-total net primary production"
   )
   
   if (selected_variable_id %in% names(fallback_variable_labels)) {
@@ -514,6 +588,108 @@ ui <- page_sidebar(
           position: relative;
           z-index: 10;
         }
+
+
+        .selection-status-box {
+          margin-top: 10px;
+          padding: 12px;
+          background-color: #f8f9fa;
+          border: 1px solid #d8dde2;
+          border-radius: 6px;
+          font-size: 13px;
+        }
+
+        .selection-status-ready {
+          border-left: 5px solid #2e7d32;
+        }
+
+        .selection-status-incomplete {
+          border-left: 5px solid #d9822b;
+        }
+
+        .selection-status-heading {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 600;
+          font-size: 14px;
+        }
+
+        .selection-status-box hr {
+          margin-top: 9px;
+          margin-bottom: 9px;
+        }
+
+        .selection-status-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 12px;
+          margin-top: 5px;
+        }
+
+        .selection-status-label {
+          flex: 0 0 42%;
+          color: #5f6872;
+          font-weight: 600;
+        }
+
+        .selection-status-value {
+          flex: 1;
+          text-align: right;
+          overflow-wrap: anywhere;
+        }
+
+        .selection-status-detail {
+          margin-top: 1px;
+          margin-bottom: 5px;
+          color: #6c757d;
+          font-size: 12px;
+          text-align: right;
+        }
+
+        .selection-status-good {
+          color: #2e7d32;
+          font-weight: 600;
+          text-align: right;
+        }
+
+        .selection-status-warning {
+          color: #a34f00;
+          font-weight: 600;
+          text-align: right;
+        }
+
+        .oil-palm-summary-card {
+          padding: 16px;
+          border: 1px solid #cfd8d3;
+          border-left: 6px solid #2e7d32;
+          border-radius: 8px;
+          background: #f7fbf7;
+          margin-bottom: 16px;
+        }
+
+        .oil-palm-summary-big {
+          font-size: 24px;
+          font-weight: 700;
+          color: #1b5e20;
+          margin-bottom: 4px;
+        }
+
+        .oil-palm-score-card {
+          padding: 14px;
+          border-radius: 8px;
+          background: #eef6ef;
+          border: 1px solid #c8ddca;
+          margin-top: 12px;
+          margin-bottom: 12px;
+        }
+
+        .oil-palm-score-number {
+          font-size: 28px;
+          font-weight: 700;
+          color: #1b5e20;
+        }
         "
       )
     )
@@ -552,6 +728,10 @@ ui <- page_sidebar(
       
       h4("1. Select area"),
       
+      helpText(
+        "Choose one method to define the area you want to analyse."
+      ),
+      
       radioButtons(
         inputId = "aoi_method",
         label = NULL,
@@ -581,6 +761,10 @@ ui <- page_sidebar(
             ".prj"
           ),
           multiple = TRUE
+        ),
+        
+        helpText(
+          "Upload a polygon GeoPackage, GeoJSON, KML, or complete shapefile."
         )
       ),
       
@@ -588,7 +772,7 @@ ui <- page_sidebar(
         condition = "input.aoi_method == 'draw'",
         
         helpText(
-          "Use the polygon tool on the map to draw an AOI. Click points to trace the boundary, then click the first point again to finish the polygon. The finished polygon will become the active AOI."
+          "Use the polygon tool on the map. Click around the boundary, then click the first point again to finish. The polygon will become the active AOI."
         ),
         
         actionButton(
@@ -610,7 +794,7 @@ ui <- page_sidebar(
         ),
         
         helpText(
-          "Loads data/examples/Jambongan.gpkg."
+          "Loads the Jambongan example AOI for testing."
         )
       ),
       
@@ -627,7 +811,7 @@ ui <- page_sidebar(
         ),
         
         helpText(
-          "Enter a buffer distance, then click the map to create a circular AOI around that point. The buffer will become the active AOI."
+          "Enter a buffer distance, then click the map. The circular buffer will become the active AOI."
         ),
         
         actionButton(
@@ -644,105 +828,186 @@ ui <- page_sidebar(
       
       hr(),
       
-      h4("2. Select user pathway"),
+      h4("2. Select screening application"),
       
       selectInput(
-        inputId = "pathway",
+        inputId = "screening_application",
         label = NULL,
-        choices = pathway_choices,
-        selected = pathway_choices[1]
-      ),
-      
-      h4("3. Select theme"),
-      
-      selectInput(
-        inputId = "theme",
-        label = NULL,
-        choices = NULL
-      ),
-      
-      h4("4. Select variable"),
-      
-      selectInput(
-        inputId = "variable_id",
-        label = NULL,
-        choices = NULL
-      ),
-      
-      h4("5. Select scenario"),
-      
-      selectInput(
-        inputId = "scenario",
-        label = NULL,
-        choices = NULL
-      ),
-      
-      h4("6. Select time period"),
-      
-      selectInput(
-        inputId = "period",
-        label = NULL,
-        choices = NULL
-      ),
-      
-      h4("7. Comparison options"),
-      
-      checkboxInput(
-        inputId = "run_comparison",
-        label = "Run scenario and period comparison",
-        value = FALSE
-      ),
-      
-      h4("8. Output options"),
-      
-      checkboxInput(
-        inputId = "create_cropped_raster",
-        label = "Create cropped raster output",
-        value = FALSE
+        choices = screening_application_choices,
+        selected = default_screening_application
       ),
       
       helpText(
-        "Only turn this on if you need to display or download a clipped GeoTIFF. Leaving it off keeps the map simpler and avoids offering unnecessary raster outputs."
+        paste(
+          "Choose the decision or screening task first.",
+          "The controls below change to suit that application."
+        )
+      ),
+      
+      div(
+        style = "display:none;",
+        selectInput(
+          inputId = "pathway",
+          label = NULL,
+          choices = pathway_choices,
+          selected = general_pathway
+        ),
+        checkboxInput(
+          inputId = "run_comparison",
+          label = NULL,
+          value = FALSE
+        )
       ),
       
       conditionalPanel(
-        condition = "input.run_comparison == true",
+        condition = "input.screening_application != 'oil_palm'",
         
-        selectInput(
-          inputId = "comparison_scenarios",
-          label = "Compare scenarios",
-          choices = NULL,
-          selected = NULL,
-          multiple = TRUE
+        h4("3. Select theme"),
+        selectInput("theme", NULL, choices = NULL),
+        
+        h4("4. Select variable"),
+        selectInput("variable_id", NULL, choices = NULL),
+        
+        h4("5. Select analysis mode"),
+        radioButtons(
+          "analysis_mode",
+          NULL,
+          choices = c(
+            "Single scenario / time period" = "single",
+            "Compare scenarios / time periods" = "compare"
+          ),
+          selected = "single"
         ),
         
-        selectInput(
-          inputId = "comparison_periods",
-          label = "Compare periods",
-          choices = NULL,
-          selected = NULL,
-          multiple = TRUE
-        )
-      ),
-      
-      hr(),
-      
-      div(
-        id = "run_analysis_scroll_zone",
+        conditionalPanel(
+          condition = "input.analysis_mode == 'single'",
+          h4("6. Select scenario"),
+          selectInput("scenario", NULL, choices = NULL),
+          h4("7. Select time period"),
+          selectInput("period", NULL, choices = NULL)
+        ),
         
-        actionButton(
-          inputId = "run_analysis",
-          label = "Run analysis",
-          class = "btn-primary",
-          width = "100%"
-        )
+        conditionalPanel(
+          condition = "input.analysis_mode == 'compare'",
+          h4("6. Compare scenarios"),
+          selectInput(
+            "comparison_scenarios",
+            NULL,
+            choices = NULL,
+            selected = NULL,
+            multiple = TRUE
+          ),
+          h4("7. Compare time periods"),
+          selectInput(
+            "comparison_periods",
+            NULL,
+            choices = NULL,
+            selected = NULL,
+            multiple = TRUE
+          ),
+          helpText(
+            paste(
+              "Time periods are 30-year climatologies.",
+              "Unavailable scenario-period combinations are skipped automatically."
+            )
+          )
+        ),
+        
+        h4("8. Output options"),
+        checkboxInput(
+          "create_cropped_raster",
+          "Create cropped raster output",
+          value = FALSE
+        ),
+        helpText(
+          "Only turn this on if you need to display or download a clipped GeoTIFF."
+        ),
+        
+        hr(),
+        h4("9. Run analysis"),
+        div(
+          id = "run_analysis_scroll_zone",
+          helpText("Load or draw an AOI before running analysis."),
+          actionButton(
+            "run_analysis",
+            "Run analysis",
+            class = "btn-primary",
+            width = "100%"
+          )
+        ),
+        br(), br(),
+        uiOutput("selection_status")
       ),
       
-      br(),
-      br(),
-      
-      uiOutput(
-        "selection_status"
+      conditionalPanel(
+        condition = "input.screening_application == 'oil_palm'",
+        div(
+          class = "oil-palm-screening-panel",
+          h4("3. Oil palm climate stress"),
+          helpText(
+            paste(
+              "Automatically uses Minimum P:PET, consecutive months with P:PET < 1,",
+              "and consecutive dry days (CDD). Future conditions are compared with the 1981–2010 baseline."
+            )
+          ),
+          
+          h4("4. Select analysis mode"),
+          radioButtons(
+            "oil_palm_analysis_mode",
+            NULL,
+            choices = c(
+              "Single scenario / time period" = "single",
+              "Compare scenarios / time periods" = "compare"
+            ),
+            selected = "single"
+          ),
+          
+          conditionalPanel(
+            condition = "input.oil_palm_analysis_mode == 'single'",
+            h4("5. Select scenario"),
+            selectInput("oil_palm_scenario", NULL, choices = NULL),
+            h4("6. Select time period"),
+            selectInput("oil_palm_period", NULL, choices = NULL)
+          ),
+          
+          conditionalPanel(
+            condition = "input.oil_palm_analysis_mode == 'compare'",
+            h4("5. Compare scenarios"),
+            selectInput(
+              "oil_palm_comparison_scenarios",
+              NULL,
+              choices = NULL,
+              selected = NULL,
+              multiple = TRUE
+            ),
+            h4("6. Compare time periods"),
+            selectInput(
+              "oil_palm_comparison_periods",
+              NULL,
+              choices = NULL,
+              selected = NULL,
+              multiple = TRUE
+            ),
+            helpText(
+              paste(
+                "The 1981–2010 baseline is included automatically.",
+                "Only available SSP and climatology combinations are analysed."
+              )
+            )
+          ),
+          
+          hr(),
+          h4("7. Run oil palm screening"),
+          helpText("Load or draw an AOI before running the oil palm screening."),
+          actionButton(
+            "run_oil_palm",
+            "Run oil palm screening",
+            class = "btn-success",
+            width = "100%"
+          ),
+          br(), br(),
+          uiOutput("oil_palm_selection_status")
+        )
       )
     )
   ),
@@ -813,12 +1078,16 @@ ui <- page_sidebar(
         
         div(
           class = "results-note",
-          "The graph shows mean values only. Minimum and maximum values are shown in the table. Interpretation depends on the selected variable; for some variables, higher values indicate greater concern, while for others, lower values indicate drier conditions."
+          paste(
+            "The graph shows mean values from the comparison table.",
+            "It does not show the full range of values.",
+            "Minimum and maximum values are shown in the table."
+          )
         ),
         
         div(
           class = "results-note",
-          "This is especially important for Bio017 and PPETmin because they are lower-is-drier variables."
+          "For Bio017 and PPETmin, lower values indicate drier conditions."
         ),
         
         br(),
@@ -840,6 +1109,30 @@ ui <- page_sidebar(
         div(
           class = "results-note",
           "Cropped raster output is optional. If selected, the app creates a clipped GeoTIFF for GIS use. If not selected, only table and graph outputs are produced."
+        )
+      )
+    ),
+    
+    nav_panel(
+      title = "Oil Palm",
+      card(
+        card_header("Oil Palm Climate Stress"),
+        uiOutput("oil_palm_summary_ui"),
+        h4("Screening results"),
+        tableOutput("oil_palm_results_table"),
+        uiOutput("oil_palm_comparison_plot_controls"),
+        uiOutput("oil_palm_comparison_plot_ui"),
+        div(
+          class = "results-note",
+          paste(
+            "The 0–100 Relative climate-stress-change score now uses one fixed Sabah-wide reference scale for all SSPs and time periods.",
+            "It can therefore be compared between scenarios and climatologies. It is a relative climate-stress score, not a percentage yield loss."
+          )
+        ),
+        br(),
+        downloadButton(
+          "download_oil_palm_csv",
+          "Download oil palm screening CSV"
         )
       )
     ),
@@ -883,6 +1176,21 @@ ui <- page_sidebar(
           "Available raster datasets"
         ),
         
+        div(
+          class = "results-note",
+          p(
+            "This table shows raster layers listed in the prototype catalogue. ",
+            "Use the search box or column filters to find a variable, scenario or period. ",
+            "The File exists and Enabled columns show whether each layer is present and available for use in the prototype."
+          ),
+          p(
+            "Some layers, such as WBGT, are monthly climatology summaries. ",
+            "Interpret each layer according to its variable definition, units and time period."
+          )
+        ),
+        
+        br(),
+        
         DTOutput(
           "catalogue_table"
         )
@@ -894,47 +1202,27 @@ ui <- page_sidebar(
       
       card(
         card_header(
-          "Prototype status"
+          "About this prototype"
         ),
         
         p(
-          paste(
-            "This prototype demonstrates AOI-based climate raster",
-            "screening using uploaded polygons, drawn polygons,",
-            "point buffers, and a built-in Jambongan test AOI."
-          )
+          "This is a prototype for AOI-based climate risk screening."
         ),
         
         p(
-          paste(
-            "Draw polygon is active in this prototype.",
-            "Draw an AOI on the map, then run analysis."
-          )
+          "Results are screening summaries and should not be treated as a complete local assessment."
         ),
         
         p(
-          paste(
-            "Results are screening summaries only.",
-            "They describe raster values within the selected AOI",
-            "and should not be interpreted as a final risk score."
-          )
+          "No combined risk score is produced."
         ),
         
         p(
-          paste(
-            "Drawn-polygon and point-buffer AOIs are intended for",
-            "rapid testing and exploratory screening.",
-            "For formal reporting, users should use a checked boundary",
-            "from a verified spatial file wherever possible."
-          )
+          "Drawn polygons and point-buffer AOIs are intended for exploratory testing."
         ),
         
         p(
-          paste(
-            "No combined overall-risk score is produced at this stage.",
-            "A combined score will only be added after the scoring method,",
-            "weights and assumptions are agreed and documented."
-          )
+          "For formal reporting, use a checked boundary from a verified spatial file."
         )
       )
     )
@@ -961,7 +1249,11 @@ server <- function(
     result = NULL,
     comparison_results = NULL,
     comparison_missing = NULL,
-    cropped_raster = NULL
+    cropped_raster = NULL,
+    oil_palm_result = NULL,
+    oil_palm_comparison = NULL,
+    oil_palm_score_raster = NULL,
+    oil_palm_agreement_raster = NULL
   )
   
   # ----------------------------------------------------------
@@ -974,14 +1266,22 @@ server <- function(
     rv$comparison_results <- NULL
     rv$comparison_missing <- NULL
     rv$cropped_raster <- NULL
+    rv$oil_palm_result <- NULL
+    rv$oil_palm_comparison <- NULL
+    rv$oil_palm_score_raster <- NULL
+    rv$oil_palm_agreement_raster <- NULL
   }
   
   clear_analysis_map <- function() {
     
     leafletProxy("map") |>
       clearGroup("Analysis result") |>
+      clearGroup("Oil palm stress") |>
       removeControl(
         layerId = "analysis_result_legend"
+      ) |>
+      removeControl(
+        layerId = "oil_palm_legend"
       )
   }
   
@@ -1043,13 +1343,19 @@ server <- function(
     {
       if (is.null(rv$aoi)) {
         return(
-          "No AOI currently loaded."
+          paste(
+            "No AOI currently loaded.",
+            "Choose Upload polygon, Draw polygon,",
+            "Point-buffer, or Jambongan before running analysis."
+          )
         )
       }
       
       geometry_type <- unique(
         as.character(
-          sf::st_geometry_type(rv$aoi)
+          sf::st_geometry_type(
+            rv$aoi
+          )
         )
       )
       
@@ -1112,14 +1418,264 @@ server <- function(
   )
   
   # ----------------------------------------------------------
+  # SCREENING APPLICATION -> EXISTING PATHWAY BRIDGE
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    input$screening_application,
+    {
+      req(input$screening_application)
+      
+      if (
+        input$screening_application != "oil_palm" &&
+        stringr::str_starts(input$screening_application, "pathway::")
+      ) {
+        selected_pathway <- stringr::str_remove(
+          input$screening_application,
+          "^pathway::"
+        )
+        
+        if (selected_pathway %in% pathway_choices) {
+          updateSelectInput(
+            session,
+            "pathway",
+            choices = pathway_choices,
+            selected = selected_pathway
+          )
+        }
+      }
+    },
+    ignoreInit = FALSE
+  )
+  
+  # The existing comparison engine reads input$run_comparison.
+  # Keep that hidden input synchronised with the clearer analysis-mode control.
+  observeEvent(
+    input$analysis_mode,
+    {
+      updateCheckboxInput(
+        session,
+        "run_comparison",
+        value = identical(input$analysis_mode, "compare")
+      )
+    },
+    ignoreInit = FALSE
+  )
+  
+  # ----------------------------------------------------------
+  # OIL PALM AVAILABLE SCENARIOS / PERIODS
+  # ----------------------------------------------------------
+  
+  oil_palm_combinations <- reactive({
+    oil_palm_available_combinations(raster_catalogue)
+  })
+  
+  observe({
+    combinations <- oil_palm_combinations()
+    
+    if (nrow(combinations) == 0) {
+      updateSelectInput(session, "oil_palm_scenario", choices = character(0))
+      updateSelectInput(session, "oil_palm_period", choices = character(0))
+      updateSelectInput(session, "oil_palm_comparison_scenarios", choices = character(0))
+      updateSelectInput(session, "oil_palm_comparison_periods", choices = character(0))
+      return()
+    }
+    
+    scenarios <- unique(combinations$scenario)
+    scenario_choices <- stats::setNames(
+      scenarios,
+      vapply(scenarios, get_scenario_label, character(1))
+    )
+    
+    selected_scenario <- if ("ssp370" %in% scenarios) {
+      "ssp370"
+    } else if ("ssp245" %in% scenarios) {
+      "ssp245"
+    } else {
+      scenarios[1]
+    }
+    
+    updateSelectInput(
+      session,
+      "oil_palm_scenario",
+      choices = scenario_choices,
+      selected = selected_scenario
+    )
+    
+    updateSelectInput(
+      session,
+      "oil_palm_comparison_scenarios",
+      choices = scenario_choices,
+      selected = scenarios
+    )
+    
+    periods <- unique(combinations$period)
+    period_choices <- stats::setNames(
+      periods,
+      vapply(periods, get_period_label, character(1))
+    )
+    
+    default_periods <- intersect(
+      c("2011-2040", "2041-2070", "2071-2100"),
+      periods
+    )
+    if (length(default_periods) == 0) default_periods <- periods
+    
+    updateSelectInput(
+      session,
+      "oil_palm_comparison_periods",
+      choices = period_choices,
+      selected = default_periods
+    )
+  })
+  
+  observeEvent(
+    input$oil_palm_scenario,
+    {
+      req(input$oil_palm_scenario)
+      
+      combinations <- oil_palm_combinations() |>
+        dplyr::filter(scenario == input$oil_palm_scenario)
+      
+      periods <- unique(combinations$period)
+      period_choices <- stats::setNames(
+        periods,
+        vapply(periods, get_period_label, character(1))
+      )
+      
+      selected_period <- if ("2041-2070" %in% periods) {
+        "2041-2070"
+      } else {
+        periods[1]
+      }
+      
+      updateSelectInput(
+        session,
+        "oil_palm_period",
+        choices = period_choices,
+        selected = selected_period
+      )
+    },
+    ignoreInit = FALSE
+  )
+  
+  oil_palm_ready <- reactive({
+    if (is.null(rv$aoi)) return(FALSE)
+    
+    mode <- input$oil_palm_analysis_mode
+    if (is.null(mode) || !nzchar(mode)) return(FALSE)
+    
+    if (mode == "single") {
+      if (
+        is.null(input$oil_palm_scenario) ||
+        !nzchar(input$oil_palm_scenario) ||
+        is.null(input$oil_palm_period) ||
+        !nzchar(input$oil_palm_period)
+      ) return(FALSE)
+      
+      matching <- oil_palm_combinations() |>
+        dplyr::filter(
+          scenario == input$oil_palm_scenario,
+          period == input$oil_palm_period
+        )
+      
+      return(nrow(matching) > 0)
+    }
+    
+    selected_scenarios <- input$oil_palm_comparison_scenarios
+    selected_periods <- input$oil_palm_comparison_periods
+    
+    if (
+      is.null(selected_scenarios) || length(selected_scenarios) == 0 ||
+      is.null(selected_periods) || length(selected_periods) == 0
+    ) return(FALSE)
+    
+    matching <- oil_palm_combinations() |>
+      dplyr::filter(
+        scenario %in% selected_scenarios,
+        period %in% selected_periods
+      )
+    
+    nrow(matching) > 0
+  })
+  
+  observe({
+    shinyjs::toggleState(
+      id = "run_oil_palm",
+      condition = isTRUE(oil_palm_ready())
+    )
+  })
+  
+  output$oil_palm_selection_status <- renderUI({
+    ready <- isTRUE(oil_palm_ready())
+    mode <- input$oil_palm_analysis_mode
+    
+    status_text <- if (ready) {
+      if (identical(mode, "compare")) {
+        "Ready to compare Oil Palm scenarios and time periods"
+      } else {
+        "Ready to run Oil Palm screening"
+      }
+    } else if (is.null(rv$aoi)) {
+      "Load or create an AOI first"
+    } else if (nrow(oil_palm_combinations()) == 0) {
+      "The three required Oil Palm climate layers are not available together in the raster catalogue"
+    } else if (identical(mode, "compare")) {
+      "Select at least one available SSP and time period"
+    } else {
+      "Choose an available future scenario and time period"
+    }
+    
+    div(
+      class = paste(
+        "selection-status-box",
+        if (ready) "selection-status-ready" else "selection-status-incomplete"
+      ),
+      strong(status_text)
+    )
+  })
+  
+  # ----------------------------------------------------------
   # ENABLE / DISABLE RUN ANALYSIS BUTTON
   # ----------------------------------------------------------
   
   observe(
     {
+      selection_complete <-
+        !is.null(rv$aoi) &&
+        !is.null(input$variable_id) &&
+        nzchar(input$variable_id) &&
+        !is.null(input$scenario) &&
+        nzchar(input$scenario) &&
+        !is.null(input$period) &&
+        nzchar(input$period)
+      
+      raster_available <- FALSE
+      
+      if (selection_complete) {
+        
+        matched_rasters <- raster_catalogue |>
+          dplyr::filter(
+            enabled,
+            variable_id == input$variable_id,
+            scenario == input$scenario,
+            period == input$period
+          )
+        
+        raster_available <-
+          nrow(matched_rasters) > 0 &&
+          any(
+            file.exists(
+              matched_rasters$file_path
+            )
+          )
+      }
+      
       shinyjs::toggleState(
         id = "run_analysis",
-        condition = !is.null(rv$aoi)
+        condition =
+          selection_complete &&
+          raster_available
       )
     }
   )
@@ -1837,22 +2393,29 @@ server <- function(
         enabled_variable_ids
       )
       
-      pilot_variable_ids <- intersect(
-        c(
-          "Bio05",
-          "Bio017"
-        ),
-        enabled_variable_ids
-      )
-      
-      available_variable_ids <- unique(
-        c(
-          available_variable_ids,
-          pilot_variable_ids
+      # Bio05/Bio017 were originally injected into every theme as
+      # prototype variables. Keep that convenience only for the general
+      # climate screening pathway; specialist applications should show
+      # only variables explicitly assigned to their selected theme.
+      if (identical(input$pathway, general_pathway)) {
+        pilot_variable_ids <- intersect(
+          c("Bio05", "Bio017"),
+          enabled_variable_ids
         )
-      )
+        
+        available_variable_ids <- unique(
+          c(available_variable_ids, pilot_variable_ids)
+        )
+      }
       
-      if (length(available_variable_ids) == 0) {
+      # Only fall back to all enabled variables if the theme has no
+      # configured variable links at all. If the links exist but rasters
+      # are unavailable, leave the list empty so the configuration issue
+      # is visible rather than silently showing unrelated variables.
+      if (
+        length(available_variable_ids) == 0 &&
+        length(theme_variable_ids) == 0
+      ) {
         available_variable_ids <- enabled_variable_ids
       }
       
@@ -2005,18 +2568,26 @@ server <- function(
         )
       )
       
-      selected_period <- if (
-        input$scenario == "baseline" &&
-        "1981-2010" %in% available_periods
-      ) {
-        "1981-2010"
-      } else if (
-        input$scenario != "baseline" &&
-        "2041-2070" %in% available_periods
-      ) {
-        "2041-2070"
+      preferred_periods <- if (input$scenario == "baseline") {
+        c("1981-2010", "1980-2005")
       } else {
-        available_periods[1]
+        c(
+          "2041-2070",
+          "2040-2059",
+          "2011-2040",
+          "2020-2039",
+          "2071-2100",
+          "2079-2098"
+        )
+      }
+      
+      selected_period <- intersect(
+        preferred_periods,
+        available_periods
+      )[1]
+      
+      if (length(selected_period) == 0 || is.na(selected_period)) {
+        selected_period <- available_periods[1]
       }
       
       updateSelectInput(
@@ -2059,11 +2630,17 @@ server <- function(
         )
       )
       
+      # Default to the appropriate baseline plus mid-century period.
+      # Terrestrial: 1981-2010 / 2041-2070.
+      # Sabah Marine Vision: 1980-2005 / 2040-2059.
+      if ("1980-2005" %in% available_periods) {
+        preferred_comparison_periods <- c("1980-2005", "2040-2059")
+      } else {
+        preferred_comparison_periods <- c("1981-2010", "2041-2070")
+      }
+      
       default_periods <- intersect(
-        c(
-          "1981-2010",
-          "2041-2070"
-        ),
+        preferred_comparison_periods,
         available_periods
       )
       
@@ -2087,14 +2664,304 @@ server <- function(
   
   output$selection_status <- renderUI(
     {
-      tagList(
-        strong("Current selection"),
-        br(),
-        paste("Variable:", input$variable_id),
-        br(),
-        paste("Scenario:", input$scenario),
-        br(),
-        paste("Period:", input$period)
+      variable_selected <-
+        !is.null(input$variable_id) &&
+        nzchar(input$variable_id)
+      
+      scenario_selected <-
+        !is.null(input$scenario) &&
+        nzchar(input$scenario)
+      
+      period_selected <-
+        !is.null(input$period) &&
+        nzchar(input$period)
+      
+      aoi_selected <- !is.null(rv$aoi)
+      
+      selection_complete <-
+        variable_selected &&
+        scenario_selected &&
+        period_selected
+      
+      matching_dataset <- NULL
+      
+      if (selection_complete) {
+        matching_dataset <- raster_catalogue |>
+          dplyr::filter(
+            enabled,
+            variable_id == input$variable_id,
+            scenario == input$scenario,
+            period == input$period
+          )
+      }
+      
+      raster_catalogued <-
+        !is.null(matching_dataset) &&
+        nrow(matching_dataset) > 0
+      
+      raster_file_exists <- FALSE
+      
+      if (raster_catalogued) {
+        raster_file_exists <- any(
+          file.exists(
+            matching_dataset$file_path
+          )
+        )
+      }
+      
+      ready_to_run <-
+        aoi_selected &&
+        selection_complete &&
+        raster_catalogued &&
+        raster_file_exists
+      
+      status_message <- if (ready_to_run) {
+        "Ready to run analysis"
+      } else if (!aoi_selected) {
+        "Load or create an AOI to continue"
+      } else if (!variable_selected) {
+        "Select a climate variable"
+      } else if (!scenario_selected) {
+        "Select a scenario"
+      } else if (!period_selected) {
+        "Select a time period"
+      } else if (!raster_catalogued) {
+        "No raster catalogue entry matches this selection"
+      } else if (!raster_file_exists) {
+        "The selected raster is listed but the file is unavailable"
+      } else {
+        "Selection incomplete"
+      }
+      
+      if (aoi_selected) {
+        geometry_type <- paste(
+          unique(
+            as.character(
+              sf::st_geometry_type(
+                rv$aoi
+              )
+            )
+          ),
+          collapse = ", "
+        )
+        
+        aoi_detail <- paste0(
+          nrow(rv$aoi),
+          ifelse(
+            nrow(rv$aoi) == 1,
+            " feature",
+            " features"
+          ),
+          " | ",
+          geometry_type
+        )
+      } else {
+        aoi_detail <- NULL
+      }
+      
+      raster_status <- if (!selection_complete) {
+        "Waiting for selection"
+      } else if (!raster_catalogued) {
+        "Not catalogued"
+      } else if (!raster_file_exists) {
+        "File unavailable"
+      } else {
+        "Available"
+      }
+      
+      div(
+        class = paste(
+          "selection-status-box",
+          if (ready_to_run) {
+            "selection-status-ready"
+          } else {
+            "selection-status-incomplete"
+          }
+        ),
+        
+        div(
+          class = "selection-status-heading",
+          icon(
+            if (ready_to_run) {
+              "circle-check"
+            } else {
+              "circle-info"
+            }
+          ),
+          tags$span(
+            status_message
+          )
+        ),
+        
+        tags$hr(),
+        
+        div(
+          class = "selection-status-row",
+          tags$span(
+            class = "selection-status-label",
+            "AOI"
+          ),
+          tags$span(
+            class = "selection-status-value",
+            if (aoi_selected) {
+              rv$aoi_name
+            } else {
+              "Not loaded"
+            }
+          )
+        ),
+        
+        if (aoi_selected) {
+          div(
+            class = "selection-status-detail",
+            aoi_detail
+          )
+        },
+        
+        div(
+          class = "selection-status-row",
+          tags$span(
+            class = "selection-status-label",
+            "Application"
+          ),
+          tags$span(
+            class = "selection-status-value",
+            if (
+              !is.null(input$pathway) &&
+              nzchar(input$pathway)
+            ) {
+              get_screening_application_label(input$pathway)
+            } else {
+              "Not selected"
+            }
+          )
+        ),
+        
+        div(
+          class = "selection-status-row",
+          tags$span(
+            class = "selection-status-label",
+            "Theme"
+          ),
+          tags$span(
+            class = "selection-status-value",
+            if (
+              !is.null(input$theme) &&
+              nzchar(input$theme)
+            ) {
+              input$theme
+            } else {
+              "Not selected"
+            }
+          )
+        ),
+        
+        div(
+          class = "selection-status-row",
+          tags$span(
+            class = "selection-status-label",
+            "Variable"
+          ),
+          tags$span(
+            class = "selection-status-value",
+            if (variable_selected) {
+              get_variable_label(
+                input$variable_id
+              )
+            } else {
+              "Not selected"
+            }
+          )
+        ),
+        
+        div(
+          class = "selection-status-row",
+          tags$span(
+            class = "selection-status-label",
+            "Scenario"
+          ),
+          tags$span(
+            class = "selection-status-value",
+            if (scenario_selected) {
+              get_scenario_label(
+                input$scenario
+              )
+            } else {
+              "Not selected"
+            }
+          )
+        ),
+        
+        div(
+          class = "selection-status-row",
+          tags$span(
+            class = "selection-status-label",
+            "Period"
+          ),
+          tags$span(
+            class = "selection-status-value",
+            if (period_selected) {
+              get_period_label(
+                input$period
+              )
+            } else {
+              "Not selected"
+            }
+          )
+        ),
+        
+        div(
+          class = "selection-status-row",
+          tags$span(
+            class = "selection-status-label",
+            "Raster"
+          ),
+          tags$span(
+            class = if (
+              raster_catalogued &&
+              raster_file_exists
+            ) {
+              "selection-status-good"
+            } else {
+              "selection-status-warning"
+            },
+            raster_status
+          )
+        ),
+        
+        div(
+          class = "selection-status-row",
+          tags$span(
+            class = "selection-status-label",
+            "Comparison"
+          ),
+          tags$span(
+            class = "selection-status-value",
+            if (isTRUE(input$run_comparison)) {
+              "Selected"
+            } else {
+              "Not selected"
+            }
+          )
+        ),
+        
+        div(
+          class = "selection-status-row",
+          tags$span(
+            class = "selection-status-label",
+            "Cropped GeoTIFF"
+          ),
+          tags$span(
+            class = "selection-status-value",
+            if (isTRUE(
+              input$create_cropped_raster
+            )) {
+              "Selected"
+            } else {
+              "Not selected"
+            }
+          )
+        )
       )
     }
   )
@@ -2594,10 +3461,11 @@ server <- function(
             comparison_results
           )
           
+          # Identify the baseline dynamically so terrestrial 1981-2010
+          # and SMV marine 1980-2005 can coexist in the same app.
           baseline_mean <- rv$comparison_results |>
             dplyr::filter(
-              Scenario_ID == "baseline",
-              Period_ID == "1981-2010"
+              Scenario_ID == "baseline"
             ) |>
             dplyr::pull(
               Mean
@@ -2627,6 +3495,735 @@ server <- function(
       showNotification(
         "Analysis completed.",
         type = "message"
+      )
+    }
+  )
+  
+  # ----------------------------------------------------------
+  # OIL PALM CLIMATE-STRESS SCREENING
+  # ----------------------------------------------------------
+  # v4 uses a single Sabah-wide reference scale for the 0-100 score.
+  # The same scale is used in single and comparison modes, so scores
+  # can be compared directly between SSPs and 30-year climatologies.
+  # The score is a relative climate-stress-change index, not yield loss.
+  # ----------------------------------------------------------
+  
+  observeEvent(
+    input$run_oil_palm,
+    {
+      req(
+        rv$aoi,
+        input$oil_palm_analysis_mode
+      )
+      
+      # Clear previous Oil Palm outputs without disturbing the AOI.
+      rv$oil_palm_result <- NULL
+      rv$oil_palm_comparison <- NULL
+      rv$oil_palm_score_raster <- NULL
+      rv$oil_palm_agreement_raster <- NULL
+      
+      leafletProxy("map") |>
+        clearGroup("Oil palm stress") |>
+        removeControl(layerId = "oil_palm_legend")
+      
+      if (identical(input$oil_palm_analysis_mode, "single")) {
+        req(
+          input$oil_palm_scenario,
+          input$oil_palm_period
+        )
+        
+        withProgress(
+          message = "Running Oil Palm climate screening",
+          value = 0,
+          {
+            incProgress(
+              0.2,
+              detail = "Loading baseline and future climate layers"
+            )
+            
+            oil_result <- tryCatch(
+              {
+                oil_palm_build_screening(
+                  raster_catalogue = raster_catalogue,
+                  aoi = rv$aoi,
+                  aoi_name = rv$aoi_name,
+                  future_scenario = input$oil_palm_scenario,
+                  future_period = input$oil_palm_period
+                )
+              },
+              error = function(error) {
+                showNotification(
+                  paste(
+                    "Oil Palm screening failed:",
+                    error$message
+                  ),
+                  type = "error",
+                  duration = NULL
+                )
+                
+                NULL
+              }
+            )
+            
+            if (is.null(oil_result)) {
+              return()
+            }
+            
+            incProgress(
+              0.75,
+              detail = "Building agreement, future stress, and change layers"
+            )
+            
+            rv$oil_palm_result <- oil_result
+            rv$oil_palm_score_raster <- oil_result$score_raster
+            rv$oil_palm_agreement_raster <- oil_result$agreement_raster
+            
+            score_values <- terra::values(
+              rv$oil_palm_score_raster,
+              mat = FALSE
+            )
+            
+            score_values <- score_values[
+              is.finite(score_values)
+            ]
+            
+            if (length(score_values) > 0) {
+              oil_palette <- leaflet::colorNumeric(
+                palette = "YlOrRd",
+                domain = c(0, 100),
+                na.color = "transparent"
+              )
+              
+              leafletProxy("map") |>
+                clearGroup("Analysis result") |>
+                clearGroup("Oil palm stress") |>
+                removeControl(
+                  layerId = "analysis_result_legend"
+                ) |>
+                removeControl(
+                  layerId = "oil_palm_legend"
+                ) |>
+                addRasterImage(
+                  x = rv$oil_palm_score_raster,
+                  colors = oil_palette,
+                  opacity = 0.75,
+                  group = "Oil palm stress",
+                  project = TRUE,
+                  method = "bilinear",
+                  maxBytes = 10 * 1024 * 1024
+                ) |>
+                addLegend(
+                  pal = oil_palette,
+                  values = c(0, 100),
+                  title = "Oil Palm Future Climate Stress (0–100)",
+                  position = "bottomright",
+                  opacity = 1,
+                  layerId = "oil_palm_legend"
+                )
+            }
+            
+            incProgress(
+              1,
+              detail = "Complete"
+            )
+          }
+        )
+        
+        if (!is.null(rv$oil_palm_result)) {
+          showNotification(
+            "Oil Palm climate screening completed.",
+            type = "message"
+          )
+        }
+        
+      } else {
+        req(
+          input$oil_palm_comparison_scenarios,
+          input$oil_palm_comparison_periods
+        )
+        
+        withProgress(
+          message = "Comparing Oil Palm climate stress",
+          value = 0,
+          {
+            incProgress(
+              0.15,
+              detail = "Checking available SSP and climatology combinations"
+            )
+            
+            oil_comparison <- tryCatch(
+              {
+                oil_palm_build_comparison(
+                  raster_catalogue = raster_catalogue,
+                  aoi = rv$aoi,
+                  aoi_name = rv$aoi_name,
+                  future_scenarios = input$oil_palm_comparison_scenarios,
+                  future_periods = input$oil_palm_comparison_periods
+                )
+              },
+              error = function(error) {
+                showNotification(
+                  paste(
+                    "Oil Palm comparison failed:",
+                    error$message
+                  ),
+                  type = "error",
+                  duration = NULL
+                )
+                
+                NULL
+              }
+            )
+            
+            if (is.null(oil_comparison)) {
+              return()
+            }
+            
+            incProgress(
+              0.9,
+              detail = "Preparing comparison table and graph"
+            )
+            
+            rv$oil_palm_comparison <- oil_comparison
+            
+            # Comparison mode reports comparable 0-100 AOI scores.
+            # A single raster is not shown because several SSP/period
+            # combinations may be selected at the same time.
+            leafletProxy("map") |>
+              clearGroup("Oil palm stress") |>
+              removeControl(layerId = "oil_palm_legend")
+            
+            incProgress(
+              1,
+              detail = "Complete"
+            )
+          }
+        )
+        
+        if (!is.null(rv$oil_palm_comparison)) {
+          showNotification(
+            "Oil Palm scenario and time-period comparison completed.",
+            type = "message"
+          )
+        }
+      }
+    }
+  )
+  
+  # ----------------------------------------------------------
+  # OIL PALM SUMMARY
+  # ----------------------------------------------------------
+  
+  output$oil_palm_summary_ui <- renderUI(
+    {
+      if (
+        is.null(rv$oil_palm_result) &&
+        is.null(rv$oil_palm_comparison)
+      ) {
+        return(
+          div(
+            class = "text-muted",
+            "Select Oil Palm Climate Stress in the sidebar and run the screening."
+          )
+        )
+      }
+      
+      if (!is.null(rv$oil_palm_comparison)) {
+        comparison <- rv$oil_palm_comparison
+        
+        future_scores <- comparison$comparison_table |>
+          dplyr::filter(
+            .data$Scenario_ID != OIL_PALM_BASELINE_SCENARIO,
+            is.finite(.data$Relative_stress_change_score)
+          ) |>
+          dplyr::pull(.data$Relative_stress_change_score)
+        
+        score_text <- if (length(future_scores) == 0) {
+          "Not available"
+        } else if (length(future_scores) == 1) {
+          paste0(round(future_scores[1]), " / 100")
+        } else {
+          paste0(
+            round(min(future_scores)),
+            "–",
+            round(max(future_scores)),
+            " / 100 across selected futures"
+          )
+        }
+        
+        return(
+          div(
+            div(
+              class = "oil-palm-summary-card",
+              div(
+                class = "oil-palm-summary-big",
+                paste0(
+                  comparison$n_combinations,
+                  ifelse(
+                    comparison$n_combinations == 1,
+                    " future combination compared",
+                    " future combinations compared"
+                  )
+                )
+              ),
+              div(
+                paste(
+                  "AOI:",
+                  comparison$aoi_name,
+                  "| Baseline: 1981–2010"
+                )
+              )
+            ),
+            div(
+              class = "oil-palm-score-card",
+              strong("Future climate-stress score"),
+              div(
+                class = "oil-palm-score-number",
+                {
+                  future_stress_scores <- comparison$comparison_table |>
+                    dplyr::filter(
+                      .data$Scenario_ID != OIL_PALM_BASELINE_SCENARIO,
+                      is.finite(.data$Future_stress_score)
+                    ) |>
+                    dplyr::pull(.data$Future_stress_score)
+                  
+                  if (length(future_stress_scores) == 0) {
+                    "Not available"
+                  } else if (length(future_stress_scores) == 1) {
+                    paste0(round(future_stress_scores[1]), " / 100")
+                  } else {
+                    paste0(
+                      round(min(future_stress_scores)),
+                      "–",
+                      round(max(future_stress_scores)),
+                      " / 100 across selected futures"
+                    )
+                  }
+                }
+              ),
+              div(
+                class = "text-muted",
+                paste(
+                  "This shows how climate-stressed the AOI is under the future",
+                  "scenario and period, not just how much it changes."
+                )
+              )
+            ),
+            div(
+              class = "oil-palm-score-card",
+              strong("Additional climate-stress-change score"),
+              div(
+                class = "oil-palm-score-number",
+                score_text
+              ),
+              div(
+                class = "text-muted",
+                paste(
+                  "Every SSP and time period uses the same fixed Sabah-wide",
+                  "reference scale, so these 0–100 change scores can be compared directly."
+                )
+              )
+            ),
+            p(
+              paste(
+                "Comparison mode shows the three oil-palm water-stress indicators,",
+                "a future climate-stress score, and an additional",
+                "climate-stress-change score for each available SSP and",
+                "30-year climatology against the same historical baseline."
+              )
+            ),
+            div(
+              class = "results-note",
+              paste(
+                "The Future climate-stress score reflects how stressed the AOI is",
+                "under the selected future conditions. The Additional",
+                "climate-stress-change score reflects the amount of worsening",
+                "relative to 1981–2010. Neither score is percentage yield loss."
+              )
+            )
+          )
+        )
+      }
+      result <- rv$oil_palm_result
+      
+      div(
+        div(
+          class = "oil-palm-summary-card",
+          div(
+            class = "oil-palm-summary-big",
+            paste0(
+              result$n_worsening,
+              " of 3 water-stress indicators worsen"
+            )
+          ),
+          div(
+            paste(
+              "AOI:",
+              result$aoi_name,
+              "|",
+              result$scenario,
+              "|",
+              result$period
+            )
+          )
+        ),
+        
+        div(
+          class = "oil-palm-score-card",
+          strong("Baseline climate-stress score"),
+          div(
+            class = "oil-palm-score-number",
+            if (is.finite(result$baseline_absolute_score_mean)) {
+              paste0(round(result$baseline_absolute_score_mean), " / 100")
+            } else {
+              "Not available"
+            }
+          ),
+          div(
+            class = "text-muted",
+            "How climate-stressed the AOI is under the 1981–2010 baseline climate."
+          )
+        ),
+        div(
+          class = "oil-palm-score-card",
+          strong("Future climate-stress score"),
+          div(
+            class = "oil-palm-score-number",
+            if (is.finite(result$future_absolute_score_mean)) {
+              paste0(round(result$future_absolute_score_mean), " / 100")
+            } else {
+              "Not available"
+            }
+          ),
+          div(
+            class = "text-muted",
+            "How climate-stressed the AOI is under the selected future scenario and period."
+          )
+        ),
+        div(
+          class = "oil-palm-score-card",
+          strong("Additional climate-stress-change score"),
+          div(
+            class = "oil-palm-score-number",
+            if (is.finite(result$relative_score_mean)) {
+              paste0(round(result$relative_score_mean), " / 100")
+            } else {
+              "Not available"
+            }
+          ),
+          div(
+            class = "text-muted",
+            paste(
+              "Uses the same fixed Sabah-wide reference scale as every other SSP",
+              "and time period, so the change score is comparable across screenings.",
+              "It is not percentage yield loss."
+            )
+          )
+        ),
+        
+        h5("Interpretation"),
+        p(result$interpretation)
+      )
+    }
+  )
+  
+  # ----------------------------------------------------------
+  # OIL PALM RESULTS TABLE
+  # ----------------------------------------------------------
+  
+  output$oil_palm_results_table <- renderTable(
+    {
+      if (!is.null(rv$oil_palm_comparison)) {
+        return(
+          rv$oil_palm_comparison$comparison_table |>
+            dplyr::transmute(
+              Scenario = .data$Scenario,
+              Period = .data$Period,
+              `Minimum P:PET` = round(.data$PPETmin, 2),
+              `Consecutive months P:PET < 1` = round(
+                .data$PPETConDryMth,
+                2
+              ),
+              `Consecutive dry days` = round(.data$CDD, 2),
+              `Baseline climate-stress score` = round(
+                .data$Baseline_stress_score,
+                0
+              ),
+              `Future climate-stress score` = round(
+                .data$Future_stress_score,
+                0
+              ),
+              `Indicators worsening` = ifelse(
+                is.na(.data$Indicators_worsening),
+                "Reference",
+                paste0(.data$Indicators_worsening, " / 3")
+              ),
+              `Additional climate-stress-change score` = round(
+                .data$Relative_stress_change_score,
+                0
+              )
+            )
+        )
+      }
+      
+      req(rv$oil_palm_result)
+      
+      rv$oil_palm_result$indicator_table |>
+        dplyr::transmute(
+          Indicator = .data$Indicator,
+          Baseline = round(.data$Baseline, 2),
+          Future = round(.data$Future, 2),
+          Change = round(.data$Change, 2),
+          `Climate stress worsens` = ifelse(
+            .data$Worsens,
+            "Yes",
+            "No"
+          ),
+          Units = .data$Units
+        )
+    },
+    striped = TRUE,
+    bordered = TRUE,
+    spacing = "s",
+    width = "100%"
+  )
+  
+  # ----------------------------------------------------------
+  # OIL PALM COMPARISON GRAPH
+  # ----------------------------------------------------------
+  
+  output$oil_palm_comparison_plot_controls <- renderUI(
+    {
+      if (is.null(rv$oil_palm_comparison)) {
+        return(NULL)
+      }
+      
+      tagList(
+        h4("Comparison graph"),
+        selectInput(
+          inputId = "oil_palm_plot_indicator",
+          label = "Indicator to plot",
+          choices = c(
+            "Future climate-stress score" = "FutureStressScore",
+            "Additional climate-stress-change score" = "StressScore",
+            "Minimum P:PET" = "PPETmin",
+            "Consecutive months P:PET < 1" = "PPETConDryMth",
+            "Consecutive dry days" = "CDD"
+          ),
+          selected = "FutureStressScore"
+        )
+      )
+    }
+  )
+  
+  output$oil_palm_comparison_plot_ui <- renderUI(
+    {
+      if (is.null(rv$oil_palm_comparison)) {
+        return(NULL)
+      }
+      
+      plotOutput(
+        outputId = "oil_palm_comparison_plot",
+        height = "430px"
+      )
+    }
+  )
+  
+  output$oil_palm_comparison_plot <- renderPlot(
+    {
+      req(
+        rv$oil_palm_comparison,
+        input$oil_palm_plot_indicator
+      )
+      
+      if (identical(input$oil_palm_plot_indicator, "StressScore")) {
+        plot_data <- rv$oil_palm_comparison$comparison_table |>
+          dplyr::mutate(
+            Scenario_Period = paste(
+              .data$Scenario,
+              .data$Period,
+              sep = " / "
+            ),
+            Plot_value = .data$Relative_stress_change_score
+          )
+        
+        indicator_name <- "Additional climate-stress-change score"
+        units_value <- "0–100"
+        score_plot <- TRUE
+      } else if (identical(input$oil_palm_plot_indicator, "FutureStressScore")) {
+        plot_data <- rv$oil_palm_comparison$comparison_table |>
+          dplyr::mutate(
+            Scenario_Period = paste(
+              .data$Scenario,
+              .data$Period,
+              sep = " / "
+            ),
+            Plot_value = .data$Future_stress_score
+          )
+        
+        indicator_name <- "Future climate-stress score"
+        units_value <- "0–100"
+        score_plot <- TRUE
+      } else {
+        plot_data <- rv$oil_palm_comparison$long_table |>
+          dplyr::filter(
+            .data$Variable_ID == input$oil_palm_plot_indicator
+          ) |>
+          dplyr::mutate(
+            Scenario_Period = paste(
+              .data$Scenario,
+              .data$Period,
+              sep = " / "
+            ),
+            Plot_value = .data$Value
+          )
+        
+        indicator_name <- unique(plot_data$Indicator)[1]
+        units_value <- unique(plot_data$Units)[1]
+        score_plot <- FALSE
+      }
+      
+      validate(
+        need(
+          nrow(plot_data) > 0,
+          "No comparison values are available for this indicator."
+        )
+      )
+      
+      old_par <- par(no.readonly = TRUE)
+      on.exit(par(old_par))
+      
+      par(
+        mar = c(4, 10, 3, 1) + 0.1,
+        cex.main = 0.9,
+        cex.lab = 0.85,
+        cex.axis = 0.75
+      )
+      
+      if (isTRUE(score_plot)) {
+        barplot(
+          height = plot_data$Plot_value,
+          names.arg = plot_data$Scenario_Period,
+          horiz = TRUE,
+          las = 1,
+          xlab = paste0(indicator_name, " (0–100)"),
+          xlim = c(0, 100),
+          main = paste(
+            indicator_name,
+            "within",
+            rv$oil_palm_comparison$aoi_name
+          )
+        )
+      } else {
+        barplot(
+          height = plot_data$Plot_value,
+          names.arg = plot_data$Scenario_Period,
+          horiz = TRUE,
+          las = 1,
+          xlab = paste0(
+            indicator_name,
+            if (
+              !is.na(units_value) &&
+              nzchar(units_value)
+            ) {
+              paste0(" (", units_value, ")")
+            } else {
+              ""
+            }
+          ),
+          main = paste(
+            indicator_name,
+            "within",
+            rv$oil_palm_comparison$aoi_name
+          )
+        )
+      }
+    },
+    height = 430
+  )
+  
+  # ----------------------------------------------------------
+  # DOWNLOAD OIL PALM CSV
+  # ----------------------------------------------------------
+  
+  output$download_oil_palm_csv <- downloadHandler(
+    filename = function() {
+      if (!is.null(rv$oil_palm_comparison)) {
+        return(
+          paste0(
+            safe_filename(rv$oil_palm_comparison$aoi_name),
+            "_oil_palm_comparison.csv"
+          )
+        )
+      }
+      
+      req(rv$oil_palm_result)
+      
+      paste0(
+        safe_filename(rv$oil_palm_result$aoi_name),
+        "_oil_palm_",
+        rv$oil_palm_result$scenario_id,
+        "_",
+        rv$oil_palm_result$period_id,
+        ".csv"
+      )
+    },
+    
+    content = function(file) {
+      if (!is.null(rv$oil_palm_comparison)) {
+        export <- rv$oil_palm_comparison$export_table |>
+          dplyr::mutate(
+            Note = paste(
+              "Actual indicator values and the 0-100 Relative climate-stress-change score are comparable across rows.",
+              "All SSPs and time periods use the same fixed Sabah-wide reference scale.",
+              "The score is not a percentage yield loss."
+            )
+          )
+        
+        readr::write_csv(
+          export,
+          file
+        )
+        
+        return()
+      }
+      
+      req(rv$oil_palm_result)
+      
+      export <- rv$oil_palm_result$indicator_table |>
+        dplyr::mutate(
+          AOI = rv$oil_palm_result$aoi_name,
+          Scenario = rv$oil_palm_result$scenario,
+          Scenario_ID = rv$oil_palm_result$scenario_id,
+          Period = rv$oil_palm_result$period,
+          Period_ID = rv$oil_palm_result$period_id,
+          Indicators_worsening = rv$oil_palm_result$n_worsening,
+          Relative_stress_change_score = rv$oil_palm_result$relative_score_mean,
+          Interpretation = rv$oil_palm_result$interpretation
+        ) |>
+        dplyr::select(
+          AOI,
+          Scenario,
+          Scenario_ID,
+          Period,
+          Period_ID,
+          Indicator,
+          Variable_ID,
+          Baseline,
+          Future,
+          Change,
+          Worsens,
+          Units,
+          Indicators_worsening,
+          Relative_stress_change_score,
+          Interpretation,
+          Baseline_raster,
+          Future_raster
+        )
+      
+      readr::write_csv(
+        export,
+        file
       )
     }
   )
@@ -2906,11 +4503,7 @@ server <- function(
         return("")
       }
       
-      paste(
-        "Skipped",
-        nrow(rv$comparison_missing),
-        "scenario-period combination(s) because the raster was unavailable, missing, or did not contain valid cells within the active AOI."
-      )
+      "Some selected scenario-period combinations were skipped because no matching raster was found in the raster catalogue."
     }
   )
   
@@ -3148,60 +4741,44 @@ server <- function(
   
   output$results_note <- renderText(
     {
-      base_note <- paste(
-        "Results summarise the selected raster within the active AOI.",
-        "The raster resolution reflects the source climate dataset and should not be interpreted as fine-scale local variation."
+      req(input$variable_id)
+      
+      switch(
+        input$variable_id,
+        
+        WBGTmax =
+          paste(
+            "Maximum WBGT is a heat-stress indicator.",
+            "Higher values indicate greater potential heat exposure and reduced outdoor workability.",
+            "This layer represents monthly average maximum WBGT, not daily extreme WBGT."
+          ),
+        
+        Bio017 =
+          paste(
+            "Bio017 is precipitation of the driest quarter.",
+            "Lower values indicate drier conditions."
+          ),
+        
+        PPETmin =
+          paste(
+            "PPETmin is the minimum precipitation-to-potential-evapotranspiration ratio.",
+            "Lower values indicate drier conditions."
+          ),
+        
+        Bio05 =
+          paste(
+            "Bio05 is maximum temperature of the warmest month.",
+            "Higher values indicate hotter warm-month conditions."
+          ),
+        
+        FIRE_PROB =
+          "Higher values indicate greater modelled fire probability.",
+        
+        Fire =
+          "Higher values indicate greater modelled fire probability.",
+        
+        ""
       )
-      
-      if (
-        !is.null(input$variable_id) &&
-        input$variable_id == "Bio05"
-      ) {
-        return(
-          paste(
-            base_note,
-            "For Bio05, higher values indicate hotter maximum temperature conditions."
-          )
-        )
-      }
-      
-      if (
-        !is.null(input$variable_id) &&
-        input$variable_id == "Bio017"
-      ) {
-        return(
-          paste(
-            base_note,
-            "For Bio017, lower values indicate lower precipitation in the driest quarter and therefore drier conditions."
-          )
-        )
-      }
-      
-      if (
-        !is.null(input$variable_id) &&
-        input$variable_id == "PPETmin"
-      ) {
-        return(
-          paste(
-            base_note,
-            "For PPETmin, lower values indicate drier moisture-balance conditions."
-          )
-        )
-      }
-      
-      if (
-        !is.null(input$variable_id) &&
-        input$variable_id == "WBGTmax"
-      ) {
-        return(
-          paste(
-            base_note,
-            "For WBGTmax, higher values indicate hotter heat-stress conditions. Interpret this as a screening indicator, not as a site-level occupational safety assessment."
-          )
-        )
-      }
-      
-      base_note
     }
   )
   
@@ -3358,6 +4935,11 @@ server <- function(
     {
       display_catalogue <- raster_catalogue |>
         dplyr::mutate(
+          Variable = vapply(
+            variable_id,
+            get_variable_label,
+            character(1)
+          ),
           Scenario = vapply(
             scenario,
             get_scenario_label,
@@ -3367,28 +4949,101 @@ server <- function(
             period,
             get_period_label,
             character(1)
-          )
-        ) |>
+          ),
+          Units = dplyr::if_else(
+            is.na(units) | units == "",
+            "Not specified",
+            as.character(units)
+          ),
+          `File exists` = dplyr::if_else(
+            file.exists(file_path),
+            "Yes",
+            "No"
+          ),
+          Enabled = dplyr::if_else(
+            enabled,
+            "Yes",
+            "No"
+          ),
+          `Variable ID` = variable_id,
+          `Scenario ID` = scenario,
+          `Period ID` = period,
+          `Raster file` = basename(file_path),
+          `File path` = file_path
+        )
+      
+      front_columns <- c(
+        "Variable",
+        "Scenario",
+        "Period",
+        "Units",
+        "File exists",
+        "Enabled"
+      )
+      
+      technical_columns <- c(
+        "Variable ID",
+        "Scenario ID",
+        "Period ID",
+        "Raster file",
+        "File path"
+      )
+      
+      remaining_columns <- setdiff(
+        names(display_catalogue),
+        c(
+          front_columns,
+          technical_columns,
+          "variable_id",
+          "scenario",
+          "period",
+          "units",
+          "enabled",
+          "file_path"
+        )
+      )
+      
+      display_catalogue <- display_catalogue |>
         dplyr::select(
-          dplyr::any_of(
-            c(
-              "dataset_id",
-              "variable_id",
-              "Scenario",
-              "Period",
-              "file_path",
-              "units",
-              "enabled"
-            )
-          )
+          dplyr::all_of(front_columns),
+          dplyr::all_of(technical_columns),
+          dplyr::any_of(remaining_columns)
+        ) |>
+        dplyr::arrange(
+          Variable,
+          Scenario,
+          Period
         )
       
       DT::datatable(
         display_catalogue,
         rownames = FALSE,
+        filter = "top",
+        class = "stripe hover compact",
         options = list(
-          pageLength = 10,
-          scrollX = TRUE
+          pageLength = 15,
+          lengthMenu = c(10, 15, 25, 50),
+          scrollX = TRUE,
+          autoWidth = TRUE,
+          searchHighlight = TRUE,
+          columnDefs = list(
+            list(
+              targets = c(1, 2, 3, 4, 5),
+              className = "dt-center"
+            ),
+            list(
+              targets = 0,
+              width = "260px"
+            ),
+            list(
+              targets = 9,
+              width = "220px"
+            ),
+            list(
+              targets = 10,
+              width = "360px"
+            )
+          )
         )
       )
     }

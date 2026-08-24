@@ -39,3 +39,4 @@ data/**/*.kml
 !data/**/README.md
 !rasters/**/README.md
 !outputs/README.md
+rasters/
