@@ -73,6 +73,53 @@ source(
   )
 )
 
+source(
+  file.path(
+    "R",
+    "processing",
+    "oil_palm_dimensions.R"
+  )
+)
+
+
+# ------------------------------------------------------------
+# OIL PALM CONDITIONAL COASTAL LINKED SCREENING
+# ------------------------------------------------------------
+
+source(
+  file.path(
+    "R",
+    "processing",
+    "oil_palm_coastal_linked_screening.R"
+  )
+)
+
+
+# ------------------------------------------------------------
+# OIL PALM DOA PEAT / FIRE LINKED SCREENING
+# ------------------------------------------------------------
+
+source(
+  file.path(
+    "R",
+    "processing",
+    "oil_palm_peat_fire_linked_screening.R"
+  )
+)
+
+
+# ------------------------------------------------------------
+# FOREST RESTORATION CLIMATE SCREENING
+# ------------------------------------------------------------
+
+source(
+  file.path(
+    "R",
+    "processing",
+    "restoration_screening_app.R"
+  )
+)
+
 # ------------------------------------------------------------
 # LOAD CONFIGURATION TABLES
 # ------------------------------------------------------------
@@ -127,10 +174,12 @@ general_pathway <- if (length(general_pathway_matches) > 0) {
 }
 
 other_pathways <- setdiff(pathway_choices, general_pathway)
+other_pathways <- other_pathways[!stringr::str_detect(stringr::str_to_lower(other_pathways), "restoration")]
 
 screening_application_choices <- c(
   stats::setNames(paste0("pathway::", general_pathway), "General Climate Screening"),
-  "Oil Palm Climate Stress" = "oil_palm"
+  "Oil Palm Climate Stress" = "oil_palm",
+  "Forest Restoration Planning" = "restoration"
 )
 
 if (length(other_pathways) > 0) {
@@ -719,6 +768,117 @@ ui <- page_sidebar(
     )
   ),
   
+  tags$style(
+    HTML(
+      "
+      .print-only {
+        display: none;
+      }
+
+      .screening-report-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        margin-bottom: 12px;
+      }
+
+      @media print {
+        @page {
+          size: A4 portrait;
+          margin: 12mm;
+        }
+
+        html, body {
+          height: auto !important;
+          overflow: visible !important;
+          background: #ffffff !important;
+        }
+
+        body * {
+          visibility: hidden !important;
+        }
+
+        .active-print-report,
+        .active-print-report * {
+          visibility: visible !important;
+        }
+
+        .active-print-report {
+          position: absolute !important;
+          left: 0 !important;
+          top: 0 !important;
+          width: 100% !important;
+          max-width: none !important;
+          border: 0 !important;
+          box-shadow: none !important;
+          background: #ffffff !important;
+        }
+
+        .active-print-report .no-print,
+        .active-print-report #oil_palm_comparison_plot_controls,
+        .active-print-report #download_oil_palm_csv {
+          display: none !important;
+        }
+
+        .active-print-report .print-only {
+          display: block !important;
+        }
+
+        .active-print-report .results-note {
+          color: #333333 !important;
+          background: #ffffff !important;
+          border-left: 3px solid #666666 !important;
+        }
+
+        .active-print-report .oil-palm-summary-card,
+        .active-print-report .oil-palm-score-card,
+        .active-print-report table,
+        .active-print-report .shiny-plot-output {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+
+        .active-print-report table {
+          width: 100% !important;
+          font-size: 9.5pt !important;
+        }
+
+        .active-print-report .card-header {
+          font-size: 18pt !important;
+          font-weight: 700 !important;
+        }
+      }
+      "
+    )
+  ),
+
+  tags$script(
+    HTML(
+      "
+      function printScreeningReport(targetId) {
+        var target = document.getElementById(targetId);
+        if (!target) {
+          return;
+        }
+
+        document.querySelectorAll('.active-print-report').forEach(function(el) {
+          el.classList.remove('active-print-report');
+        });
+
+        target.classList.add('active-print-report');
+        window.print();
+
+        setTimeout(function() {
+          target.classList.remove('active-print-report');
+        }, 500);
+      }
+      "
+    )
+  ),
+
+  # OIL PALM PRINT V6 - external standalone report window
+  tags$script(src = "print_screening_report_v7.js"),
+
   sidebar = sidebar(
     
     width = 360,
@@ -860,7 +1020,7 @@ ui <- page_sidebar(
       ),
       
       conditionalPanel(
-        condition = "input.screening_application != 'oil_palm'",
+        condition = "input.screening_application != 'oil_palm' && input.screening_application != 'restoration'",
         
         h4("3. Select theme"),
         selectInput("theme", NULL, choices = NULL),
@@ -940,6 +1100,13 @@ ui <- page_sidebar(
       ),
       
       conditionalPanel(
+        condition = "input.screening_application == 'restoration'",
+        div(
+          class = "restoration-screening-panel",
+          uiOutput("restoration_screening_ui")
+        )
+      ),
+      conditionalPanel(
         condition = "input.screening_application == 'oil_palm'",
         div(
           class = "oil-palm-screening-panel",
@@ -951,6 +1118,12 @@ ui <- page_sidebar(
             )
           ),
           
+          uiOutput("oil_palm_dimensions_ui"),
+
+          uiOutput("oil_palm_coastal_linked_ui"),
+
+          uiOutput("oil_palm_peat_fire_linked_ui"),
+
           h4("4. Select analysis mode"),
           radioButtons(
             "oil_palm_analysis_mode",
@@ -1116,10 +1289,16 @@ ui <- page_sidebar(
     nav_panel(
       title = "Oil Palm",
       card(
+        id = "oil_palm_report_print_area",
         card_header("Oil Palm Climate Stress"),
+        uiOutput("oil_palm_print_metadata"),
+        uiOutput("oil_palm_print_button_ui"),
         uiOutput("oil_palm_summary_ui"),
         h4("Screening results"),
         tableOutput("oil_palm_results_table"),
+        uiOutput("oil_palm_peat_fire_results_ui"),
+        uiOutput("oil_palm_coastal_results_ui"),
+        uiOutput("oil_palm_optional_results_ui"),
         uiOutput("oil_palm_comparison_plot_controls"),
         uiOutput("oil_palm_comparison_plot_ui"),
         div(
@@ -1137,6 +1316,14 @@ ui <- page_sidebar(
       )
     ),
     
+    nav_panel(
+      title = "Restoration",
+      card(
+        card_header("Forest Restoration Planning"),
+        uiOutput("restoration_results_ui")
+      )
+    ),
+
     nav_panel(
       title = "Developer Test",
       
@@ -1252,8 +1439,12 @@ server <- function(
     cropped_raster = NULL,
     oil_palm_result = NULL,
     oil_palm_comparison = NULL,
+    oil_palm_optional_results = NULL,
     oil_palm_score_raster = NULL,
-    oil_palm_agreement_raster = NULL
+    oil_palm_agreement_raster = NULL,
+    oil_palm_coastal_result = NULL,
+    oil_palm_coastal_record = NULL,
+    oil_palm_coastal_raster = NULL
   )
   
   # ----------------------------------------------------------
@@ -1268,8 +1459,12 @@ server <- function(
     rv$cropped_raster <- NULL
     rv$oil_palm_result <- NULL
     rv$oil_palm_comparison <- NULL
+    rv$oil_palm_optional_results <- NULL
     rv$oil_palm_score_raster <- NULL
     rv$oil_palm_agreement_raster <- NULL
+    rv$oil_palm_coastal_result <- NULL
+    rv$oil_palm_coastal_record <- NULL
+    rv$oil_palm_coastal_raster <- NULL
   }
   
   clear_analysis_map <- function() {
@@ -1277,11 +1472,15 @@ server <- function(
     leafletProxy("map") |>
       clearGroup("Analysis result") |>
       clearGroup("Oil palm stress") |>
+      clearGroup("Oil palm coastal exposure") |>
       removeControl(
         layerId = "analysis_result_legend"
       ) |>
       removeControl(
         layerId = "oil_palm_legend"
+      ) |>
+      removeControl(
+        layerId = "oil_palm_coastal_legend"
       )
   }
   
@@ -1428,6 +1627,7 @@ server <- function(
       
       if (
         input$screening_application != "oil_palm" &&
+        input$screening_application != "restoration" &&
         stringr::str_starts(input$screening_application, "pathway::")
       ) {
         selected_pathway <- stringr::str_remove(
@@ -1462,6 +1662,116 @@ server <- function(
     ignoreInit = FALSE
   )
   
+  # ----------------------------------------------------------
+  # OIL PALM CORE / OPTIONAL DIMENSIONS
+  # ----------------------------------------------------------
+
+  oil_palm_dimension_status <- reactive({
+    oil_palm_dimension_availability(
+      raster_catalogue = raster_catalogue,
+      config_dir = "config"
+    )
+  })
+
+  output$oil_palm_dimensions_ui <- renderUI({
+    status <- oil_palm_dimension_status()
+
+    optional <- status |>
+      dplyr::filter(!.data$contributes_to_core_score)
+
+    usable <- optional |>
+      dplyr::filter(.data$status %in% c("ready", "provisional"))
+
+    unavailable <- optional |>
+      dplyr::filter(.data$status == "missing")
+
+    usable_choices <- stats::setNames(
+      usable$dimension_id,
+      ifelse(
+        usable$status == "provisional",
+        paste0(usable$dimension_name, " (provisional)"),
+        usable$dimension_name
+      )
+    )
+
+    ui_parts <- list(
+      h4("4. Select dimensions"),
+      div(
+        class = "results-note",
+        tags$strong("Crop water stress (core - always included)"),
+        div(
+          class = "text-muted",
+          "PPETmin + consecutive P:PET < 1 months + CDD. This remains the core Oil Palm climate-stress score."
+        )
+      )
+    )
+
+    if (length(usable_choices) > 0) {
+      ui_parts <- c(
+        ui_parts,
+        list(
+          checkboxGroupInput(
+            inputId = "oil_palm_optional_dimensions",
+            label = "Additional dimensions",
+            choices = usable_choices,
+            selected = character(0)
+          )
+        )
+      )
+    }
+
+    if (nrow(unavailable) > 0) {
+      ui_parts <- c(
+        ui_parts,
+        list(
+          tags$strong("Not yet available in the raster catalogue"),
+          tags$ul(
+            lapply(
+              seq_len(nrow(unavailable)),
+              function(i) {
+                tags$li(
+                  paste0(
+                    unavailable$dimension_name[[i]],
+                    " - ",
+                    unavailable$status_note[[i]]
+                  )
+                )
+              }
+            )
+          )
+        )
+      )
+    }
+
+    ui_parts <- c(
+      ui_parts,
+      list(
+        helpText(
+          paste(
+            "Additional dimensions are reported separately.",
+            "They do not change the core crop-water-stress score."
+          )
+        ),
+        div(
+          class = "results-note",
+          tags$strong("Peat plantations: "),
+          paste(
+            "Fire is not included in the general Oil Palm screen.",
+            "Peat-related drying, hydrology and fire should be assessed as a separate",
+            "conditional site-specific consideration when peat context is available."
+          )
+        )
+      )
+    )
+
+    do.call(tagList, ui_parts)
+  })
+
+  oil_palm_selected_optional_dimensions <- reactive({
+    selected <- input$oil_palm_optional_dimensions
+    if (is.null(selected)) character(0) else selected
+  })
+
   # ----------------------------------------------------------
   # OIL PALM AVAILABLE SCENARIOS / PERIODS
   # ----------------------------------------------------------
@@ -1635,6 +1945,579 @@ server <- function(
     )
   })
   
+
+  # ----------------------------------------------------------
+  # OIL PALM - CONDITIONAL COASTAL INUNDATION LINKED SCREENING
+  # ----------------------------------------------------------
+  # This is intentionally separate from the Oil Palm core and
+  # optional-dimension scores.
+  # ----------------------------------------------------------
+
+  oil_palm_coastal_registered_records <- reactive({
+    oil_palm_coastal_catalogue(
+      raster_catalogue = raster_catalogue,
+      variable_metadata = variable_metadata
+    )
+  })
+
+  oil_palm_coastal_overlap_records <- reactive({
+    if (is.null(rv$aoi)) {
+      return(
+        oil_palm_coastal_registered_records()[0, , drop = FALSE]
+      )
+    }
+
+    oil_palm_coastal_records_for_aoi(
+      raster_catalogue = raster_catalogue,
+      variable_metadata = variable_metadata,
+      aoi_sf = rv$aoi
+    )
+  })
+
+  output$oil_palm_coastal_linked_ui <- renderUI({
+    registered <- oil_palm_coastal_registered_records()
+
+    if (nrow(registered) == 0) {
+      return(
+        tagList(
+          hr(),
+          h5("Site-specific linked screening"),
+          div(
+            class = "selection-status-box selection-status-incomplete",
+            strong("Coastal inundation / sea-level exposure"),
+            div(
+              class = "selection-status-detail",
+              paste(
+                "No enabled coastal inundation layer is currently registered.",
+                "When a binary SLR/coastal-inundation layer is added to the raster catalogue,",
+                "this option will become available automatically."
+              )
+            )
+          )
+        )
+      )
+    }
+
+    if (is.null(rv$aoi)) {
+      return(
+        tagList(
+          hr(),
+          h5("Site-specific linked screening"),
+          helpText(
+            paste(
+              "Coastal inundation / sea-level exposure is available where the AOI overlaps",
+              "a registered coastal inundation layer. Load or draw the AOI first."
+            )
+          )
+        )
+      )
+    }
+
+    records <- oil_palm_coastal_overlap_records()
+
+    if (nrow(records) == 0) {
+      return(
+        tagList(
+          hr(),
+          h5("Site-specific linked screening"),
+          div(
+            class = "selection-status-box selection-status-ready",
+            strong("No registered coastal-inundation coverage overlaps this AOI"),
+            div(
+              class = "selection-status-detail",
+              paste(
+                "The coastal option is therefore not shown for this site.",
+                "This does not imply zero coastal risk outside the coverage of the registered layers."
+              )
+            )
+          )
+        )
+      )
+    }
+
+    include_coastal <- isTRUE(
+      input$oil_palm_include_coastal
+    )
+
+    variable_ids <- unique(records$variable_id)
+
+    variable_labels <- vapply(
+      variable_ids,
+      function(x) {
+        label <- records$coastal_display_name[
+          records$variable_id == x
+        ][1]
+
+        if (
+          is.na(label) ||
+          !nzchar(label)
+        ) {
+          label <- oil_palm_coastal_display_name(x)
+        }
+
+        label
+      },
+      character(1)
+    )
+
+    variable_choices <- stats::setNames(
+      variable_ids,
+      variable_labels
+    )
+
+    selected_variable <- input$oil_palm_coastal_variable
+
+    if (
+      is.null(selected_variable) ||
+      !selected_variable %in% variable_ids
+    ) {
+      selected_variable <- variable_ids[1]
+    }
+
+    variable_records <- records |>
+      dplyr::filter(
+        .data$variable_id == selected_variable
+      )
+
+    scenarios <- unique(
+      variable_records$scenario
+    )
+
+    selected_scenario <- input$oil_palm_coastal_scenario
+
+    if (
+      is.null(selected_scenario) ||
+      !selected_scenario %in% scenarios
+    ) {
+      selected_scenario <- scenarios[1]
+    }
+
+    scenario_choices <- stats::setNames(
+      scenarios,
+      vapply(
+        scenarios,
+        get_scenario_label,
+        character(1)
+      )
+    )
+
+    period_records <- variable_records |>
+      dplyr::filter(
+        .data$scenario == selected_scenario
+      )
+
+    periods <- unique(
+      period_records$period
+    )
+
+    selected_period <- input$oil_palm_coastal_period
+
+    if (
+      is.null(selected_period) ||
+      !selected_period %in% periods
+    ) {
+      selected_period <- periods[1]
+    }
+
+    period_choices <- stats::setNames(
+      periods,
+      vapply(
+        periods,
+        get_period_label,
+        character(1)
+      )
+    )
+
+    tagList(
+      hr(),
+      h5("Site-specific linked screening"),
+      checkboxInput(
+        inputId = "oil_palm_include_coastal",
+        label = "Coastal inundation / sea-level exposure",
+        value = include_coastal
+      ),
+      helpText(
+        paste(
+          "This is a separate exposure screening.",
+          "It does not alter the Oil Palm crop-water-stress score",
+          "or any selected optional-dimension score."
+        )
+      ),
+      if (include_coastal) {
+        tagList(
+          selectInput(
+            inputId = "oil_palm_coastal_variable",
+            label = "Exposure layer",
+            choices = variable_choices,
+            selected = selected_variable
+          ),
+          selectInput(
+            inputId = "oil_palm_coastal_scenario",
+            label = "Coastal dataset scenario",
+            choices = scenario_choices,
+            selected = selected_scenario
+          ),
+          selectInput(
+            inputId = "oil_palm_coastal_period",
+            label = "Coastal dataset time horizon",
+            choices = period_choices,
+            selected = selected_period
+          ),
+          helpText(
+            paste(
+              "These controls intentionally remain separate from the Oil Palm SSP/climatology controls",
+              "because coastal datasets may use different scenarios and time horizons."
+            )
+          ),
+          actionButton(
+            inputId = "run_oil_palm_coastal",
+            label = "Run coastal exposure screening",
+            class = "btn-info",
+            width = "100%"
+          )
+        )
+      }
+    )
+  })
+
+  observeEvent(
+    input$oil_palm_include_coastal,
+    {
+      if (!isTRUE(input$oil_palm_include_coastal)) {
+        rv$oil_palm_coastal_result <- NULL
+        rv$oil_palm_coastal_record <- NULL
+        rv$oil_palm_coastal_raster <- NULL
+
+        leafletProxy("map") |>
+          clearGroup("Oil palm coastal exposure") |>
+          removeControl(
+            layerId = "oil_palm_coastal_legend"
+          )
+      }
+    },
+    ignoreInit = TRUE
+  )
+
+  observeEvent(
+    input$run_oil_palm_coastal,
+    {
+      req(
+        rv$aoi,
+        isTRUE(input$oil_palm_include_coastal),
+        input$oil_palm_coastal_variable,
+        input$oil_palm_coastal_scenario,
+        input$oil_palm_coastal_period
+      )
+
+      records <- oil_palm_coastal_overlap_records() |>
+        dplyr::filter(
+          .data$variable_id ==
+            input$oil_palm_coastal_variable,
+          .data$scenario ==
+            input$oil_palm_coastal_scenario,
+          .data$period ==
+            input$oil_palm_coastal_period
+        )
+
+      if (nrow(records) == 0) {
+        showNotification(
+          "The selected coastal exposure layer is no longer available for this AOI.",
+          type = "error",
+          duration = NULL
+        )
+        return()
+      }
+
+      record <- records[1, , drop = FALSE]
+
+      result <- tryCatch(
+        {
+          withProgress(
+            message = "Running coastal exposure screening",
+            value = 0,
+            {
+              incProgress(
+                0.25,
+                detail = "Checking AOI and inundation layer"
+              )
+
+              x <- oil_palm_run_coastal_exposure(
+                raster_record = record,
+                aoi_sf = rv$aoi,
+                aoi_name = rv$aoi_name,
+                output_dir = file.path(
+                  "outputs",
+                  "oil_palm",
+                  "coastal_exposure"
+                ),
+                write_cropped_raster = TRUE
+              )
+
+              incProgress(
+                1,
+                detail = "Complete"
+              )
+
+              x
+            }
+          )
+        },
+        error = function(error) {
+          showNotification(
+            paste(
+              "Coastal exposure screening failed:",
+              error$message
+            ),
+            type = "error",
+            duration = NULL
+          )
+
+          NULL
+        }
+      )
+
+      if (is.null(result)) {
+        return()
+      }
+
+      rv$oil_palm_coastal_result <- result
+      rv$oil_palm_coastal_record <- record
+      rv$oil_palm_coastal_raster <- NULL
+
+      summary_row <- result$summary[1, ]
+
+      cropped_path <- summary_row$cropped_raster[[1]]
+
+      if (
+        !is.na(cropped_path) &&
+        nzchar(cropped_path) &&
+        file.exists(cropped_path)
+      ) {
+        coastal_raster <- terra::rast(
+          cropped_path
+        )
+
+        rv$oil_palm_coastal_raster <- coastal_raster
+
+        coastal_palette <- leaflet::colorFactor(
+          palette = c(
+            "#FFFFFF00",
+            "#2C7FB8"
+          ),
+          domain = c(
+            0,
+            1
+          ),
+          na.color = "#FFFFFF00"
+        )
+
+        leafletProxy("map") |>
+          clearGroup("Oil palm coastal exposure") |>
+          removeControl(
+            layerId = "oil_palm_coastal_legend"
+          ) |>
+          addRasterImage(
+            x = coastal_raster,
+            colors = coastal_palette,
+            opacity = 0.75,
+            group = "Oil palm coastal exposure",
+            project = TRUE,
+            method = "ngb",
+            maxBytes = 10 * 1024 * 1024
+          ) |>
+          addLegend(
+            colors = "#2C7FB8",
+            labels = "Potential inundation exposure",
+            title = "Oil Palm: coastal exposure",
+            position = "bottomright",
+            opacity = 1,
+            layerId = "oil_palm_coastal_legend"
+          )
+      }
+
+      showNotification(
+        paste(
+          "Coastal exposure screening completed:",
+          round(
+            summary_row$pct_AOI_exposed[[1]],
+            1
+          ),
+          "% of present-day land flagged as exposed."
+        ),
+        type = "message"
+      )
+    }
+  )
+
+  output$oil_palm_coastal_results_ui <- renderUI({
+    if (is.null(rv$oil_palm_coastal_result)) {
+      return(NULL)
+    }
+
+    s <- rv$oil_palm_coastal_result$summary[1, ]
+
+    scenario_label <- get_scenario_label(
+      s$scenario[[1]]
+    )
+
+    period_label <- get_period_label(
+      s$period[[1]]
+    )
+
+    tags$div(
+      id = "oil_palm_coastal_linked_report",
+      class = "oil-palm-coastal-report-section",
+      hr(),
+      h4("Site-specific linked screening"),
+      div(
+        class = "oil-palm-summary-card",
+        div(
+          class = "oil-palm-summary-big",
+          "Coastal inundation / sea-level exposure"
+        ),
+        div(
+          paste(
+            s$layer_name[[1]],
+            "|",
+            scenario_label,
+            "|",
+            period_label
+          )
+        )
+      ),
+      tags$table(
+        class = "table table-sm table-bordered report-table oil-palm-coastal-table",
+        tags$thead(
+          tags$tr(
+            tags$th("Measure"),
+            tags$th("Result")
+          )
+        ),
+        tags$tbody(
+          tags$tr(
+            tags$td("Potentially inundated present-day land"),
+            tags$td(
+              paste0(
+                format(
+                  round(
+                    s$exposed_area_ha[[1]],
+                    2
+                  ),
+                  big.mark = ","
+                ),
+                " ha"
+              )
+            )
+          ),
+          tags$tr(
+            tags$td("Share of present-day land exposed"),
+            tags$td(
+              paste0(
+                round(
+                  s$pct_AOI_exposed[[1]],
+                  1
+                ),
+                "%"
+              )
+            )
+          ),
+          tags$tr(
+            tags$td("Raster coverage of present-day land"),
+            tags$td(
+              paste0(
+                round(
+                  s$raster_coverage_pct[[1]],
+                  1
+                ),
+                "%"
+              )
+            )
+          ),
+          tags$tr(
+            tags$td("Share of raster-covered land exposed"),
+            tags$td(
+              paste0(
+                round(
+                  s$pct_covered_area_exposed[[1]],
+                  1
+                ),
+                "%"
+              )
+            )
+          )
+        )
+      ),
+      div(
+        class = "results-note",
+        paste(
+          "This is a site-specific exposure result and is reported separately.",
+          "It is not included in the Oil Palm crop-water-stress score.",
+          "Interpretation depends on the assumptions, scenario and time horizon of the selected inundation dataset."
+        )
+      ),
+      br(),
+      downloadButton(
+        outputId = "download_oil_palm_coastal_csv",
+        label = "Download coastal exposure CSV"
+      )
+    )
+  })
+
+  output$download_oil_palm_coastal_csv <- downloadHandler(
+    filename = function() {
+      paste0(
+        "oil_palm_coastal_exposure_",
+        safe_filename(
+          ifelse(
+            is.null(rv$aoi_name),
+            "AOI",
+            rv$aoi_name
+          )
+        ),
+        ".csv"
+      )
+    },
+    content = function(file) {
+      req(rv$oil_palm_coastal_result)
+
+      readr::write_csv(
+        rv$oil_palm_coastal_result$summary,
+        file
+      )
+    }
+  )
+
+
+  # ----------------------------------------------------------
+  # OIL PALM DOA PEAT / FIRE LINKED SCREENING
+  # ----------------------------------------------------------
+
+  oil_palm_peat_fire_module <- oil_palm_peat_fire_server(
+    input = input,
+    output = output,
+    session = session,
+    rv = rv,
+    raster_catalogue = raster_catalogue,
+    get_scenario_label = get_scenario_label,
+    get_period_label = get_period_label,
+    safe_filename = safe_filename
+  )
+
+
+  # ----------------------------------------------------------
+  # FOREST RESTORATION CLIMATE SCREENING
+  # ----------------------------------------------------------
+
+  restoration_screening_module <- restoration_screening_server(
+    input = input,
+    output = output,
+    session = session,
+    rv = rv,
+    raster_catalogue = raster_catalogue,
+    get_scenario_label = get_scenario_label,
+    get_period_label = get_period_label,
+    safe_filename = safe_filename
+  )
   # ----------------------------------------------------------
   # ENABLE / DISABLE RUN ANALYSIS BUTTON
   # ----------------------------------------------------------
@@ -3519,6 +4402,7 @@ server <- function(
       # Clear previous Oil Palm outputs without disturbing the AOI.
       rv$oil_palm_result <- NULL
       rv$oil_palm_comparison <- NULL
+      rv$oil_palm_optional_results <- NULL
       rv$oil_palm_score_raster <- NULL
       rv$oil_palm_agreement_raster <- NULL
       
@@ -3575,6 +4459,14 @@ server <- function(
             )
             
             rv$oil_palm_result <- oil_result
+            rv$oil_palm_optional_results <- oil_palm_run_optional_dimensions(
+              raster_catalogue = raster_catalogue,
+              aoi = rv$aoi,
+              selected_dimensions = oil_palm_selected_optional_dimensions(),
+              future_scenario = input$oil_palm_scenario,
+              future_period = input$oil_palm_period,
+              availability = oil_palm_dimension_status()
+            )
             rv$oil_palm_score_raster <- oil_result$score_raster
             rv$oil_palm_agreement_raster <- oil_result$agreement_raster
             
@@ -3685,6 +4577,14 @@ server <- function(
             )
             
             rv$oil_palm_comparison <- oil_comparison
+            rv$oil_palm_optional_results <- oil_palm_compare_optional_dimensions(
+              raster_catalogue = raster_catalogue,
+              aoi = rv$aoi,
+              selected_dimensions = oil_palm_selected_optional_dimensions(),
+              future_scenarios = input$oil_palm_comparison_scenarios,
+              future_periods = input$oil_palm_comparison_periods,
+              availability = oil_palm_dimension_status()
+            )
             
             # Comparison mode reports comparable 0-100 AOI scores.
             # A single raster is not shown because several SSP/period
@@ -3710,6 +4610,54 @@ server <- function(
     }
   )
   
+  # ----------------------------------------------------------
+  # OIL PALM PRINTABLE REPORT
+  # ----------------------------------------------------------
+
+  output$oil_palm_print_button_ui <- renderUI({
+    if (is.null(rv$oil_palm_result) && is.null(rv$oil_palm_comparison)) {
+      return(NULL)
+    }
+
+    div(
+      class = "screening-report-actions no-print",
+      actionButton(
+        inputId = "print_oil_palm_report",
+        label = "Print / Save report",
+        icon = icon("print"),
+        class = "btn-primary",
+        onclick = "printScreeningReport('oil_palm_report_print_area'); return false;"
+      )
+    )
+  })
+
+  output$oil_palm_print_metadata <- renderUI({
+    if (is.null(rv$oil_palm_result) && is.null(rv$oil_palm_comparison)) {
+      return(NULL)
+    }
+
+    aoi_name <- if (!is.null(rv$oil_palm_comparison)) {
+      rv$oil_palm_comparison$aoi_name
+    } else {
+      rv$oil_palm_result$aoi_name
+    }
+
+    div(
+      class = "print-only",
+      h3("Sabah Climate Risk Explorer"),
+      p(strong(paste("Area of interest:", aoi_name))),
+      p(paste("Report generated:", format(Sys.time(), "%d %B %Y %H:%M"))),
+      p(
+        class = "text-muted",
+        paste(
+          "Screening-level climate information. Scores are comparative climate-stress indicators",
+          "and should not be interpreted as percentage yield loss."
+        )
+      ),
+      tags$hr()
+    )
+  })
+
   # ----------------------------------------------------------
   # OIL PALM SUMMARY
   # ----------------------------------------------------------
@@ -3988,6 +4936,89 @@ server <- function(
     width = "100%"
   )
   
+  # ----------------------------------------------------------
+  # OIL PALM OPTIONAL DIMENSION RESULTS
+  # ----------------------------------------------------------
+
+  output$oil_palm_optional_results_ui <- renderUI({
+    results <- rv$oil_palm_optional_results
+
+    if (is.null(results) || nrow(results) == 0) {
+      return(NULL)
+    }
+
+    tagList(
+      h4("Additional dimensions"),
+      div(
+        class = "results-note",
+        paste(
+          "These dimensions are reported separately and do not change the core crop-water-stress score.",
+          "Provisional means the best currently registered indicator is being used while a preferred impact layer is pending."
+        )
+      ),
+      tableOutput("oil_palm_optional_results_table"),
+      downloadButton(
+        "download_oil_palm_optional_csv",
+        "Download additional dimensions CSV"
+      ),
+      br(), br()
+    )
+  })
+
+  output$oil_palm_optional_results_table <- renderTable({
+    req(rv$oil_palm_optional_results)
+    results <- rv$oil_palm_optional_results
+
+    if ("Scenario" %in% names(results)) {
+      results |>
+        dplyr::transmute(
+          Dimension = .data$Dimension,
+          Status = .data$Status,
+          Indicator = .data$Indicator,
+          Scenario = .data$Scenario,
+          Period = .data$Period,
+          Baseline = round(.data$Baseline, 2),
+          Future = round(.data$Future, 2),
+          Change = round(.data$Change, 2),
+          `Stress worsens` = dplyr::case_when(
+            is.na(.data$Worsens) ~ "Not available",
+            .data$Worsens ~ "Yes",
+            TRUE ~ "No"
+          ),
+          Units = .data$Units
+        )
+    } else {
+      results |>
+        dplyr::transmute(
+          Dimension = .data$Dimension,
+          Status = .data$Status,
+          Indicator = .data$Indicator,
+          Baseline = round(.data$Baseline, 2),
+          Future = round(.data$Future, 2),
+          Change = round(.data$Change, 2),
+          `Stress worsens` = dplyr::case_when(
+            is.na(.data$Worsens) ~ "Not available",
+            .data$Worsens ~ "Yes",
+            TRUE ~ "No"
+          ),
+          Units = .data$Units
+        )
+    }
+  }, striped = TRUE, bordered = TRUE, spacing = "s", width = "100%")
+
+  output$download_oil_palm_optional_csv <- downloadHandler(
+    filename = function() {
+      paste0(
+        safe_filename(rv$aoi_name),
+        "_oil_palm_additional_dimensions.csv"
+      )
+    },
+    content = function(file) {
+      req(rv$oil_palm_optional_results)
+      readr::write_csv(rv$oil_palm_optional_results, file)
+    }
+  )
+
   # ----------------------------------------------------------
   # OIL PALM COMPARISON GRAPH
   # ----------------------------------------------------------

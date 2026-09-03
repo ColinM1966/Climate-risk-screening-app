@@ -1,0 +1,2 @@
+source_path,source_feature_count,invalid_geometries_before,output_feature_count,invalid_geometries_after,output_crs,xmin,ymin,xmax,ymax,total_land_area_ha,output_path,output_layer,prepared_at
+E:/GIS_layers/Borneoshape/Borneo_clipping.shp,647,1,1,0,WGS 84,108.67990810402652,-4.375092043401031,119.26925841635502,7.379627859328974,73810969.85220452,data/boundaries/Borneo_land_mask.gpkg,present_day_land,2026-08-25 09:22:32.311732

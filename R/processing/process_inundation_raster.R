@@ -1,3 +1,15 @@
+
+# ------------------------------------------------------------
+# PRESENT-DAY LAND MASK FOR INUNDATION ANALYSIS
+# ------------------------------------------------------------
+source(
+  file.path(
+    "R",
+    "processing",
+    "inundation_land_mask.R"
+  )
+)
+
 # ============================================================
 # PROCESS INUNDATION RASTER
 # Sabah Climate Risk Explorer
@@ -89,6 +101,17 @@ process_inundation_raster <- function(
     nodata_value = -9999,
     overwrite = TRUE
 ) {
+
+  # ----------------------------------------------------------
+  # EXCLUDE PRESENT-DAY SEA
+  # ----------------------------------------------------------
+  # Inundation exposure is calculated only over present-day
+  # land. Existing sea is excluded from both the raster mask
+  # and the exposure denominator.
+  aoi_sf <- clip_inundation_aoi_to_present_day_land(
+    aoi_sf
+  )
+
 
   # ----------------------------------------------------------
   # CHECK INPUTS
@@ -192,6 +215,41 @@ process_inundation_raster <- function(
     )
   }
 
+  # ----------------------------------------------------------
+  # NORMALISE SOURCE NODATA
+  # ----------------------------------------------------------
+  # Some Float32 inundation rasters store the minimum Float32
+  # value (~ -3.4028235e38) as NoData without declaring it in
+  # raster metadata. process_inundation_raster() is only for
+  # binary 0/1 exposure rasters, so values <= -1e30 are safely
+  # treated as source NoData here.
+  #
+  # The catalogue nodata_value is also honoured for other
+  # binary inundation datasets.
+  # ----------------------------------------------------------
+
+  source_nodata <- suppressWarnings(
+    as.numeric(nodata_value)
+  )
+
+  if (
+    is.finite(source_nodata) &&
+    source_nodata > -1e30
+  ) {
+    r <- terra::ifel(
+      r == source_nodata,
+      NA,
+      r
+    )
+  }
+
+  # Float32-min sentinel fallback. This is intentionally
+  # restricted to the binary inundation processor.
+  r <- terra::ifel(
+    r <= -1e30,
+    NA,
+    r
+  )
   # ----------------------------------------------------------
   # CREATE CLEAN BINARY RASTER
   #

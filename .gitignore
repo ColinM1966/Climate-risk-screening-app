@@ -40,3 +40,14 @@ data/**/*.kml
 !rasters/**/README.md
 !outputs/README.md
 rasters/
+source_rasters/
+
+# Local code backups
+*.bak
+*.before_*
+
+# Local generated backups
+config/backups/
+
+# Temporary local mockups
+mockups/

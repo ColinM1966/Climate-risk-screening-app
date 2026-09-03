@@ -828,8 +828,20 @@ oil_palm_build_screening <- function(
     )
 
     score_rasters[[variable_id]] <- score_full
-    baseline_stress_rasters[[variable_id]] <- baseline_stress_full
-    future_stress_rasters[[variable_id]] <- future_stress_full
+    # Store aligned COPIES for the cross-indicator composite raster.
+    # Keep baseline_stress_full/future_stress_full on their native grids
+    # so the AOI statistics below are not changed by resampling.
+    baseline_stress_rasters[[variable_id]] <- oil_palm_align_raster(
+      baseline_stress_full,
+      template,
+      method = 'bilinear'
+    )
+
+    future_stress_rasters[[variable_id]] <- oil_palm_align_raster(
+      future_stress_full,
+      template,
+      method = 'bilinear'
+    )
     agreement_rasters[[variable_id]] <- agreement_full
 
     baseline_aoi <- oil_palm_crop_to_aoi(
@@ -1485,3 +1497,255 @@ oil_palm_build_comparison <- function(
     score_is_comparable = TRUE
   )
 }
+
+
+# >>> PPETMIN_PHYSICAL_SCALING_V16_OIL_PALM >>>
+# ------------------------------------------------------------
+# PPETmin physical moisture-deficit scaling for Oil Palm
+# ------------------------------------------------------------
+
+oil_palm_ppetmin_stress_fraction <- function(x) {
+
+  if (inherits(
+    x,
+    "SpatRaster"
+  )) {
+
+    return(
+      terra::clamp(
+        1 - x,
+        lower = 0,
+        upper = 1,
+        values = TRUE
+      )
+    )
+  }
+
+  x <- as.numeric(x)
+
+  pmax(
+    0,
+    pmin(
+      1,
+      1 - x
+    )
+  )
+}
+
+
+oil_palm_ppetmin_stress_score <- function(x) {
+  oil_palm_ppetmin_stress_fraction(
+    x
+  ) * 100
+}
+
+
+if (!exists(
+  ".oil_palm_worsening_before_ppet_physical_v16",
+  inherits = FALSE
+)) {
+  .oil_palm_worsening_before_ppet_physical_v16 <-
+    oil_palm_worsening
+}
+
+if (!exists(
+  ".oil_palm_reference_value_before_ppet_physical_v16",
+  inherits = FALSE
+)) {
+  .oil_palm_reference_value_before_ppet_physical_v16 <-
+    oil_palm_reference_value
+}
+
+if (!exists(
+  ".oil_palm_absolute_reference_values_before_ppet_physical_v16",
+  inherits = FALSE
+)) {
+  .oil_palm_absolute_reference_values_before_ppet_physical_v16 <-
+    oil_palm_absolute_reference_values
+}
+
+if (
+  exists(
+    "oil_palm_build_reference_scale",
+    mode = "function"
+  ) &&
+  !exists(
+    ".oil_palm_build_reference_scale_before_ppet_physical_v16",
+    inherits = FALSE
+  )
+) {
+  .oil_palm_build_reference_scale_before_ppet_physical_v16 <-
+    oil_palm_build_reference_scale
+}
+
+
+# PPETmin is the only core Oil Palm indicator with direction
+# "decrease". For that branch, calculate change in PHYSICAL
+# water-deficit stress rather than change in the raw ratio.
+oil_palm_worsening <- function(
+    baseline,
+    future,
+    direction
+) {
+
+  if (identical(
+    direction,
+    "decrease"
+  )) {
+
+    baseline_stress <-
+      oil_palm_ppetmin_stress_fraction(
+        baseline
+      )
+
+    future_stress <-
+      oil_palm_ppetmin_stress_fraction(
+        future
+      )
+
+    delta <-
+      future_stress -
+      baseline_stress
+
+    return(
+      terra::clamp(
+        delta,
+        lower = 0,
+        upper = 1,
+        values = TRUE
+      )
+    )
+  }
+
+  .oil_palm_worsening_before_ppet_physical_v16(
+    baseline = baseline,
+    future = future,
+    direction = direction
+  )
+}
+
+
+# A fixed reference of 1 leaves the physical PPETmin stress-change
+# fraction unchanged in oil_palm_scale_with_reference().
+oil_palm_reference_value <- function(
+    reference_scale,
+    variable_id
+) {
+
+  if (identical(
+    variable_id,
+    "PPETmin"
+  )) {
+    return(1)
+  }
+
+  .oil_palm_reference_value_before_ppet_physical_v16(
+    reference_scale = reference_scale,
+    variable_id = variable_id
+  )
+}
+
+
+# Existing oil_palm_scale_absolute() with low=0, high=1 and
+# direction="decrease" becomes clamp(1 - P:PET, 0, 1).
+oil_palm_absolute_reference_values <- function(
+    reference_scale,
+    variable_id
+) {
+
+  if (identical(
+    variable_id,
+    "PPETmin"
+  )) {
+    return(
+      list(
+        low = 0,
+        high = 1
+      )
+    )
+  }
+
+  .oil_palm_absolute_reference_values_before_ppet_physical_v16(
+    reference_scale = reference_scale,
+    variable_id = variable_id
+  )
+}
+
+
+if (exists(
+  ".oil_palm_build_reference_scale_before_ppet_physical_v16",
+  inherits = FALSE
+)) {
+
+  oil_palm_build_reference_scale <- function(...) {
+
+    scale <-
+      .oil_palm_build_reference_scale_before_ppet_physical_v16(...)
+
+    row <- which(
+      scale$Variable_ID ==
+        "PPETmin"
+    )
+
+    if (length(row) == 1) {
+
+      if (
+        "Change_reference_value" %in%
+          names(scale)
+      ) {
+        scale$Change_reference_value[
+          row
+        ] <- 1
+      }
+
+      if (
+        "Absolute_low_reference" %in%
+          names(scale)
+      ) {
+        scale$Absolute_low_reference[
+          row
+        ] <- 0
+      }
+
+      if (
+        "Absolute_high_reference" %in%
+          names(scale)
+      ) {
+        scale$Absolute_high_reference[
+          row
+        ] <- 1
+      }
+
+      if (
+        "Change_reference_method" %in%
+          names(scale)
+      ) {
+        scale$Change_reference_method[
+          row
+        ] <- paste(
+          "Physical PPETmin stress change:",
+          "max(0, future stress - baseline stress),",
+          "where stress = max(0, min(1, 1-P:PET))"
+        )
+      }
+
+      if (
+        "Absolute_reference_method" %in%
+          names(scale)
+      ) {
+        scale$Absolute_reference_method[
+          row
+        ] <- paste(
+          "Physical P:PET balance scale:",
+          "P:PET >= 1 = 0 stress;",
+          "below 1, stress fraction = 1-P:PET"
+        )
+      }
+    }
+
+    scale
+  }
+}
+
+# <<< PPETMIN_PHYSICAL_SCALING_V16_OIL_PALM <<<
+

@@ -1,4 +1,4 @@
-﻿dimension_id,layer_id,indicator_role,default_weight,preferred,notes
+dimension_id,layer_id,indicator_role,default_weight,preferred,notes
 oil_palm_water,CWD_DEFICIT,severity,1,Future preferred,Use PPETmin until built.
 oil_palm_water,PPETmin,severity fallback,1,Current,Current app core.
 oil_palm_water,CONDRYMONTH100,duration,1,Future preferred,Literature-based dry-month duration.
@@ -12,43 +12,44 @@ worker_heat,WBGT30_DAYS,supporting threshold,0,Available code,Display rather tha
 worker_heat,HI41_DAYS,supporting,0,Available code,"Heat-health context, not same as workability."
 fire_drought,KBDI,primary fire-weather drought,1,Future preferred,Implement after local convention check.
 fire_drought,FIRE_PROB,impact model,1,Current,Keep as separate model output; do not average blindly with KBDI.
-fire_drought,HOT_DRY_SPELL_MAX,compound dryness,1,Available code,
-dry_spell,CDD_PR1MM,primary,1,Available code,
-dry_spell,DRY_SPELLS_14D_PR1MM,supporting,0,Available code,
-hot_dry,HOT_DRY_DAYS_35_PR5,primary,1,Available code,
-hot_dry,HOT_DRY_SPELL_MAX,duration,1,Available code,
-extreme_rainfall,RX5DAY,multi-day intensity,1,Available code,
-extreme_rainfall,R99PTOT_BASE,tail severity,1,Available code,
-extreme_rainfall,SDII,daily intensity,1,Available code,
-extreme_rainfall,R50MM,supporting frequency,0,Available code,
-wet_spell,CWD_PR1MM,duration,1,Available code,
-wet_spell,MAX_15DAY_PR,accumulation,1,Available code,
-night_heat,TROPICAL_NIGHTS_25,primary,1,Available code,
-night_heat,TN90P,future preferred,1,Derive later,
-livestock_heat,CATTLE_THI_LOAD72,heat load,1,Available code,
-livestock_heat,CATTLE_THI84_DAYS,severe threshold days,1,Available code,
-livestock_heat,CATTLE_THI72_SPELL_MAX,duration,1,Available code,
-rice_heat,RICE_YIELD_DECLINE,primary impact,1,Verify older layer,
-rubber_heat,RUBBER_YIELD_DECLINE,primary impact,1,Verify older layer,
-cooling_demand,CDD18,primary,1,Available code,
-marine_warming,MARINE_SST,primary,1,Available code,
-marine_warming,MARINE_BOTTOM_T,supporting,0,Available code,
-marine_deoxygenation,MARINE_O2_BOTTOM,primary,1,Available code,
-marine_acidification,MARINE_PH_SURFACE,primary,1,Available code,
-marine_acidification,MARINE_ARAG_SURFACE,supporting,0,Available code,
-marine_productivity,MARINE_NETPP,primary,1,Available code,
-fisheries_biomass,FISH_BIOMASS,direct impact,1,Verify older layer,
-coastal_inundation,SLR_INUNDATION,sea-level rise,1,Verify older layer,
-coastal_inundation,STORM_SURGE_INUNDATION,storm surge,1,Verify older layer,
-climate_stability,CLIMATE_VELOCITY,primary candidate,1,Derive later,
-flood_waterlogging,FLOOD_SUSC,static susceptibility,1,Needs data,
-landslide_trigger,LANDSLIDE_SUSC,static susceptibility,1,Needs data,
-landslide_trigger,RX5DAY,rainfall trigger,1,Available code,
-establishment_water,CWD_DEFICIT,severity,1,Future preferred,
-establishment_water,PPETmin,severity fallback,1,Current,
-establishment_water,PPETConDryMth,duration,1,Current,
-extreme_rain_erosion,RX5DAY,rainfall accumulation,1,Available code,
-extreme_rain_erosion,R99PTOT_BASE,extreme rainfall,1,Available code,
-excess_rain_operations,R20MM,heavy-rain days,1,Available code,
-excess_rain_operations,R50MM,very-heavy-rain days,1,Available code,
-excess_rain_operations,CWD_PR1MM,persistent wetness,1,Available code,
+fire_drought,HOT_DRY_SPELL_MAX,compound dryness,1,Available code,NA
+dry_spell,CDD_PR1MM,primary,1,Available code,NA
+dry_spell,DRY_SPELLS_14D_PR1MM,supporting,0,Available code,NA
+hot_dry,HOT_DRY_DAYS_35_PR5,primary,1,Available code,NA
+hot_dry,HOT_DRY_SPELL_MAX,duration,1,Available code,NA
+extreme_rainfall,RX5DAY,multi-day intensity,1,Available code,NA
+extreme_rainfall,R99PTOT_BASE,tail severity,1,Available code,NA
+extreme_rainfall,SDII,daily intensity,1,Available code,NA
+extreme_rainfall,R50MM,supporting frequency,0,Available code,NA
+wet_spell,CWD_PR1MM,duration,1,Available code,NA
+wet_spell,MAX_15DAY_PR,accumulation,1,Available code,NA
+night_heat,TROPICAL_NIGHTS_25,primary,1,Available code,NA
+night_heat,TN90P,future preferred,1,Derive later,NA
+livestock_heat,CATTLE_THI_LOAD72,heat load,1,Available code,NA
+livestock_heat,CATTLE_THI84_DAYS,severe threshold days,1,Available code,NA
+livestock_heat,CATTLE_THI72_SPELL_MAX,duration,1,Available code,NA
+rice_heat,RICE_YIELD_DECLINE,primary impact,1,Verify older layer,NA
+rubber_heat,RUBBER_YIELD_DECLINE,primary impact,1,Verify older layer,NA
+cooling_demand,CDD18,primary,1,Available code,NA
+marine_warming,MARINE_SST,primary,1,Available code,NA
+marine_warming,MARINE_BOTTOM_T,supporting,0,Available code,NA
+marine_deoxygenation,MARINE_O2_BOTTOM,primary,1,Available code,NA
+marine_acidification,MARINE_PH_SURFACE,primary,1,Available code,NA
+marine_acidification,MARINE_ARAG_SURFACE,supporting,0,Available code,NA
+marine_productivity,MARINE_NETPP,primary,1,Available code,NA
+fisheries_biomass,FISH_BIOMASS,direct impact,1,Verify older layer,NA
+coastal_inundation,SLR_INUNDATION,sea-level rise,1,Verify older layer,NA
+coastal_inundation,STORM_SURGE_INUNDATION,storm surge,1,Verify older layer,NA
+climate_stability,CLIMATE_VELOCITY,primary candidate,1,Derive later,NA
+flood_waterlogging,FLOOD_SUSC,static susceptibility,1,Needs data,NA
+landslide_trigger,LANDSLIDE_SUSC,static susceptibility,1,Needs data,NA
+landslide_trigger,RX5DAY,rainfall trigger,1,Available code,NA
+establishment_water,CWD_DEFICIT,severity,1,Future preferred,NA
+establishment_water,PPETmin,severity fallback,1,Current,NA
+establishment_water,PPETConDryMth,duration,1,Current,NA
+extreme_rain_erosion,RX5DAY,rainfall accumulation,1,Available code,NA
+extreme_rain_erosion,R99PTOT_BASE,extreme rainfall,1,Available code,NA
+excess_rain_operations,R20MM,heavy-rain days,1,Available code,NA
+excess_rain_operations,R50MM,very-heavy-rain days,1,Available code,NA
+excess_rain_operations,CWD_PR1MM,persistent wetness,1,Available code,NA
+worker_heat,WBGT,provisional current indicator,0,Current fallback,Current catalogue layer; use for display/change until a direct workability metric is registered.
